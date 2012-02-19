@@ -53,6 +53,7 @@
  ****************************************************************************/
 #include "../config.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include "HTMLP.h"
 #ifdef MOTIF
 #include <Xm/DrawingA.h>
@@ -4075,7 +4076,7 @@ _HTMLInput(
 #else
 	on_gadget = (_XmInputForGadget((CompositeWidget)hw,
 #endif /* MOTIF1_2 */
-				event->xbutton.x, event->xbutton.y) != NULL);
+				event->xbutton.x, event->xbutton.y));
 
 	if (on_gadget)
 	{

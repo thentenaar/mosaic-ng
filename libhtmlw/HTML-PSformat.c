@@ -59,7 +59,13 @@
  *
  */
 #include "../config.h"
+
+/* GCC no longer prodvides varargs.h as of GCC 3.1 */
+#if defined(__GNUC__) && (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1))
+#include <stdarg.h>
+#else
 #include <varargs.h>
+#endif
 
 #include <string.h>
 #include <stdio.h>
@@ -229,9 +235,13 @@ GetDpi(HTMLWidget hw)
  *
  */
 static int 
+#if defined(__GNUC__) && (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1))
+PSprintf(char *format, ...)
+#else
 PSprintf(format, va_alist)
     char* format;
     va_dcl
+#endif
 {
     int 	len;
     char 	*s;
@@ -251,7 +261,12 @@ PSprintf(format, va_alist)
 	}
 	PS_string = s;
     }
+
+    #if defined(__GNUC__) && (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1))
+    va_start(args,format);
+    #else
     va_start(args);
+    #endif
     len = vsprintf(PS_string+PS_len, format, args);
     /* this is a hack to make it work on systems were vsprintf(s,...)
      * returns s, instead of the len.

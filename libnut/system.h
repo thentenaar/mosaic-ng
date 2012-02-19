@@ -14,9 +14,10 @@
 #define SYS_WRITE_FAIL 13
 #define SYS_INTERNAL_FAIL 14
 
+#define my_strerror(X) strerror(X)
+
 int my_system(char *cmd, char *retBuf, int bufsize);
 int my_move(char *src, char *dest, char *retBuf, int bufsize, int overwrite);
-char *my_strerror(int errornum);
 char **buildArgv(char *cmd, int *new_argc);
 int my_copy(char *, char *, char *, int, int);
 int file_exists(char *);

@@ -135,18 +135,17 @@ static_xlibs = /usr/X11R6/lib/libXpm.a /usr/X11R6/lib/libXm.a /usr/X11R6/lib/lib
 #### For inline PNG support, the following should be defined:
 #### The libraries currently used are PNGLIB 0.81 and ZLIB 0.95
 
-pngdir = /xdev/mosaic/libpng/linux
-pnglibdir = $(pngdir)/lib
+pngdir = /usr
 pngincludedir = $(pngdir)/include
-pnglibs = $(pnglibdir)/libpng.a $(pnglibdir)/libz.a /usr/lib/libm.a
+pnglibs = -lpng -lz -lm
 pngflags =  -I$(pngincludedir) -DHAVE_PNG
 
 #### JPEG SUPPORT
 #### For inline JPEG support, the following should be defined:
 #### The library used is Independent JPEG Group (IJG's) 5.0a.
 
-jpegdir = /xdev/mosaic/libjpeg/linux
-jpeglibs = $(jpegdir)/lib/libjpeg.a
+jpegdir = /usr
+jpeglibs = -ljpeg
 jpegflags = -I$(jpegdir)/include -DHAVE_JPEG
 
 

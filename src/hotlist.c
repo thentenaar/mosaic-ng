@@ -589,7 +589,7 @@ static XmxCallback (edit_or_insert_hot_cb)
 #ifndef DISABLE_TRACE
 		if (srcTrace) {
 			fprintf (stderr, 
-				 "w->hotlist_list 0x%08x, xmstr 0x%08x, hotnode->position %d\n",
+				 "w->hotlist_list %p, xmstr %p, hotnode->position %d\n",
 				 w->hotlist_list, 
 				 xmstr, 
 				 hotnode->any.position);

@@ -51,6 +51,7 @@
  * Comments and questions are welcome and can be sent to                    *
  * mosaic-x@ncsa.uiuc.edu.                                                  *
  ****************************************************************************/
+#include <stdlib.h>
 #include "../config.h"
 #include "XmxP.h"
 
@@ -67,7 +68,7 @@ _XmxMenuAddEntryToRecord (XmxMenuRecord *rec, Widget w, int token)
   XmxMenuEntry *_ent;
 
   /* Create new menu entry. */
-  _ent = (XmxMenuEntry *)malloc (sizeof (XmxMenuEntry));
+  _ent = (XmxMenuEntry *)malloc(sizeof(XmxMenuEntry));
   _ent->w = w;
   _ent->token = token;
 

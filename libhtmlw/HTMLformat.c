@@ -61,6 +61,7 @@ struct timezone Tz;
 #endif
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include "HTMLP.h"
 
@@ -4865,7 +4866,7 @@ FormatAll(hw, Fwidth)
 	if (htmlwTrace) {
 #ifndef VMS
 		gettimeofday(&Tv, &Tz);
-		fprintf(stderr, "FormatAll enter (%d.%d)\n", Tv.tv_sec, Tv.tv_usec);
+		fprintf(stderr, "FormatAll enter (%ld.%ld)\n", Tv.tv_sec, Tv.tv_usec);
 #else
                 fprintf(stderr, "FormatAll enter (%s)\n", asctime(localtime(&clock)));
 #endif
@@ -5081,7 +5082,7 @@ FormatAll(hw, Fwidth)
 	if (htmlwTrace) {
 #ifndef VMS
 		gettimeofday(&Tv, &Tz);
-		fprintf(stderr, "FormatAll exit (%d.%d)\n", Tv.tv_sec, Tv.tv_usec);
+		fprintf(stderr, "FormatAll exit (%ld.%ld)\n", Tv.tv_sec, Tv.tv_usec);
 #else
                 fprintf(stderr, "FormatAll exit (%s)\n", asctime(localtime(&clock)));
 #endif

@@ -1037,7 +1037,7 @@ unsigned char *ReadXpm3Pixmap(FILE *fp, char *datafile, int *w, int *h,
 #ifndef DISABLE_TRACE
 	if (srcTrace) {
 		gettimeofday(&Tv, &Tz);
-		fprintf(stderr, "ReadXpm3Pixmap enter (%d.%d)\n", Tv.tv_sec, Tv.tv_usec);
+		fprintf(stderr, "ReadXpm3Pixmap enter (%ld.%ld)\n", Tv.tv_sec, Tv.tv_usec);
 	}
 #endif
 
@@ -1143,7 +1143,7 @@ unsigned char *ReadXpm3Pixmap(FILE *fp, char *datafile, int *w, int *h,
 #ifndef DISABLE_TRACE
 	if (srcTrace) {
 		gettimeofday(&Tv, &Tz);
-		fprintf(stderr, "ReadXpm3Pixmap exit (%d.%d)\n", Tv.tv_sec, Tv.tv_usec);
+		fprintf(stderr, "ReadXpm3Pixmap exit (%ld.%ld)\n", Tv.tv_sec, Tv.tv_usec);
 	}
 #endif
 
@@ -1267,7 +1267,7 @@ unsigned char *ProcessXpm3Data(Widget wid, char **xpmdata, int *w,
 #ifndef DISABLE_TRACE
 	if (srcTrace) {
 		gettimeofday(&Tv, &Tz);
-		fprintf(stderr, "ReadXpm3Pixmap exit (%d.%d)\n", Tv.tv_sec, Tv.tv_usec);
+		fprintf(stderr, "ReadXpm3Pixmap exit (%ld.%ld)\n", Tv.tv_sec, Tv.tv_usec);
 	}
 #endif
 

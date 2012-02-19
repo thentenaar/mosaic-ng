@@ -101,13 +101,6 @@
 extern char *strdup(char *str);
 #endif
 
-#ifndef VMS
-extern int sys_nerr;
-extern char *sys_errlist[];
-extern int errno;
-#endif
-
-
 #ifndef DISABLE_TRACE
 int nutTrace=0;
 #endif
@@ -115,9 +108,10 @@ int nutTrace=0;
 
 int sleep_interrupt=0;
 
+/* Most systems these days have strerror (e.g. since C89) */
+#define my_strerror(X) strerror(X)
 
 int my_system(char *cmd, char *retBuf, int bufsize);
-char *my_strerror(int errornum);
 char **buildArgv(char *cmd, int *new_argc);
 char *findProgram(char *pname,char *spath);
 int my_sleep(int length, int interrupt);
@@ -625,25 +619,6 @@ struct stat dest_stat;
 	unlink(src);
 
 	return(SYS_SUCCESS);
-}
-
-
-/*
- * Written by: Scott Powers
- *
- * Some systems do not have a "strerror" function. This covers all the bases.
- */
-char *my_strerror(int errornum) {
-
-#ifndef VMS   /* PGE, old VMS versions do not support sys_errlist */
-        if (errornum<sys_nerr) {
-                return(sys_errlist[errornum]);
-	}
-#else
-        return(strerror(errornum));
-#endif
-
-        return(NULL);
 }
 
 

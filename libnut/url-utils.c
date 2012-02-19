@@ -163,25 +163,6 @@ int rind(char *s, char c) {
     return -1;
 }
 
-
-int getline(char *s, int n, FILE *f) {
-    register int i=0;
-
-    while(1) {
-        s[i] = (char)fgetc(f);
-
-        if(s[i] == CR)
-            s[i] = fgetc(f);
-
-        if((s[i] == 0x4) || (s[i] == LF) || (i == (n-1))) {
-            s[i] = '\0';
-            return (feof(f) ? 1 : 0);
-        }
-        ++i;
-    }
-}
-
-
 void send_fd(FILE *f, FILE *fd)
 {
     int num_chars=0;

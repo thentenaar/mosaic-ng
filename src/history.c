@@ -514,7 +514,7 @@ mo_status mo_dump_history (mo_window *win)
   if (srcTrace) {
 
   fprintf (stderr, "----------------- history -------------- \n");
-  fprintf (stderr, "HISTORY is 0x%08x\n", win->history);
+  fprintf (stderr, "HISTORY is %p\n", win->history);
   for (node = win->history; node != NULL; node = node->next)
     {
       fprintf (stderr, "NODE %d %s\n", node->position, node->url);

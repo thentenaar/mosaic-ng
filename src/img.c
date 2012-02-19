@@ -332,7 +332,7 @@ ImageInfo *ImageResolve (Widget w, char *src, int noload, char *wid, char *hei)
 foundit:
 #ifndef DISABLE_TRACE
     if (srcTrace)
-        fprintf (stderr, "[ImageResolve] hello! win 0x%08x\n",
+        fprintf (stderr, "[ImageResolve] hello! win %p\n",
                  win);
 #endif
 
@@ -581,7 +581,7 @@ stuffcache:
 #ifndef DISABLE_TRACE
 	if (srcTrace)
 		fprintf (stderr,
-			 "[ImageResolve] Did ReadBitmap, got 0x%08x\n", data);
+			 "[ImageResolve] Did ReadBitmap, got %p\n", data);
 #endif
 
 	/* if we have a transparent background, prepare for it */
@@ -823,7 +823,7 @@ int found_bg=0;
 
 #ifndef DISABLE_TRACE
   if (srcTrace)
-    fprintf (stderr, "[ImageResolve] Doing mo_cache_data on '%s', 0x%08x\n",
+    fprintf (stderr, "[ImageResolve] Doing mo_cache_data on '%s', %p\n",
              src, img_data);
 #endif
 
@@ -875,7 +875,7 @@ static ImageInfo *DelayedImageResolve (Widget w, char *src)
 
 #ifndef DISABLE_TRACE
   if (srcTrace)
-    fprintf (stderr, "[DelayedImageResolve] Returning 0x%08x\n", img);
+    fprintf (stderr, "[DelayedImageResolve] Returning %p\n", img);
 #endif
 
 /* need this here now...but may make other stuff look cheeeezy -- SWP */
@@ -892,7 +892,7 @@ mo_status mo_free_image_data (void *ptr)
 
 #ifndef DISABLE_TRACE
   if (srcTrace)
-    fprintf (stderr, "[mo_free_image_info] Freeing 0x%08x\n", img);
+    fprintf (stderr, "[mo_free_image_info] Freeing %p\n", img);
 #endif
 
   if (!img)

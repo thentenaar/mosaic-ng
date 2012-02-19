@@ -88,6 +88,7 @@
 *                                                                             *
 \*****************************************************************************/
 
+#include <stdlib.h>
 #include "xpm.h"
 
 LFUNC(AtomMake, xpmHashAtom, (char *name, void *data));

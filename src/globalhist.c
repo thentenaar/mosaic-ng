@@ -625,7 +625,7 @@ void *mo_fetch_cached_image_data (char *url)
               {
 #ifndef DISABLE_TRACE
                 if (cacheTrace)
-                  fprintf (stderr, "[mo_fetch_cached_image_data] Hit for '%s', data 0x%08x\n", url, l->cached_data->image_data);
+                  fprintf (stderr, "[mo_fetch_cached_image_data] Hit for '%s', data %p\n", url, l->cached_data->image_data);
 #endif
                 l->cached_data->last_access = access_counter++;
                 return l->cached_data->image_data;
@@ -736,7 +736,7 @@ mo_status mo_cache_data (char *url, void *info, int type)
     {
 #ifndef DISABLE_TRACE
       if (cacheTrace)
-        fprintf (stderr, "[mo_cache_data] Caching '%s', data 0x%08x\n",
+        fprintf (stderr, "[mo_cache_data] Caching '%s', data %p\n",
                  url, info);
 #endif
       mo_cache_image_data (l->cached_data, info);
@@ -845,7 +845,7 @@ static mo_status mo_dump_cached_cd_array (void)
     {
       if (cached_cd_array[i])
 	if (cacheTrace) {
-		fprintf (stderr, "  %02d data 0x%08x last_access %d\n", i,
+		fprintf (stderr, "  %02d data %p last_access %d\n", i,
 			 cached_cd_array[i]->image_data, 
 			 cached_cd_array[i]->last_access);
 	}
@@ -875,7 +875,7 @@ static mo_status mo_init_cached_cd_array (void)
 
 #ifndef DISABLE_TRACE
   if (cacheTrace)
-    fprintf (stderr, "[mo_init] Did it 0x%08x -- allocated %d pointers.\n",
+    fprintf (stderr, "[mo_init] Did it %p -- allocated %d pointers.\n",
              cached_cd_array,
              size_of_cached_cd_array);
 #endif
@@ -898,7 +898,7 @@ static mo_status mo_grow_cached_cd_array (void)
 
 #ifndef DISABLE_TRACE
   if (cacheTrace)
-    fprintf (stderr, "[grow] cached_cd_array 0x%08x, size_of_cached_cd_array 0x%08x, sum 0x%08x\n",
+    fprintf (stderr, "[grow] cached_cd_array %p, size_of_cached_cd_array 0x%08x, sum %p\n",
              cached_cd_array, size_of_cached_cd_array, 
              cached_cd_array + size_of_cached_cd_array);
 #endif
@@ -958,7 +958,7 @@ static mo_status mo_sort_cached_cd_array (void)
 #ifndef DISABLE_TRACE
   if (cacheTrace)
     {
-      fprintf (stderr, "[mo_sort_cached_cd_array] Sorting 0x%08x!\n",
+      fprintf (stderr, "[mo_sort_cached_cd_array] Sorting %p!\n",
                cached_cd_array);
       mo_dump_cached_cd_array ();
     }
@@ -991,7 +991,7 @@ static mo_status mo_remove_cd_from_cached_cd_array (cached_data *cd)
           if (cacheTrace)
             fprintf 
               (stderr, 
-               "[mo_remove_cd_from_cached_cd_array] Found data 0x%08x, location %d\n", 
+               "[mo_remove_cd_from_cached_cd_array] Found data %p, location %d\n", 
                cached_cd_array[i]->image_data, i);
 #endif
           freed_kbytes = mo_kbytes_in_image_data 
@@ -1051,7 +1051,7 @@ static mo_status mo_add_cd_to_cached_cd_array (cached_data *cd)
       int num_to_remove = 0;
 #ifndef DISABLE_TRACE
       if (cacheTrace)
-        fprintf (stderr, "[mo_add_cd] Going to sort 0x%08x...\n", 
+        fprintf (stderr, "[mo_add_cd] Going to sort %p...\n", 
                  cached_cd_array);
 #endif
       mo_sort_cached_cd_array ();
@@ -1162,7 +1162,7 @@ static mo_status mo_add_cd_to_cached_cd_array (cached_data *cd)
     {
       fprintf 
         (stderr, 
-         "[mo_add_cd_to_cached_cd_array] Added cd, data 0x%08x, num %d\n",
+         "[mo_add_cd_to_cached_cd_array] Added cd, data %p, num %d\n",
          cd->image_data, num);
       fprintf 
         (stderr,

@@ -62,6 +62,7 @@
  ****************************************************************************/
 #include "../config.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <X11/Intrinsic.h>
 #include "gifread.h"
 
@@ -164,7 +165,7 @@ ReadGIF(FILE *fd, int *w, int *h, XColor *colrs, int *bg)
 #ifndef DISABLE_TRACE
 	if (srcTrace) {
 		gettimeofday(&Tv, &Tz);
-		fprintf(stderr, "ReadGIF_DK enter (%d.%d)\n", Tv.tv_sec, Tv.tv_usec);
+		fprintf(stderr, "ReadGIF_DK enter (%ld.%ld)\n", Tv.tv_sec, Tv.tv_usec);
 	}
 #endif
 
@@ -421,7 +422,7 @@ ReadGIF(FILE *fd, int *w, int *h, XColor *colrs, int *bg)
 #ifndef DISABLE_TRACE
 	if (srcTrace) {
 		gettimeofday(&Tv, &Tz);
-		fprintf(stderr, "ReadGIF_DK exit (%d.%d)\n", Tv.tv_sec, Tv.tv_usec);
+		fprintf(stderr, "ReadGIF_DK exit (%ld.%ld)\n", Tv.tv_sec, Tv.tv_usec);
 	}
 #endif
 

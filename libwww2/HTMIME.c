@@ -583,7 +583,7 @@ PRIVATE void HTMIME_put_character ARGS2(HTStream *, me, char, c)
 #ifndef DISABLE_TRACE
               if (www2Trace)
                 fprintf (stderr, "[MIME_put_char] Got content-type value atom 0x%08x\n",
-                         me->format);
+                         (unsigned int)me->format);
 #endif
               break;
 	    case CONTENT_TRANSFER_ENCODING:
@@ -592,7 +592,7 @@ PRIVATE void HTMIME_put_character ARGS2(HTStream *, me, char, c)
               if (www2Trace)
                 fprintf (stderr, 
                          "[MIME_put_char] Picked up transfer_encoding '%s'\n",
-                         me->encoding);
+                         (char *)me->encoding);
 #endif
               break;
             case CONTENT_ENCODING:
@@ -884,18 +884,14 @@ PRIVATE void HTMIME_free ARGS1(HTStream *, me)
 #endif
 #ifndef DISABLE_TRACE
       if (www2Trace)
-        fprintf (stderr, "  me 0x%08x, me->target 0x%08x\n", me, me->target);
+        fprintf (stderr, "  me %p, me->target %p\n", me, me->target);
 #endif
       me->format = HTAtom_for ("text/html");
       me->target = HTStreamStack(me->format, me->targetRep, 0,
                                  me->sink, me->anchor);
 #ifndef DISABLE_TRACE
       if (www2Trace)
-        fprintf (stderr, "  me->target->isa 0x%08x\n", me->target->isa);
-#endif
-#ifndef DISABLE_TRACE
-      if (www2Trace)
-        fprintf (stderr, "  *me->target->isa 0x%08x\n", *me->target->isa);
+        fprintf (stderr, "  me->target->isa %p\n", me->target->isa);
 #endif
       me->targetClass = *me->target->isa;
       (*me->targetClass.put_string) (me->target, "<H1>ERROR IN HTTP/1.0 RESPONSE</H1> The remote server returned a HTTP/1.0 response that Mosaic's MIME parser could not understand.  Please contact the server maintainer.<P> Sorry for the inconvenience,<P> <ADDRESS>The Management</ADDRESS>");

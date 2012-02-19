@@ -72,9 +72,6 @@ PRIVATE char *hostname=0;		/* The name of this host */
 extern int errno;
 #endif /* errno */
 
-extern char *sys_errlist[];		/* see man perror on cernvax */
-extern int sys_nerr;
-
 /*	Report Internet Error
 **	---------------------
 */
@@ -88,8 +85,7 @@ PUBLIC int HTInetStatus(where)
 #ifndef DISABLE_TRACE
     if (www2Trace) {
 	fprintf(stderr, "TCP: Error %d in `errno' after call to %s() failed.\n\t%s\n",
-	    errno,  where,
-	    errno < sys_nerr ? sys_errlist[errno] : "Unknown error" );
+	    errno,  where, strerror(errno));
     }
 #endif
 

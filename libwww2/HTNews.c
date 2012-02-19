@@ -1953,7 +1953,7 @@ PRIVATE void read_list NOARGS
       	      if (n->attribs&naSUBSCRIBED && 
 		  (newsShowAllGroups || n->unread>0 
 		   || newsShowReadGroups)) {
-		sprintf(line,"%s % 7d S <A HREF=\"news:%s\">%s</A> \n",
+		sprintf(line,"%s %7ld S <A HREF=\"news:%s\">%s</A> \n",
 			(lastg==1)?"<b>&gt;&gt;&gt;</b>":"   ",
 			n->unread, n->name, elgroup);
 		PUTS (line);
@@ -1961,7 +1961,7 @@ PRIVATE void read_list NOARGS
 		  lastg=2;
 	      } 
 	    } else {
-	      sprintf(line,"    % 7d U <A HREF=\"news:%s\">%s</A> \n",
+	      sprintf(line,"    %7d U <A HREF=\"news:%s\">%s</A> \n",
 		      last<first?0:last-first, group, elgroup);
 	      PUTS(line);
 	    }
@@ -2015,7 +2015,7 @@ PRIVATE void read_list NOARGS
       else if (nn == n && !mark)
 	lastg = 1;
       if (newsShowAllGroups  || n->unread>0 || newsShowReadGroups) {
-	sprintf(line,"%s % 7d %s <A HREF=\"news:%s\">%s</A> \n",
+	sprintf(line,"%s %7ld %s <A HREF=\"news:%s\">%s</A> \n",
 		(lastg==1)? "<b>&gt;&gt;&gt;</b>":"   ",
 		n->unread, n->attribs&naSUBSCRIBED?"S":"U", 
 		n->name, elgroup);

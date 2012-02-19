@@ -488,9 +488,12 @@ PUBLIC void HTFileInit NOARGS
    NCSA httpd is in the public domain, as is this code. */
 
 #define MAX_STRING_LEN 256
-
-static int getline(char *s, int n, FILE *f) 
+static int getln(char *s, int n, FILE *f)
 {
+#if _POSIX_C_SOURCE >= 200809L || _XOPEN_SOURCE >= 700 || _GNU_SOURCE
+  /* getline() was originally a GNU extension, but was standardized in POSIX.1-2008 */
+  getline(&s,(size_t *)&n,f);
+#else
   register int i=0;
   
   while(1) 
@@ -507,8 +510,7 @@ static int getline(char *s, int n, FILE *f)
         }
       ++i;
     }
-
-  /* NOTREACHED */
+#endif
 }
 
 static void getword(char *word, char *line, char stop, char stop2) 
@@ -553,7 +555,7 @@ int HTLoadExtensionsConfigFile (char *fn)
       return -1;
     }
 
-  while(!(getline(l,MAX_STRING_LEN,f))) 
+  while(!(getln(l,MAX_STRING_LEN,f))) 
     {
       /* always get rid of leading white space for "line" -- SWP */
       for (ptr=l; *ptr && isspace(*ptr); ptr++);

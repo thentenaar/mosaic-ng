@@ -1228,7 +1228,7 @@ forget_multi:
                     else
                         {
                         sprintf(buffer,"%s (%d bytes)", 
-                            dataptr, statbuf.st_size);
+                            dataptr, (int)statbuf.st_size);
               
                         format = HTFileFormat(dataptr, &pencoding, 
                                      WWW_SOURCE, &cmpr);
