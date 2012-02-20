@@ -121,10 +121,6 @@ ReadPNG(FILE *infile,int *width, int *height, XColor *colrs)
             return(0);
     }
 
-        /* OK, it is a valid PNG file, so let's rewind it, and start 
-           decoding it */
-    rewind(infile);
-
         /* allocate the structures */
     png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,NULL,NULL,NULL);
     if(!png_ptr)
