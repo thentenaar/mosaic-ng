@@ -572,8 +572,10 @@ PRIVATE void HTMIME_put_character ARGS2(HTStream *, me, char, c)
               /* Lowercase it. */
               {
                 char *tmp;
-                for (tmp = me->value; *tmp; tmp++)
+                for (tmp = me->value; *tmp; tmp++) {
+                  if (*tmp == ';') { *tmp = 0; tmp--; } /* Kludge so that charsets don't confuse Mosaic */
                   *tmp = TOLOWER (*tmp);
+                }
               }
 #ifndef DISABLE_TRACE
               if (www2Trace)
