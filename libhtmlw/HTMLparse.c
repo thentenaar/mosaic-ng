@@ -1410,7 +1410,8 @@ ParseMarkType(str)
 			fprintf(stderr, "warning: unknown mark (%s)\n", str);
 		}
 #endif
-		type = M_UNKNOWN;
+                /* Treat any unknown element as a comment */
+		type = M_COMMENT; /* M_UNKNOWN */
 	}
 
 	*tptr = tchar;
