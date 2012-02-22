@@ -1004,7 +1004,7 @@ HTMLParse(old_list, str, hw)
 				return(list);
 			}
 		}
-		else if (mark->type == M_COMMENT) free(text);
+		else if (mark && mark->type == M_COMMENT) free(text);
 		else
 		{
 			mark = (struct mark_up *)malloc(sizeof(struct mark_up));
