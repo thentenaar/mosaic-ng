@@ -752,6 +752,12 @@ get_mark(start, endp)
 		mark->end = NULL;
 	}
 
+	/* JS Parsing Kludge */
+	if (mark->type == M_NONE && strlen(text) > 10) {
+		*ptr = '>'; *endp = ptr-8; free(text); free(mark);
+		return get_mark(*endp,endp);
+	}
+
 	mark->text = NULL;
 	mark->next = NULL;
 
@@ -1151,6 +1157,9 @@ ParseMarkType(str)
 		if (isspace((int)*tptr))
 		{
 			break;
+		}  else if (*tptr == ';' || *tptr == ')' || *tptr == '(' || *tptr == '|') {
+			/* JS parsing kludge */
+			return M_NONE;
 		}
 		tptr++;
 	}
