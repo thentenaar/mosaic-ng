@@ -1416,6 +1416,7 @@ ParseMarkType(str)
 	{
 		type=M_MAP;
 	}
+	else if (caseless_equal(str,"script") || caseless_equal(str,"style")) type = M_COMMENT;
 	else
 	{
 #ifndef DISABLE_TRACE
@@ -1423,8 +1424,7 @@ ParseMarkType(str)
 			fprintf(stderr, "warning: unknown mark (%s)\n", str);
 		}
 #endif
-                /* Treat any unknown element as a comment */
-		type = M_COMMENT; /* M_UNKNOWN */
+		type = M_UNKNOWN;
 	}
 
 	*tptr = tchar;
