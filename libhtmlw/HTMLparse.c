@@ -621,6 +621,35 @@ get_mark(start, endp)
 		return(NULL);
 	}
 
+	/* Better script kludge */
+	tchar = *(start+7); *(start+7) = 0;
+	if (caseless_equal(start,"<script")) {
+		*(start+7) = tchar; ptr = start+7;
+		while (*ptr != 0 && !comment) {
+			while (*ptr != '<' && *ptr != 0) ptr++;
+			if (*ptr != 0 && *(ptr+1) == '/') {
+				tchar = *(ptr+9); *(ptr+9) = 0;
+				if (caseless_equal(ptr,"</script>")) {
+					*(ptr+9) = tchar; ptr += 9; comment = 1;
+				} else ptr++;
+			} else ptr++;
+		}
+
+		if (comment) {
+			*endp = ptr;
+
+			/* Add a comment tag */
+			if (!(mark = (struct mark_up *)malloc(sizeof(struct mark_up)))) return NULL;
+			mark->is_end = 1;
+			mark->type = M_COMMENT;
+			mark->start = NULL;
+			mark->text = NULL;
+			mark->end = NULL;
+			mark->next = NULL;
+			return mark;
+		} else { *endp = ptr; return NULL; }
+	} else *(start+7) = tchar;
+
 	/* amb - check if we are in a comment, start tag is <!-- */
 	if (strncmp (start, "<!--", 4)==0)
 	  comment=1;
@@ -750,12 +779,6 @@ get_mark(start, endp)
 		mark->start = text;
 		mark->text = NULL;
 		mark->end = NULL;
-	}
-
-	/* JS Parsing Kludge */
-	if (mark->type == M_NONE && strlen(text) > 10) {
-		*ptr = '>'; *endp = ptr-8; free(text); free(mark);
-		return get_mark(*endp,endp);
 	}
 
 	mark->text = NULL;
@@ -1158,9 +1181,6 @@ ParseMarkType(str)
 		if (isspace((int)*tptr))
 		{
 			break;
-		}  else if (*tptr == ';' || *tptr == ')' || *tptr == '(' || *tptr == '|') {
-			/* JS parsing kludge */
-			return M_NONE;
 		}
 		tptr++;
 	}
@@ -1416,7 +1436,7 @@ ParseMarkType(str)
 	{
 		type=M_MAP;
 	}
-	else if (caseless_equal(str,"script") || caseless_equal(str,"style")) type = M_COMMENT;
+	else if (caseless_equal(str,"style")) type = M_COMMENT;
 	else
 	{
 #ifndef DISABLE_TRACE
