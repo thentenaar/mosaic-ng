@@ -607,7 +607,7 @@ get_mark(start, endp)
 	char *ptr;
 	char *text;
 	char tchar;
-	struct mark_up *mark;
+	struct mark_up *mark = NULL;
 	int  comment=0;       /* amb - comment==1 if we are in a comment */
 	char *first_gt=NULL;  /* keep track of ">" for old broken comments */
 
@@ -688,6 +688,7 @@ get_mark(start, endp)
 		*endp=ptr;
 	}
 	else {
+		free(mark);
 		return(NULL); /*only if EOF and no close comment -- SWP*/
 	}
 
@@ -698,6 +699,7 @@ get_mark(start, endp)
 			fprintf(stderr, "error: bad mark format\n");
 		}
 #endif
+		free(mark);
 		return(NULL);
 	}
 
@@ -716,6 +718,7 @@ get_mark(start, endp)
 		}
 #endif
 		*ptr = tchar;
+		free(mark);
 		return(NULL);
 	}
 	strcpy(text, start);
