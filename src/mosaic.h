@@ -131,6 +131,8 @@ typedef enum
   "http://www.ncsa.uiuc.edu/SDG/Software/XMosaic"
 #endif
 
+#undef HOME_PAGE_DEFAULT
+#define HOME_PAGE_DEFAULT "about:xmosaic"
 #ifndef HOME_PAGE_DEFAULT
 /* This must be a straight string as it is included into a struct; 
    no tricks. */
