@@ -3875,7 +3875,7 @@ static XmxCallback (fire_er_up)
       XmxSetArg (XmNheight, userHeight);
 
       XmxSetArg (XmNx, userX);
-      XmxSetArg (XmNx, userY);
+      XmxSetArg (XmNy, userY);
   }
 
   if (get_pref_boolean(eINITIAL_WINDOW_ICONIC))
