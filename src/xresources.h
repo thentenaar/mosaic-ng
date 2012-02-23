@@ -372,7 +372,7 @@ static XtResource resources[] = {
       offset (splashScreen), XtRString, "True" },
 
   { "imageViewInternal", "ImageViewInternal", XtRBoolean, sizeof (Boolean),
-      offset (imageViewInternal), XtRString, "False" },
+      offset (imageViewInternal), XtRString, "True" },
 
   { "urlExpired", "UrlExpired", XtRInt, sizeof (int),
       offset (urlExpired), XtRString, "30" },
