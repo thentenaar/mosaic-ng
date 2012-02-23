@@ -62,7 +62,6 @@ int i;
 	if (setjmp(jerr.setjmp_buffer)) {
 		/* If we get here, the JPEG code has signaled an error. */
     		jpeg_destroy_decompress(&cinfo);
-		fclose(infile);
 
 		if (retBuffer) {
 			free(retBuffer);
