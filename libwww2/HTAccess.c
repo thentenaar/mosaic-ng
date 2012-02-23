@@ -492,7 +492,17 @@ PRIVATE int HTLoadDocument ARGS4(
     if (status == HT_REDIRECTING)
       {
         /* Exported from HTMIME.c, of all places. */
-        extern char *redirecting_url;
+        extern char *redirecting_url; char *nurl;
+
+        /* Make relative Locations work */
+        if (full_address && redirecting_url && *redirecting_url == '/') {
+            if ((nurl = (char *)malloc(strlen(full_address) + strlen(redirecting_url)))) {
+                strncpy(nurl,full_address,strlen(full_address));
+                strncpy(nurl+strlen(full_address),redirecting_url+1,strlen(redirecting_url)-1);
+                free(redirecting_url); redirecting_url = nurl;
+            }
+        }
+
 #ifndef DISABLE_TRACE
         if (www2Trace)
           {
