@@ -1259,7 +1259,26 @@ int expandedWidth,expandedHeight;
 					vertMarker, horizMarker,
 					vertMarker, horizMarker + rowHeight);
 				}
+
+			    if (xx == eptr->table_data->numColumns - 1) {
+			        /* Draw the right border on the last col */
+				XDrawLine(XtDisplay(hw),
+					XtWindow(hw->html.view),
+					hw->html.drawGC,
+					vertMarker + colWidth, horizMarker,
+					vertMarker + colWidth, horizMarker + rowHeight);
 			    }
+
+			    if (yy == eptr->table_data->numRows - 1) {
+			        /* Draw the bottom border on the last row */
+				XDrawLine(XtDisplay(hw),
+					XtWindow(hw->html.view),
+					hw->html.drawGC,
+					vertMarker,            horizMarker + rowHeight,
+					vertMarker + colWidth, horizMarker + rowHeight);
+			    }
+			}
+
 			TableGetExpandedDimensions(eptr->table_data,
 					xx,yy,&expandedWidth,&expandedHeight);
 			/* fill in field */
