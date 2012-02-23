@@ -607,7 +607,7 @@ get_mark(start, endp)
 	char *ptr;
 	char *text;
 	char tchar;
-	struct mark_up *mark = NULL;
+	struct mark_up *mark;
 	int  comment=0;       /* amb - comment==1 if we are in a comment */
 	char *first_gt=NULL;  /* keep track of ">" for old broken comments */
 
