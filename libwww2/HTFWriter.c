@@ -373,7 +373,7 @@ PRIVATE void HTFWriter_handle_interrupt ARGS1(HTStream *, me)
 {
 /*  char *cmd;*/
 
-  if (me->write_error)
+  if (me->write_error || me->interrupted)
     goto outtahere;
 
   /* Close the file, then kill it. */
