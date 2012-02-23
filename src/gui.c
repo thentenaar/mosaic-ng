@@ -4711,7 +4711,7 @@ splash_goto:
       /*Wait 3 secs, then popdown*/
       if(splash_cc) {
           splashTimer =
-              XtAppAddTimeOut(app_context, 3000,
+              XtAppAddTimeOut(app_context, 1300,
                               (XtTimerCallbackProc)kill_splash, NULL);
       } else {
           kill_splash();
