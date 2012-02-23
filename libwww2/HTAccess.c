@@ -492,13 +492,19 @@ PRIVATE int HTLoadDocument ARGS4(
     if (status == HT_REDIRECTING)
       {
         /* Exported from HTMIME.c, of all places. */
-        extern char *redirecting_url; char *nurl;
+        extern char *redirecting_url; char *nurl; int slash = 0;
 
         /* Make relative Locations work */
-        if (full_address && redirecting_url && *redirecting_url == '/') {
-            if ((nurl = (char *)malloc(strlen(full_address) + strlen(redirecting_url)))) {
+        if (full_address && redirecting_url && strncmp(redirecting_url,"http:",5) && strncmp(redirecting_url,"https:",6)) {
+            if (*(full_address+strlen(full_address)-1) == '/') slash++;
+            if (*redirecting_url == '/')                       slash++;
+
+            if ((nurl = (char *)malloc(strlen(full_address) + strlen(redirecting_url) + (!slash ? 2 : 1)))) {
                 strncpy(nurl,full_address,strlen(full_address));
-                strncpy(nurl+strlen(full_address),redirecting_url+1,strlen(redirecting_url)-1);
+                if (!slash) *(nurl+strlen(full_address)) = '/';
+                strncpy(nurl+strlen(full_address)+(!slash ? 1 : 0),redirecting_url+((slash & 2) >> 1),
+                        strlen(redirecting_url)-((slash & 2) >> 1));
+                *(nurl+strlen(full_address)+strlen(redirecting_url)+(!slash ? 1 : 0)-((slash & 2) >> 1)) = 0;
                 free(redirecting_url); redirecting_url = nurl;
             }
         }
