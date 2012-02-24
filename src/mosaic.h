@@ -120,8 +120,8 @@ typedef enum
 /* -------------------------------- MACROS -------------------------------- */
 /* ------------------------------------------------------------------------ */
 
-#define MO_VERSION_STRING "2.7b5"
-#define MO_GO_NCSA_COUNT 3  /* Go to the NCSA home page thrice*/
+#define MO_VERSION_STRING "2.7b6"
+#define MO_GO_NCSA_COUNT 1  /* Go to the NCSA home page thrice*/
 #define MO_HELP_ON_VERSION_DOCUMENT \
   mo_assemble_help_url ("help-on-version-2.7b5.html")
 #define MO_DEVELOPER_ADDRESS "mosaic-x@ncsa.uiuc.edu"
@@ -176,10 +176,10 @@ typedef enum
 #endif /* not DOCUMENTS_MENU_SPECFILE */
 
 #ifndef GLOBAL_EXTENSION_MAP
-#define GLOBAL_EXTENSION_MAP "/usr/local/lib/mosaic/mime.types"
+#define GLOBAL_EXTENSION_MAP "/etc/mime.types"
 #endif
 #ifndef GLOBAL_TYPE_MAP
-#define GLOBAL_TYPE_MAP "/usr/local/lib/mosaic/mailcap"
+#define GLOBAL_TYPE_MAP "/etc/mailcap"
 #endif
 
 
