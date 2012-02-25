@@ -58,6 +58,7 @@
 #include "libhtmlw/HTML.h"
 #include <time.h>
 #include "../libnut/system.h"
+#include <pwd.h>
 
 /*for memset*/
 #include <memory.h>
@@ -506,53 +507,28 @@ mo_status mo_wipe_global_history (mo_window *win)
 static char *cached_global_hist_fname = NULL;
 mo_status mo_setup_global_history (void)
 {
-  char *home = getenv ("HOME");
-  char *default_filename = get_pref_string(eGLOBAL_HISTORY_FILE);
-  char *filename;
-  FILE *fp;
+  char *home, *histfn, *filename;
+  struct passwd *pwdent; int len;
 
-  mo_init_global_history ();
+  mo_init_global_history();
+  histfn = get_pref_string(eHISTORY_FILE);
 
-  /* This shouldn't happen. */
-  if (!home)
-    home = "/tmp";
-  
-  filename = (char *)malloc 
-    ((strlen (home) +
-      strlen (get_pref_string(eHISTORY_FILE)) +
-      8) * sizeof (char));
-  sprintf (filename, "%s/%s", home, get_pref_string(eHISTORY_FILE));
-
-  if (!(fp=fopen(filename,"r"))) {
-	printf("\n\n---------------New History Format---------------\n\n");
-	printf("Mosaic needs to update your history file to a new format\n");
-	printf("  which will enable links to expire after %d days (see\n",get_pref_int(eURLEXPIRED));
-	printf("  the resource 'Mosaic*urlExpired').\n\n");
-	printf("Your current history file will still exist and will not\n");
-	printf("  be modified. However, it will no longer be updated.\n");
-	printf("  Instead, the file '.mosaic-x-history' will be used.\n\n");
-
-	free(filename);
-	filename = (char *)malloc((strlen (home) + strlen (default_filename) + 8) * sizeof (char));
-	sprintf (filename, "%s/%s", home, default_filename);
-  }
-  else {
-	fclose(fp);
+  /* Get the user's home directory */
+  home = strdup(getenv("HOME"));
+  if (!home && (pwdent = getpwuid(getuid()))) home = strdup(pwdent->pw_dir);
+  else if (!home) {
+    fprintf(stderr,"WARNING: Unable to determine location for history file. Using /tmp\n");
+    home = strdup("/tmp");
   }
 
-  cached_global_hist_fname = filename;
-
-  mo_read_global_history (filename);
-
-  free(filename);
-  filename = (char *)malloc 
-    ((strlen (home) +
-      strlen (get_pref_string(eHISTORY_FILE)) +
-      8) * sizeof (char));
-  sprintf (filename, "%s/%s", home, get_pref_string(eHISTORY_FILE));
+  /* Get the filename */
+  len      = strlen(home) + strlen(histfn) + 10;
+  filename = (char *)malloc(len+1);
+  snprintf(filename, len+1, "%s/.mosaic/%s", home, histfn);
+  free(home);
 
   cached_global_hist_fname = filename;
-
+  mo_read_global_history(filename);
   return mo_succeed;
 }
 
@@ -579,7 +555,7 @@ mo_status mo_write_global_history (void)
 
   sprintf(ts,"%ld",foo);
 
-  fp = fopen (cached_global_hist_fname, "w");
+  fp = fopen (cached_global_hist_fname, "w+");
   if (!fp)
     return mo_fail;
 

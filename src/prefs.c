@@ -256,7 +256,6 @@ Boolean read_preferences_file(prefsStructP inPrefsStruct) {
     read_pref_string(fp, eHOME_DOCUMENT, "HOME_DOCUMENT");
     read_pref_string(fp, eTMP_DIRECTORY, "TMP_DIRECTORY");
     read_pref_string(fp, eDEFAULT_FONT_CHOICE, "DEFAULT_FONT_CHOICE");
-    read_pref_string(fp, eGLOBAL_HISTORY_FILE, "GLOBAL_HISTORY_FILE");
     read_pref_boolean(fp, eUSE_GLOBAL_HISTORY, "USE_GLOBAL_HISTORY");
     read_pref_string(fp, eHISTORY_FILE, "HISTORY_FILE");
     read_pref_string(fp, eDEFAULT_HOTLIST_FILE, "DEFAULT_HOTLIST_FILE");
@@ -612,7 +611,6 @@ static Boolean write_preferences_file(prefsStructP inPrefsStruct) {
     write_pref_string(fp, eHOME_DOCUMENT, "HOME_DOCUMENT");
     write_pref_string(fp, eTMP_DIRECTORY, "TMP_DIRECTORY");
     write_pref_string(fp, eDEFAULT_FONT_CHOICE, "DEFAULT_FONT_CHOICE");
-    write_pref_string(fp, eGLOBAL_HISTORY_FILE, "GLOBAL_HISTORY_FILE");
     write_pref_boolean(fp, eUSE_GLOBAL_HISTORY, "USE_GLOBAL_HISTORY");
     write_pref_string(fp, eHISTORY_FILE, "HISTORY_FILE");
     write_pref_string(fp, eDEFAULT_HOTLIST_FILE, "DEFAULT_HOTLIST_FILE");
@@ -806,9 +804,6 @@ void *get_pref(long pref_id) {
             break;
         case  eDEFAULT_FONT_CHOICE:
             return (void *)(thePrefsStructP->RdataP->default_font_choice);
-            break;
-        case  eGLOBAL_HISTORY_FILE:
-            return (void *)(thePrefsStructP->RdataP->global_history_file);
             break;
         case  eHISTORY_FILE:
             return (void *)(thePrefsStructP->RdataP->history_file);
@@ -1324,10 +1319,6 @@ void set_pref(long pref_id, void *incoming) {
             break;
         case  eDEFAULT_FONT_CHOICE:
             thePrefsStructP->RdataP->default_font_choice =
-                (char *)incoming;
-            break;
-        case  eGLOBAL_HISTORY_FILE:
-            thePrefsStructP->RdataP->global_history_file =
                 (char *)incoming;
             break;
         case  eHISTORY_FILE:
