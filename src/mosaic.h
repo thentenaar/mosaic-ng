@@ -176,10 +176,10 @@ typedef enum
 #endif /* not DOCUMENTS_MENU_SPECFILE */
 
 #ifndef GLOBAL_EXTENSION_MAP
-#define GLOBAL_EXTENSION_MAP "/etc/mime.types"
+#define GLOBAL_EXTENSION_MAP "/usr/local/lib/mosaic/mime.types"
 #endif
 #ifndef GLOBAL_TYPE_MAP
-#define GLOBAL_TYPE_MAP "/etc/mailcap"
+#define GLOBAL_TYPE_MAP "/usr/local/lib/mosaic/mailcap"
 #endif
 
 
