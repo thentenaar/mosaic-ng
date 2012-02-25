@@ -3691,33 +3691,7 @@ static XmxCallback (fire_er_up)
   if ((home_opt = getenv ("WWW_HOME")) != NULL)
     home_document = home_opt;
 
-#ifdef PRERELEASE
-  /*
-   * If this is a pre-release, go to the help-on-version doc for three
-   *   start ups. Then, go to the Pre-Release warning page for three
-   *   start ups. Then go to their defined page or the NCSA home page.
-   */
-  if ((cnt=GetCardCount((fname=MakeFilename())))<=MO_GO_NCSA_COUNT) {
-	init_document = strdup (MO_HELP_ON_VERSION_DOCUMENT);
-  }
-  else if (cnt<=(MO_GO_NCSA_COUNT*2)) {
-	init_document = strdup ("http://www.ncsa.uiuc.edu/SDG/Software/Mosaic/NewPrereleaseWarningPage.html");
-  }
-  else {
-	init_document=strdup(home_document);
-  }
-#else
-  /*
-   * If this is not a pre-release, go to the help-on-version doc for three
-   *   start ups. Then go to their defined page or the NCSA home page.
-   */
-  if (GetCardCount((fname=MakeFilename()))<=MO_GO_NCSA_COUNT) {
-	init_document = strdup (MO_HELP_ON_VERSION_DOCUMENT);
-  }
-  else {
-	init_document=strdup(home_document);
-  }
-#endif
+  init_document=strdup(home_document);
 
   if (fname) {
 	free(fname);

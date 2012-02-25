@@ -1313,7 +1313,7 @@ mo_status mo_setup_default_hotlist (void)
   /* Doesn't exist?  Bummer.  Make a new one. */
   if (!default_hotlist)
     {
-      fprintf(stderr,"Could not find a hotlit. Creating a new one.\n");
+      fprintf(stderr,"Could not find a hotlist. Creating a new one.\n");
       /* amb - doesn't have any hotlist, add the .html extension (ugh) */
 /*      sprintf(filename, "%s/%s.html", home, default_filename); */
 /* New hotlist format... SWP */

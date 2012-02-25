@@ -121,7 +121,6 @@ typedef enum
 /* ------------------------------------------------------------------------ */
 
 #define MO_VERSION_STRING "2.7b6"
-#define MO_GO_NCSA_COUNT 1  /* Go to the NCSA home page thrice*/
 #define MO_HELP_ON_VERSION_DOCUMENT \
   mo_assemble_help_url ("help-on-version-2.7b5.html")
 #define MO_DEVELOPER_ADDRESS "mosaic-x@ncsa.uiuc.edu"
@@ -133,12 +132,6 @@ typedef enum
 
 #undef HOME_PAGE_DEFAULT
 #define HOME_PAGE_DEFAULT "about:xmosaic"
-#ifndef HOME_PAGE_DEFAULT
-/* This must be a straight string as it is included into a struct; 
-   no tricks. */
-#define HOME_PAGE_DEFAULT \
-  "http://www.ncsa.uiuc.edu/SDG/Software/Mosaic/NCSAMosaicHome.html"
-#endif /* not HOME_PAGE_DEFAULT */
 
 #ifndef WHATSNEW_PAGE_DEFAULT
 #define WHATSNEW_PAGE_DEFAULT \
