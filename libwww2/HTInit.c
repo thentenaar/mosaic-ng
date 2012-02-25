@@ -42,7 +42,6 @@ PUBLIC void HTFormatInit NOARGS
   extern int use_default_type_map;
   extern char *global_type_map;
   extern char *personal_type_map;
-  extern int have_hdf;
 
   /* Conversions aren't customizable. */
   HTSetConversion("www/mime",  "*", HTMIMEConvert, 1.0, 0.0, 0.0);
@@ -63,20 +62,7 @@ PUBLIC void HTFormatInit NOARGS
   HTLoadTypesConfigFile (global_type_map);
 
   /* These should always be installed if we have internal support;
-     can be overridden by users. */
-  if (have_hdf)
-    {
-      HTSetPresentation("application/x-hdf",      "mosaic-internal-reference", 
-                        1.0, 3.0, 0.0);
-      HTSetPresentation("application/x-netcdf",   "mosaic-internal-reference", 
-                        1.0, 3.0, 0.0);
-      /* Jumping the gun, but still... */
-      HTSetPresentation("application/hdf",      "mosaic-internal-reference", 
-                        1.0, 3.0, 0.0);
-      HTSetPresentation("application/netcdf",   "mosaic-internal-reference", 
-                        1.0, 3.0, 0.0);
-    }
-  
+     can be overridden by users. */  
   if (use_default_type_map)
     {
 #if defined(__sgi)
@@ -377,8 +363,6 @@ PUBLIC void HTFileInit NOARGS
 
       HTSetSuffix(".dvi","application/x-dvi", "binary", 1.0);
 
-      HTSetSuffix(".hdf","application/x-hdf", "binary", 1.0);
-      
       HTSetSuffix(".latex", "application/x-latex", "binary", 1.0);
 
       HTSetSuffix(".cdf","application/x-netcdf", "binary", 1.0);

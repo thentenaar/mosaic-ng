@@ -6,39 +6,33 @@ LIBXMX_INC = ../libXmx
 LIBPNG_DIR = ../libpng
 
 PROGRAM_LIBS = $(LIBWWW_DIR)/libwww.a $(LIBHTMLW_DIR)/libhtmlw.a $(LIBXMX_DIR)/libXmx.a $(LIBNUT_DIR)/libnut.a
-LIBS = $(PROGRAM_LIBS) $(X_LIBS) $(PNG_LIBS) $(DTM_LIBS) $(HDF_LIBS) $(WAIS_LIBS) $(JPEG_LIBS) $(KRB_LIBS) $(MATH_LIB) $(SYS_LIBS)
+LIBS = $(PROGRAM_LIBS) $(X_LIBS) $(PNG_LIBS) $(WAIS_LIBS) $(JPEG_LIBS) $(KRB_LIBS) $(MATH_LIB) $(SYS_LIBS)
 
 CFILES = main.c gui.c  gui-dialogs.c gui-menubar.c gui-documents.c gui-news.c\
   newsrc.c\
-  gui-extras.c mo-www.c mo-dtm.c hotlist.c history.c\
+  gui-extras.c mo-www.c hotlist.c history.c\
   annotate.c pan.c grpan.c grpan-www.c audan.c globalhist.c img.c\
   picread.c xpmhash.c xpmread.c gifread.c pixmaps.c\
-  medcut.c mo-hdf.c hotfile.c child.c mailto.c readJPEG.c readPNG.c\
+  medcut.c hotfile.c child.c mailto.c readJPEG.c readPNG.c\
   accept.c cciServer.c cciBindings.c cciBindings2.c support.c bla.c\
   comment.c kcms.c md5.c proxy-dialogs.c proxy-misc.c gui-popup.c gui-ftp.c\
   prefs.c
 
 OBJS = main.o gui.o gui-dialogs.o gui-menubar.o gui-documents.o gui-news.o\
   newsrc.o\
-  gui-extras.o mo-www.o mo-dtm.o hotlist.o history.o\
+  gui-extras.o mo-www.o hotlist.o history.o\
   annotate.o pan.o grpan.o grpan-www.o audan.o globalhist.o img.o\
   picread.o xpmhash.o xpmread.o gifread.o pixmaps.o\
-  medcut.o mo-hdf.o hotfile.o child.o mailto.o readJPEG.o readPNG.o\
+  medcut.o hotfile.o child.o mailto.o readJPEG.o readPNG.o\
   accept.o cciServer.o cciBindings.o cciBindings2.o support.o bla.o\
   comment.o kcms.o md5.o proxy-dialogs.o proxy-misc.o gui-popup.o gui-ftp.o\
   prefs.o
 
-AUXCFILES = hdf-browse.c
-AUXOBJS = hdf-browse.o
-
-hdf-browse.o: hdf-browse.c ../libhtmlw/HTML.h
-	$(CC) -c $(CFLAGS) $(AUX_CFLAGS) hdf-browse.c
-
 globalhist.o: globalhist.c ../libhtmlw/HTML.h
-	$(CC) -c $(CFLAGS) $(AUX_CFLAGS) globalhist.c
+	$(CC) -c $(CFLAGS) globalhist.c
 
-$(MOSAIC): $(OBJS) $(AUXOBJS) $(HDFOBJS) $(PROGRAM_LIBS) $(DTM_LIBS)
-	$(PURIFY) $(CC) $(LDFLAGS) -o $(MOSAIC) $(OBJS) $(AUXOBJS) $(HDFOBJS) $(LIBS)
+$(MOSAIC): $(OBJS) $(PROGRAM_LIBS)
+	$(PURIFY) $(CC) $(LDFLAGS) -o $(MOSAIC) $(OBJS) $(LIBS)
 
 #HFILES = mosaic.h prefs.h prefs_defs.h xresources.h
 #$(OBJS): $(HFILES)
@@ -113,8 +107,6 @@ mo-www.o: ../libwww2/HTStream.h ../libwww2/HTML.h ../libwww2/HTMLDTD.h
 mo-www.o: ../libwww2/SGML.h ../libwww2/HText.h ../libwww2/HTInit.h
 mo-www.o: gui-dialogs.h gui.h
 
-mo-dtm.o: mosaic.h ../libXmx/Xmx.h toolbar.h prefs.h prefs_defs.h mo-dtm.h
-
 hotlist.o: mosaic.h ../libXmx/Xmx.h toolbar.h
 hotlist.o: prefs.h prefs_defs.h hotlist.h hotfile.h gui.h
 hotlist.o: mo-www.h bitmaps/hotlist.xbm ../libnut/system.h
@@ -161,9 +153,6 @@ gifread.o: gifread.h
 pixmaps.o: mosaic.h ../libXmx/Xmx.h toolbar.h prefs.h prefs_defs.h 
 pixmaps.o: pixmaps.h xpmread.h xpm.h
 pixmaps.o: pixmaps/*.xpm
-
-mo-hdf.o: mosaic.h ../libXmx/Xmx.h toolbar.h
-mo-hdf.o: prefs.h prefs_defs.h mo-hdf.h mo-dtm.h
 
 hotfile.o: mosaic.h ../libXmx/Xmx.h toolbar.h
 hotfile.o: prefs.h prefs_defs.h hotlist.h mo-www.h ../libhtmlw/HTML.h

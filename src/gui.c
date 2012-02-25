@@ -293,7 +293,6 @@ char *personal_type_map;
 int tweak_gopher_types;
 int max_wais_responses;
 int useAFS;
-int have_hdf;
 int ftp_timeout_val;
 int ftpRedial;
 int ftpRedialSleep;
@@ -882,36 +881,6 @@ mo_status mo_busy (void) {
 	return mo_succeed;
 }
 
-
-#ifdef HAVE_DTM
-/* --------------------- mo_set_dtm_menubar_functions --------------------- */
-
-mo_status mo_set_dtm_menubar_functions (mo_window *win)
-{
-  if (mo_dtm_out_active_p ())
-    {
-      /* If we've got an active outport, then we can send a document
-         but not open another outport. */
-      XmxRSetSensitive 
-        (win->menubar, mo_dtm_open_outport, XmxNotSensitive);
-      XmxRSetSensitive
-        (win->menubar, mo_dtm_send_document, XmxSensitive);
-    }
-  else
-    {
-      /* If we don't have an active outport, then we can't send a document
-         but we can open an outport. */
-      XmxRSetSensitive 
-        (win->menubar, mo_dtm_open_outport, XmxSensitive);
-      XmxRSetSensitive
-        (win->menubar, mo_dtm_send_document, XmxNotSensitive);
-    }
-
-  return mo_succeed;
-}
-#endif
-
-
 /****************************************************************************
  * name:    mo_redisplay_window
  * purpose: Cause the current window's HTML widget to be refreshed.
@@ -1174,11 +1143,8 @@ int anchor_visited_predicate (Widget w, char *href)
   if (!get_pref_boolean(eTRACK_VISITED_ANCHORS) || !href)
     return 0;
 
-  /* This doesn't do special things for data elements inside
-     an HDF file, because it's faster this way. */
   href = mo_url_canonicalize (href, cached_url);
-
-  rv = (mo_been_here_before_huh_dad (href) == mo_succeed ? 1 : 0);
+  rv   = (mo_been_here_before_huh_dad (href) == mo_succeed ? 1 : 0);
 
   free (href);
   return rv;
@@ -3160,9 +3126,6 @@ mo_status mo_delete_window (mo_window *win)
   POPDOWN (mailto_form_win);
   POPDOWN (news_win);
   POPDOWN (links_win);
-#ifdef HAVE_DTM
-  POPDOWN (dtmout_win);
-#endif
 #ifdef HAVE_AUDIO_ANNOTATIONS
   POPDOWN (audio_annotate_win);
 #endif
@@ -3380,9 +3343,6 @@ static mo_window *mo_open_window_internal (Widget base, mo_window *parent)
   win->src_search_win_text=0;
   win->cci_win = win->cci_win_text = (Widget) 0;
   win->cci_accept_toggle = win->cci_off_toggle = (Widget) 0;
-#ifdef HAVE_DTM
-  win->dtmout_win = win->dtmout_text = 0;
-#endif
 #ifdef HAVE_AUDIO_ANNOTATIONS
   win->audio_annotate_win = 0;
 #endif
@@ -3759,28 +3719,6 @@ int gargc;
 #ifndef VMS
 extern MO_SIGHANDLER_RETURNTYPE ProcessExternalDirective (MO_SIGHANDLER_ARGS);
 #endif
-
-#ifdef HAVE_DTM
-static XmxCallback (blip)
-{
-  mo_dtm_poll_and_read ();
-
-  XtAppAddTimeOut (app_context, 100, (XtTimerCallbackProc)blip, (XtPointer)True);
-  
-  return;
-}
-#endif
-
-#ifdef HAVE_DTM
-mo_status mo_register_dtm_blip (void)
-{
-  /* Set a timer that will poll DTM regularly. */
-  XtAppAddTimeOut (app_context, 100, (XtTimerCallbackProc)blip, (XtPointer)True);
-  
-  return mo_succeed;
-}
-#endif
-
 
 /****************************************************************************
  * name:    fire_er_up (PRIVATE)
@@ -4544,12 +4482,6 @@ splash_goto:
     }
     else
         personal_type_map = "\0";
-
-#ifdef HAVE_HDF
-    have_hdf = 1;
-#else
-    have_hdf = 0;
-#endif
 
     twirl_increment = get_pref_int(eTWIRL_INCREMENT);
   

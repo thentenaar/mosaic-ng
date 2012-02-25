@@ -88,10 +88,6 @@ void mo_exit (void)
 
   preferences_armegeddon();
 
-#ifdef HAVE_DTM
-  mo_dtm_disconnect ();
-#endif
-
   exit (0);
 }
 

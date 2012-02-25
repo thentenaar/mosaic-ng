@@ -204,14 +204,6 @@ typedef struct
 
     char *save_mode;
     
-/* HDF stuff */
-    
-    int hdf_max_image_dimension;
-    int hdf_max_displayed_datasets;
-    int hdf_max_displayed_attributes;
-    Boolean hdf_power_user;
-    Boolean hdflongname;
-    
 /* miscellaneous */
 
     char *full_hostname;

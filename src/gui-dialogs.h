@@ -70,10 +70,6 @@ mo_status mo_post_save_window (mo_window *);
 void rename_binary_file (char *);
 mo_status mo_post_open_local_window (mo_window *);
 mo_status mo_post_open_window (mo_window *);
-#ifdef HAVE_DTM
-mo_status mo_send_document_over_dtm (mo_window *);
-mo_status mo_post_dtmout_window (mo_window *);
-#endif
 mo_status mo_post_mail_window (mo_window *);
 mo_status mo_post_print_window (mo_window *);
 mo_status mo_post_source_window (mo_window *);

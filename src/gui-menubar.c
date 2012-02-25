@@ -712,16 +712,6 @@ XmxCallback (menubar_cb)
       if (cci_event) MoCCISendEventOutput(FILE_EXIT_PROGRAM);
       mo_post_exitbox ();
       break;
-#ifdef HAVE_DTM
-    case mo_dtm_open_outport:
-      if (cci_event) MoCCISendEventOutput(FILE_OPEN_DTM_OUTPORT);
-      mo_post_dtmout_window (win);
-      break;
-    case mo_dtm_send_document:
-      if (cci_event) MoCCISendEventOutput(FILE_BROADCAST_DOCUMENT);
-      mo_send_document_over_dtm (win);
-      break;
-#endif
 #ifdef KRB4
     case mo_kerberosv4_login:
       if (cci_event) MoCCISendEventOutput(FILE_KERBEROS_V4_LOGIN);
@@ -1514,11 +1504,6 @@ char buf[BUFSIZ];
 	DEFINE_MENUBAR("Mail To..." ,"M",menubar_cb,mo_mail_document,NULL)
 	SPACER()
 	DEFINE_MENUBAR("CCI..." ,"D",menubar_cb,mo_cci,NULL)
-#ifdef HAVE_DTM
-	SPACER()
-	DEFINE_MENUBAR("Open DTM Outport..." ,"u",menubar_cb,mo_dtm_open_outport,NULL)
-	DEFINE_MENUBAR("Broadcast Over DTM" ,"B",menubar_cb,mo_dtm_send_document,NULL)
-#endif /* HAVE_DTM */
 /*SWP -- 7/17/95*/
 #if defined(KRB4) || defined(KRB5)
 	SPACER()

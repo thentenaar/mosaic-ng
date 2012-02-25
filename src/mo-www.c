@@ -937,10 +937,7 @@ char *mo_url_to_unique_document (char *url)
 {
   char *target = mo_url_extract_anchor (url), *rv;
 
-  if (target && !strncmp (target, "hdfref;", 7))
-    rv = strdup (url);
-  else
-    rv = mo_url_canonicalize (url, "");
+  rv = mo_url_canonicalize (url, "");
 
   if (target)
     free (target);

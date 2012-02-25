@@ -341,9 +341,6 @@ typedef struct mo_window
   */
     
        
-#ifdef HAVE_DTM
-  Widget dtmout_win;
-#endif
 #ifdef HAVE_AUDIO_ANNOTATIONS
   Widget audio_annotate_win;
 #endif
@@ -471,10 +468,6 @@ typedef struct mo_window
   int visited_underlines;
   Boolean dashed_underlines;
   Boolean dashed_visited_underlines;
-
-#ifdef HAVE_DTM
-  Widget dtmout_text;
-#endif /* HAVE_DTM */
 
 #ifdef HAVE_AUDIO_ANNOTATIONS
   Widget audio_start_button;
@@ -605,9 +598,6 @@ extern Display *dsp;
 
 typedef enum
 {
-#ifdef HAVE_DTM
-  mo_dtm_open_outport, mo_dtm_send_document,
-#endif
 #ifdef KRB4
   mo_kerberosv4_login,
 #endif

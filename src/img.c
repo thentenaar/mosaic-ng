@@ -268,10 +268,6 @@ ImageInfo *ImageResolve (Widget w, char *src, int noload, char *wid, char *hei)
     char *fnam;
     int rc;
     int bg, bg_red, bg_green, bg_blue;
-#ifdef HAVE_HDF
-    int ishdf = 0;
-    char *hdfref = NULL;
-#endif
     mo_window *win = NULL;
     extern int Vclass;
     static Pixel fg_pixel, bg_pixel;
@@ -401,24 +397,6 @@ foundit:
         RETURN_IMGINFO_FROM_BITMAP(gopher_unknown);
     }
 
-#ifdef HAVE_HDF
-  /* Incoming HDF image references will only be anchors,
-     so we can determine that they are in fact HDF image references
-     by doing strncmp here. */
-  if (strncmp (src, "#hdfref;", 8) == 0)
-    ishdf = 1;
-
-  /* OK, src is the URL we have to go hunt down.
-     First, we go get it. */
-  /* We can use cached_url here, since we set it in do_window_text. */
-  if (ishdf)
-    {
-      hdfref = &(src[8]);
-      src = mo_url_canonicalize_keep_anchor (src, cached_url);
-    }
-  else
-#endif
-
 stuffcache:
   src = mo_url_canonicalize (src, cached_url);
 
@@ -487,47 +465,6 @@ stuffcache:
    */
   bg = -1;
   bg_map = NULL;
-#ifdef HAVE_HDF
-  if (ishdf)
-    {
-      img_data =
-        (ImageInfo *)hdfGrokImage 
-          (mo_hdf_fetch_local_filename (src), 
-           hdfref,
-           &bg);
-
-#ifndef DISABLE_TRACE
-      if (srcTrace)
-        fprintf (stderr, "[ImageResolve] Did hdfGrokImage, got back 0x%08x\n", 
-                 img_data);
-#endif
-
-      if (!img_data)
-        return NULL;
-
-      /* Yet another bandaid... */
-      img_data->internal = 0;
-
-      /* Fill out colrs array. */
-      for (i = 0; i < 256; i++)
-        {
-          colrs[i].red = img_data->reds[i];
-          colrs[i].green = img_data->greens[i];
-          colrs[i].blue = img_data->blues[i];
-          colrs[i].pixel = i;
-          colrs[i].flags = DoRed|DoGreen|DoBlue;
-        }
-
-      if (bg >= 0)
-          {
-              bg_red = colrs[bg].red;
-              bg_green = colrs[bg].green;
-              bg_blue = colrs[bg].blue;
-              bg_map = (unsigned char *)malloc(img_data->width * img_data->height);
-          }
-  }
-  else
-#endif /* HAVE_HDF */
   {
 
             /* if w is NULL we're stuffing the cache with our own info...
@@ -756,15 +693,9 @@ int found_bg=0;
     }
 
   img_data->num_colors = cnt;
-
-#ifdef HAVE_HDF
-  if (!ishdf)
-#endif
-    {
-      img_data->reds = (int *)malloc(sizeof(int) * cnt);
-      img_data->greens = (int *)malloc(sizeof(int) * cnt);
-      img_data->blues = (int *)malloc(sizeof(int) * cnt);
-    }
+  img_data->reds = (int *)malloc(sizeof(int) * cnt);
+  img_data->greens = (int *)malloc(sizeof(int) * cnt);
+  img_data->blues = (int *)malloc(sizeof(int) * cnt);
 
   /* bg is not set in here if it gets munged by MedCut */
   for (i=0; i < 256; i++)

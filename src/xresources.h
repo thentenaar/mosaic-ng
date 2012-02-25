@@ -249,15 +249,6 @@ static XtResource resources[] = {
   { "trackFullURLs", "TrackFullURLs", XtRBoolean, sizeof (Boolean),
       offset (track_full_url_names), XtRString, "True" },
 
-  { "hdfMaxImageDimension", "HdfMaxImageDimension", XtRInt, sizeof (int),
-      offset (hdf_max_image_dimension), XtRString, "400" },
-  { "hdfMaxDisplayedDatasets", "HdfMaxDisplayedDatasets", XtRInt, sizeof (int),
-      offset (hdf_max_displayed_datasets), XtRString, "15" },
-  { "hdfMaxDisplayedAttributes", "HdfMaxDisplayedAttributes", XtRInt, sizeof (int),
-      offset (hdf_max_displayed_attributes), XtRString, "10" },
-  { "hdfPowerUser", "HdfPowerUser", XtRBoolean, sizeof (Boolean),
-      offset (hdf_power_user), XtRString, "False" },
-
   { "docsDirectory", "DocsDirectory", XtRString, sizeof (char *),
       offset (docs_directory), XtRString, NULL },
 
@@ -462,9 +453,6 @@ static XtResource resources[] = {
 
   { "ftpEllipsisMode", "FtpEllipsisMode", XtRInt, sizeof (int),
       offset (ftpEllipsisMode), XtRString, "2" },
-
-  { "hdfLongName", "HdfLongName", XtRBoolean, sizeof (Boolean),
-      offset (hdflongname), XtRString, "False" },
 
   { "titleIsWindowTitle", "TitleIsWindowTitle", XtRBoolean, sizeof (Boolean),
       offset (titleIsWindowTitle), XtRString, "True" },

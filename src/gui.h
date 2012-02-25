@@ -76,7 +76,6 @@ mo_status mo_busy (void);
 mo_status mo_not_busy (void);
 mo_status mo_redisplay_window (mo_window *);
 mo_status mo_set_current_cached_win (mo_window *);
-mo_status mo_set_dtm_menubar_functions (mo_window *);
 mo_status mo_delete_window (mo_window *);
 mo_window *mo_open_window (Widget, char *, mo_window *);
 mo_window *mo_duplicate_window (mo_window *);
@@ -106,12 +105,6 @@ void mo_gui_check_security_icon_in_win(int type, mo_window *win);
 void mo_gui_check_security_icon(int type);
 
 void mo_assemble_controls(mo_window *win, int detach);
-
-
-
-#ifdef HAVE_DTM
-mo_status mo_register_dtm_blip (void);
-#endif
 
 void mo_do_gui (int, char **);
 

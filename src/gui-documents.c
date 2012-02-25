@@ -722,17 +722,6 @@ mo_status mo_reload_window_text (mo_window *win, int reload_images_also)
         win->current_node->url = use_this_url_instead;
       }
   }
-#ifdef HAVE_HDF
-  if (win->current_node->text && 
-      strncmp (win->current_node->text, "<mosaic-internal-reference", 26) == 0)
-    {
-      char *text = mo_decode_internal_reference 
-        (win->current_node->url, win->current_node->text,
-         mo_url_extract_anchor (win->current_node->url));
-      win->current_node->text = text;
-      win->current_node->texthead = text;
-    }
-#endif 
   
   /* Clear out the cached stuff, if any exists. */
   win->reloading = 1;
@@ -834,8 +823,6 @@ mo_status mo_load_window_text (mo_window *win, char *url, char *ref)
       /* Now we make a copy of the current text and make sure we ask
          for a new mo_node and entry in the history list. */
       /* IF we're not dealing with an internal reference. */
-        if (strncmp (url, "#hdfref;", 8) &&
-            strncmp (url, "#hdfdtm;", 8))
         {
             if (win->current_node)
             {
@@ -930,67 +917,7 @@ mo_status mo_load_window_text (mo_window *win, char *url, char *ref)
                 win->target_anchor = mo_url_extract_anchor (url);
             }
         }
-    }
-
-#ifdef HAVE_HDF
-  /* If a target anchor exists, and if it's an HDF reference, then
-     go decode the HDF reference and call mo_do_window_text on the
-     resulting text. */
-    if (win->target_anchor &&
-        strncmp (win->target_anchor, "hdfref;", 7) == 0 &&
-        strlen (win->target_anchor) > 8)
-    {
-        char *text;
-        text = (char *)mo_decode_hdfref (url, win->target_anchor);
-        {
-        /* Check use_this_url_instead from HTAccess.c. */
-            extern char *use_this_url_instead;
-            if (use_this_url_instead)
-            {
-                mo_here_we_are_son (url);
-                url = use_this_url_instead;
-                mo_load_window_text(win, url, ref);
-                return;
-            }
-        }
-        mo_do_window_text (win, url, text, text, 1, ref,
-                           win->current_node->last_modified,
-                           win->current_node->expires);
-    }
-  /* An hdfdtm reference means that we should blast the referenced
-     HDF data object over the output DTM port to Collage.  Currently
-     this can only be an image; in the future we'll do SDS's, etc. */
-    else if (win->target_anchor &&
-             strncmp (win->target_anchor, "hdfdtm;", 7) == 0 &&
-             strlen (win->target_anchor) > 8)
-    {
-#ifdef HAVE_DTM
-      /* We specifically want to make sure that the anchor is allowed
-         to stay in the URL, so we don't canonicalize to strip it out. */
-        mo_do_hdf_dtm_thang (url, &(win->target_anchor[7]));
-#endif
-
-        if (win->target_anchor)
-            free (win->target_anchor);
-        win->target_anchor = NULL;
-        
-        mo_gui_done_with_icon ();
-        mo_not_busy ();
-    }
-  /* Assuming we have HDF, the only thing mosaic-internal-reference
-     currently can be is pointer to an HDF file. */
-    else if (newtext &&
-             strncmp (newtext, "<mosaic-internal-reference", 26) == 0)
-    {
-        char *text;
-        text = mo_decode_internal_reference (url, newtext, win->target_anchor);
-        mo_do_window_text (win, url, text, text, 1, ref,
-                           win->current_node->last_modified,
-                           win->current_node->expires);
-    }
-    else
-#endif
-      
+    }   
       
   /* Now, if it's a telnet session, there should be no need
      to do anything else.  Also check for override in text itself. */
@@ -1106,8 +1033,6 @@ static mo_status mo_post_load_window_text (mo_window *win, char *url,
       /* Now we make a copy of the current text and make sure we ask
          for a new mo_node and entry in the history list. */
       /* IF we're not dealing with an internal reference. */
-      if (strncmp (url, "#hdfref;", 8) &&
-          strncmp (url, "#hdfdtm;", 8))
         {
           if (win->current_node)
             {
@@ -1158,59 +1083,6 @@ static mo_status mo_post_load_window_text (mo_window *win, char *url,
       }
     }
 
-#ifdef HAVE_HDF
-  /* If a target anchor exists, and if it's an HDF reference, then
-     go decode the HDF reference and call mo_do_window_text on the
-     resulting text. */
-  if (win->target_anchor &&
-      strncmp (win->target_anchor, "hdfref;", 7) == 0 &&
-      strlen (win->target_anchor) > 8)
-    {
-      char *text;
-      text = (char *)mo_decode_hdfref (url, win->target_anchor);
-      {
-        /* Check use_this_url_instead from HTAccess.c. */
-        extern char *use_this_url_instead;
-        if (use_this_url_instead)
-          {
-            mo_here_we_are_son (url);
-            url = use_this_url_instead;
-            mo_load_window_text(win, url, ref);
-            return;
-          }
-      }
-      mo_do_window_text (win, url, text, text, 1, ref, win->current_node->last_modified, win->current_node->expires);
-    }
-  /* An hdfdtm reference means that we should blast the referenced
-     HDF data object over the output DTM port to Collage.  Currently
-     this can only be an image; in the future we'll do SDS's, etc. */
-  else if (win->target_anchor &&
-           strncmp (win->target_anchor, "hdfdtm;", 7) == 0 &&
-           strlen (win->target_anchor) > 8)
-    {
-#ifdef HAVE_DTM
-      /* We specifically want to make sure that the anchor is allowed
-         to stay in the URL, so we don't canonicalize to strip it out. */
-      mo_do_hdf_dtm_thang (url, &(win->target_anchor[7]));
-#endif
-
-      if (win->target_anchor)
-        free (win->target_anchor);
-      win->target_anchor = NULL;
-
-      mo_gui_done_with_icon ();
-      mo_not_busy ();
-    }
-  /* Assuming we have HDF, the only thing mosaic-internal-reference
-     currently can be is pointer to an HDF file. */
-  else if (newtext && strncmp (newtext, "<mosaic-internal-reference", 26) == 0)
-    {
-      char *text;
-      text = mo_decode_internal_reference (url, newtext, win->target_anchor);
-      mo_do_window_text (win, url, text, text, 1, ref, win->current_node->last_modified, win->current_node->expires);
-    }
-  else
-#endif
   /* Now, if it's a telnet session, there should be no need
      to do anything else.  Also check for override in text itself. */
   if (strncmp (url, "telnet:", 7) == 0 || strncmp (url, "tn3270:", 7) == 0 ||

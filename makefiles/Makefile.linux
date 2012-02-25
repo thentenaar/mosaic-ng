@@ -105,32 +105,6 @@ static_xlibs = /usr/X11R6/lib/libXpm.a /usr/X11R6/lib/libXm.a /usr/X11R6/lib/lib
 #### For Motorola SVR4:
 # xlibs = -lXm -lXmu -lXt -lXext -lX11 -lm
 
-
-#### DTM AND HDF SUPPORT; READ CAREFULLY
-
-#### If you want to compile with DTM and HDF support, you should leave
-#### the following lines uncommented and make sure you have a copy of
-#### HDF 3.3 (r1 or later) installed and ready.  You can find HDF on
-#### ftp.ncsa.uiuc.edu in /HDF.
-
-#### If you do not want to compile with DTM and HDF support, comment
-#### the following lines out.  (If you are compiling from source for
-#### the first time, you should probably not bother with HDF and DTM
-#### support.)
-
-#### dtmmachtype needs to be set to one of the following:
-####   sun, sgi, dec, ibm, next, cray, convex
-#### If your platform is not one of the above, then either do not compile
-#### with HDF/DTM support or try hacking libdtm/makefile.
-
-#dtmmachtype = sun
-#dtmdirs = libdtm libnet
-#dtmlibs = ../libnet/libnet.a ../libdtm/libdtm.a
-#dtmflags = -DHAVE_DTM -I.. -I../libnet
-#hdfdir = /hdf2/install/linux
-#hdflibs = $(hdfdir)/lib/libnetcdf.a $(hdfdir)/lib/libdf.a
-#hdfflags = -DHAVE_HDF -I$(hdfdir)/include
-
 #### PNG SUPPORT
 #### For inline PNG support, the following should be defined:
 #### The libraries currently used are PNGLIB 0.81 and ZLIB 0.95
@@ -297,21 +271,11 @@ src-static-motif-quantifyd::
 	@echo --- Building src-static-motif-quantifyd
 	cd src; $(MAKE) PURIFY=$(QUANTIFY) CC=$(CC) RANLIB=$(RANLIB) LDFLAGS="$(ldflags)" CFLAGS="$(CFLAGS) $(customflags) $(xinc) $(jpegflags) $(dtmflags) $(hdfflags) $(pngflags) $(krbflags) -I.. -I../libXmx -I../libwww2" AUX_CFLAGS=$(knrflag) X_LIBS="$(static_motif_xlibs)" SYS_LIBS="$(sockslibs) $(syslibs)" DTM_LIBS="$(dtmlibs)" HDF_LIBS="$(hdflibs)" WAIS_LIBS="$(waislibs)" LIBWWW_DIR=../libwww2 JPEG_LIBS="$(jpeglibs)" PNG_LIBS="$(pnglibs)" KRB_LIBS="$(krblibs)" LIBNUT_DIR=../libnut MOSAIC="Mosaic-q"
 
-libnet::
-	@echo --- Building libnet
-	cd libnet; $(MAKE) CC=$(CC) RANLIB=$(RANLIB) CFLAGS="$(CFLAGS) $(dtmflags)"
-
-libdtm::
-	@echo --- Building libdtm
-	cd libdtm; $(MAKE) $(dtmmachtype) CC=$(CC) RANLIB=$(RANLIB) CFLAGS="$(CFLAGS) $(dtmflags)"
-
 clean:
 	cd libXmx; $(MAKE) $@
 	cd libhtmlw; $(MAKE) $@
 	cd libwww2; $(MAKE) $@
 	cd src; $(MAKE) MOSAIC="Mosaic" $@
-	cd libnet; $(MAKE) $@
-	cd libdtm; $(MAKE) $@
 	cd libnut; $(MAKE) $@
 
 wclean:
@@ -323,7 +287,7 @@ commit:
 update:
 	cvs update
 countlines:
-	wc libdtm/*.[ch] libnet/*.[ch] libXmx/*.[ch] libhtmlw/*.[ch] libwww2/*.[ch] src/*.[ch]
+	wc libXmx/*.[ch] libhtmlw/*.[ch] libwww2/*.[ch] src/*.[ch]
 replicate:
 	cp Makefile Makefile.sun
 	cp Makefile Makefile.ibm

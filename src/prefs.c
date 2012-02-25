@@ -443,11 +443,6 @@ static Boolean write_preferences_file(prefsStructP inPrefsStruct) {
     write_pref_boolean(fp, eSECURITYICON, "SECURITYICON");
     write_pref_int(fp, eTWIRL_INCREMENT, "TWIRL_INCREMENT");
     write_pref_string(fp, eSAVE_MODE, "SAVE_MODE");
-    write_pref_int(fp, eHDF_MAX_IMAGE_DIMENSION, "HDF_MAX_IMAGE_DIMENSION");
-    write_pref_int(fp, eHDF_MAX_DISPLAYED_DATASETS, "HDF_MAX_DISPLAYED_DATASETS");
-    write_pref_int(fp, eHDF_MAX_DISPLAYED_ATTRIBUTES, "HDF_MAX_DISPLAYED_ATTRIBUTES");
-    write_pref_boolean(fp, eHDF_POWER_USER, "HDF_POWER_USER");
-    write_pref_boolean(fp, eHDFLONGNAME, "HDFLONGNAME");
     write_pref_string(fp, eFULL_HOSTNAME, "FULL_HOSTNAME");
     write_pref_int(fp, eLOAD_LOCAL_FILE, "LOAD_LOCAL_FILE");
     write_pref_boolean(fp, eEDIT_COMMAND_USE_XTERM, "EDIT_COMMAND_USE_XTERM");
@@ -779,21 +774,6 @@ void *get_pref(long pref_id) {
             break;
         case  eSAVE_MODE:
             return (void *)(thePrefsStructP->RdataP->save_mode);
-            break;
-        case  eHDF_MAX_IMAGE_DIMENSION:
-            return (void *)&(thePrefsStructP->RdataP->hdf_max_image_dimension);
-            break;
-        case  eHDF_MAX_DISPLAYED_DATASETS:
-            return (void *)&(thePrefsStructP->RdataP->hdf_max_displayed_datasets);
-            break;
-        case  eHDF_MAX_DISPLAYED_ATTRIBUTES:
-            return (void *)&(thePrefsStructP->RdataP->hdf_max_displayed_attributes);
-            break;
-        case  eHDF_POWER_USER:
-            return (void *)&(thePrefsStructP->RdataP->hdf_power_user);
-            break;
-        case  eHDFLONGNAME:
-            return (void *)&(thePrefsStructP->RdataP->hdflongname);
             break;
         case  eFULL_HOSTNAME:
             return (void *)(thePrefsStructP->RdataP->full_hostname);
@@ -1407,26 +1387,6 @@ void set_pref(long pref_id, void *incoming) {
         case  eSAVE_MODE:
             thePrefsStructP->RdataP->save_mode =
                 (char *)incoming;
-            break;
-        case  eHDF_MAX_IMAGE_DIMENSION:
-            thePrefsStructP->RdataP->hdf_max_image_dimension =
-                *((int *)incoming);
-            break;
-        case  eHDF_MAX_DISPLAYED_DATASETS:
-            thePrefsStructP->RdataP->hdf_max_displayed_datasets =
-                *((int *)incoming);
-            break;
-        case  eHDF_MAX_DISPLAYED_ATTRIBUTES:
-            thePrefsStructP->RdataP->hdf_max_displayed_attributes =
-                *((int *)incoming);
-            break;
-        case  eHDF_POWER_USER:
-            thePrefsStructP->RdataP->hdf_power_user =
-                *((Boolean *)incoming);
-            break;
-        case  eHDFLONGNAME:
-            thePrefsStructP->RdataP->hdflongname =
-                *((Boolean *)incoming);
             break;
         case  eFULL_HOSTNAME:
             thePrefsStructP->RdataP->full_hostname =
