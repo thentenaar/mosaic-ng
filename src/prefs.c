@@ -63,13 +63,13 @@
 
 #include <pwd.h>
 #include <sys/utsname.h>
-
+#include <sys/stat.h>
 
 /***********/
 /* Defines */
 /***********/
 
-#define PREFS_FILE_IO 0
+#define PREFS_FILE_IO 1
 
 #define PREFERENCES_FILENAME ".mosaic-preferences"
 #define PREFERENCES_MAJOR_VERSION 1
@@ -80,8 +80,7 @@
 /***************************/
 
 static prefsStructP thePrefsStructP;
-static char prefs_file_pathname[512];
-
+static char *prefs_file_pathname = NULL;
 
 /********************************/
 /* Static function declarations */
@@ -89,12 +88,14 @@ static char prefs_file_pathname[512];
 
 static Boolean revert_preferences_file(prefsStructP inPrefsStruct);
 static Boolean write_preferences_file(prefsStructP inPrefsStruct);
-static Boolean create_prefs_filename(char *fname);
-
 static Boolean write_pref_string(FILE *fp, long pref_id, char *string);
 static Boolean write_pref_int(FILE *fp, long pref_id, char *string);
 static Boolean write_pref_boolean(FILE *fp, long pref_id, char *string);
 static Boolean write_pref_float(FILE *fp, long pref_id, char *string);
+static Boolean read_pref_string(FILE *fp, long pref_id, char *string);
+static Boolean read_pref_int(FILE *fp, long pref_id, char *string);
+static Boolean read_pref_boolean(FILE *fp, long pref_id, char *string);
+static Boolean read_pref_float(FILE *fp, long pref_id, char *string);
 
 
 /****************************************************************************
@@ -112,7 +113,7 @@ Boolean preferences_genesis(void) {
 
     Boolean successful = 1;
 
-        /* initialize preferences structure */
+    /* initialize preferences structure */
     thePrefsStructP = (prefsStructP) malloc (sizeof(prefsStruct));
     if(thePrefsStructP == NULL) {
         fprintf(stderr, "Error: no memory for preferences structure\n");
@@ -139,17 +140,21 @@ Boolean preferences_armegeddon(void) {
 
     Boolean successful = 1;
 
-       /* write the prefs file just to be safe */
-        /*write_preferences_file(thePrefsStructP);*/
+    /* write the prefs file just to be safe */
+    write_preferences_file(thePrefsStructP);
 
-       /* free preferences structure */
+    /* free filename */
+    if (prefs_file_pathname) {
+        free(prefs_file_pathname);
+        prefs_file_pathname = NULL;
+    }
+
+    /* free preferences structure */
     free(thePrefsStructP);
     
     return(successful);
 
 }
-
-
 
 /****************************************************************************
  ****************************************************************************
@@ -159,79 +164,225 @@ Boolean preferences_armegeddon(void) {
  ***************************************************************************/
 
 /****************************************************************************
-   Function: create_prefs_filename(char *fname) 
-   Desc:     Generates a full path name for the preferences file
- ***************************************************************************/
-static Boolean create_prefs_filename(char *fname) {
-
-    char *home_ptr, home[256];
-    struct passwd *pwdent;
-    
-        /*
-         * Try the HOME environment variable, then the password file, and
-         *   finally give up.
-         */
-    if (!(home_ptr=getenv("HOME"))) {
-        if (!(pwdent=getpwuid(getuid()))) {
-            return(0);
-        }
-        else {
-            strcpy(home,pwdent->pw_dir);
-        }
-    }
-    else {
-        strcpy(home,home_ptr);
-    }
-    
-    sprintf(fname,"%s/%s",home,PREFERENCES_FILENAME);
-    
-    return(1);
-    
-}
-
-
-/****************************************************************************
    Function: read_preferences_file(prefsStructP inPrefsStruct)
    Desc:     Read the prefs file into the incoming prefs struct.          
  ***************************************************************************/
 Boolean read_preferences_file(prefsStructP inPrefsStruct) {
 
-    FILE *fp;
+    FILE *fp; char *home,*tmp; int len;
+    struct passwd *pwdent;
     Boolean successful = 1;
-
 
     /* if the incoming pointer is NULL, then we use the main structure */
     if(inPrefsStruct == NULL)
         inPrefsStruct = thePrefsStructP;
 
 #if PREFS_FILE_IO
-    
-    /* look for the file */    
-    if(!create_prefs_filename(prefs_file_pathname)) {
-        fprintf(stderr, "Error: Can't generate pathname for preferences file\n");
-        return 0;
-    }
 
-    /* Check to see if the file exists. If it doesn't, then create it */
+    /* Build the preferences filename */
+    if (!prefs_file_pathname) {
+        if ((home = getenv("HOME")))          home = strdup(home);
+        else if (pwdent = getpwuid(getuid())) home = strdup(pwdent->pw_dir);
+        else return successful;
 
-    if(!file_exists(prefs_file_pathname))
-        if(!write_preferences_file(NULL)) {
-            fprintf(stderr, "Error: Can't find or create preferences file\n");
+        len = strlen(home)+9+strlen(PREFERENCES_FILENAME)+1;
+        if (!(prefs_file_pathname = malloc(len))) {
+            free(home);
+            fprintf(stderr, "Error: Can't generate pathname for preferences file\n");
             return 0;
         }
 
+        /* Ensure the directory exists */
+        snprintf(prefs_file_pathname,len,"%s/.mosaic",home);
+        if (!file_exists(prefs_file_pathname)) mkdir(prefs_file_pathname,S_IRWXU);
+        snprintf(prefs_file_pathname,len,"%s/.mosaic/%s",home,PREFERENCES_FILENAME);
+        free(home);
+    }
+
+    /* Check to see if the file exists. If it doesn't, then create it */
+    if(!file_exists(prefs_file_pathname)) {
+        fprintf(stderr,"Creating preferences file: %s\n",prefs_file_pathname);
+        if(!write_preferences_file(inPrefsStruct)) {
+            fprintf(stderr, "Error: Can't find or create preferences file\n");
+            return successful;
+        } else return successful;
+    }
     
     /* open it and read all the stuff from the file into the prefs struct */
     if(!(fp=fopen(prefs_file_pathname, "r"))) {
-
         fprintf(stderr, "Error: Can't open preferences file for reading\n");
-        return 0;
+        return successful;
     }
     
     /* but first, check the version number of the prefs file */
+    if (!(home = malloc(256))) {
+        fclose(fp);
+        return 0;
+    }
+
+    /* Validate the header */
+    len = 0;
+    if (fgets(home,256,fp) && !strncmp(home,"# NCSA Mosaic preferences file",30)) {
+        if (fgets(home,256,fp) && !strncmp(home,"# File Version: ",16)) {
+            /* Be lazy */
+            if (tmp = malloc(8)) {
+                snprintf(tmp,8,"%d.%d\n",PREFERENCES_MAJOR_VERSION,PREFERENCES_MINOR_VERSION);
+                if (!strncmp(home+16,tmp,8)) len++;
+                free(tmp);
+            }
+        }
+    }
+
+    /* If len == 0, this isn't a valid preferences file */
+    if (!len) {
+        fprintf(stderr, "Error: Invalid preferences file\n");
+        fclose(fp); free(home);
+        return successful;
+     }
+
+    /* Skip comments / blank lines */
+    len = 0; while(!len) { fgets(home,256,fp); if (*home != '#' && *home != '\n') len++; }
+
+    /* Read the preference strings */
+    read_pref_boolean(fp, eTRACK_VISITED_ANCHORS, "TRACK_VISITED_ANCHORS");
+    read_pref_boolean(fp, eDISPLAY_URLS_NOT_TITLES, "DISPLAY_URLS_NOT_TITLES");
+    read_pref_boolean(fp, eTRACK_POINTER_MOTION, "TRACK_POINTER_MOTION");
+    read_pref_boolean(fp, eTRACK_FULL_URL_NAMES, "TRACK_FULL_URL_NAMES");
+    read_pref_boolean(fp, eRELOAD_PRAGMA_NO_CACHE, "RELOAD_PRAGMA_NO_CACHE");
+    read_pref_string(fp, eSENDMAIL_COMMAND, "SENDMAIL_COMMAND");
+    read_pref_string(fp, eEDIT_COMMAND, "EDIT_COMMAND");
+    read_pref_string(fp, eXTERM_COMMAND, "XTERM_COMMAND");
+    read_pref_string(fp, eMAIL_FILTER_COMMAND, "MAIL_FILTER_COMMAND");
+    read_pref_string(fp, eHOME_DOCUMENT, "HOME_DOCUMENT");
+    read_pref_string(fp, eTMP_DIRECTORY, "TMP_DIRECTORY");
+    read_pref_string(fp, eDEFAULT_FONT_CHOICE, "DEFAULT_FONT_CHOICE");
+    read_pref_string(fp, eGLOBAL_HISTORY_FILE, "GLOBAL_HISTORY_FILE");
+    read_pref_boolean(fp, eUSE_GLOBAL_HISTORY, "USE_GLOBAL_HISTORY");
+    read_pref_string(fp, eHISTORY_FILE, "HISTORY_FILE");
+    read_pref_string(fp, eDEFAULT_HOTLIST_FILE, "DEFAULT_HOTLIST_FILE");
+    read_pref_boolean(fp, eADD_HOTLIST_ADDS_RBM, "ADD_HOTLIST_ADDS_RBM");
+    read_pref_boolean(fp, eADD_RBM_ADDS_RBM, "ADD_RBM_ADDS_RBM");
+    read_pref_string(fp, eDOCUMENTS_MENU_SPECFILE, "DOCUMENTS_MENU_SPECFILE");
+    read_pref_int(fp, eCOLORS_PER_INLINED_IMAGE, "COLORS_PER_INLINED_IMAGE");
+    read_pref_int(fp, eIMAGE_CACHE_SIZE, "IMAGE_CACHE_SIZE");
+    read_pref_boolean(fp, eRELOAD_RELOADS_IMAGES, "RELOAD_RELOADS_IMAGES");
+    read_pref_boolean(fp, eREVERSE_INLINED_BITMAP_COLORS, "REVERSE_INLINED_BITMAP_COLORS");
+    read_pref_boolean(fp, eDELAY_IMAGE_LOADS, "DELAY_IMAGE_LOADS");
+    read_pref_float(fp, eSCREEN_GAMMA, "SCREEN_GAMMA");
+    read_pref_string(fp, eDEFAULT_AUTHOR_NAME, "DEFAULT_AUTHOR_NAME");
+    read_pref_string(fp, eDEFAULT_AUTHOR_EMAIL, "DEFAULT_AUTHOR_EMAIL");
+    read_pref_string(fp, eSIGNATURE, "SIGNATURE");
+    read_pref_string(fp, eMAIL_MODE, "MAIL_MODE");
+    read_pref_string(fp, ePRINT_COMMAND, "PRINT_COMMAND");
+    read_pref_string(fp, eUNCOMPRESS_COMMAND, "UNCOMPRESS_COMMAND");
+    read_pref_string(fp, eGUNZIP_COMMAND, "GUNZIP_COMMAND");
+    read_pref_boolean(fp, eUSE_DEFAULT_EXTENSION_MAP, "USE_DEFAULT_EXTENSION_MAP");
+    read_pref_boolean(fp, eUSE_DEFAULT_TYPE_MAP, "USE_DEFAULT_TYPE_MAP");
+    read_pref_string(fp, eGLOBAL_EXTENSION_MAP, "GLOBAL_EXTENSION_MAP");
+    read_pref_string(fp, ePERSONAL_EXTENSION_MAP, "PERSONAL_EXTENSION_MAP");
+    read_pref_string(fp, eGLOBAL_TYPE_MAP, "GLOBAL_TYPE_MAP");
+    read_pref_string(fp, ePERSONAL_TYPE_MAP, "PERSONAL_TYPE_MAP");
+    read_pref_boolean(fp, eTWEAK_GOPHER_TYPES, "TWEAK_GOPHER_TYPES");
+    read_pref_string(fp, ePRINT_MODE, "PRINT_MODE");
+    read_pref_string(fp, eGUI_LAYOUT, "GUI_LAYOUT");
+    read_pref_boolean(fp, ePRINT_BANNERS, "PRINT_BANNERS");
+    read_pref_boolean(fp, ePRINT_FOOTNOTES, "PRINT_FOOTNOTES");
+    read_pref_boolean(fp, ePRINT_PAPER_SIZE_US, "PRINT_PAPER_SIZE_US");
+    read_pref_string(fp, ePROXY_SPECFILE, "PROXY_SPECFILE");
+    read_pref_string(fp, eNOPROXY_SPECFILE, "NOPROXY_SPECFILE");
+    read_pref_boolean(fp, eKIOSK, "KIOSK");
+    read_pref_boolean(fp, eKIOSKNOEXIT, "KIOSKNOEXIT");
+    read_pref_boolean(fp, eKEEPALIVE, "KEEPALIVE");
+    read_pref_int(fp, eFTP_TIMEOUT_VAL, "FTP_TIMEOUT_VAL");
+    read_pref_boolean(fp, eENABLE_TABLES, "ENABLE_TABLES");
+    read_pref_int(fp, eDEFAULT_WIDTH, "DEFAULT_WIDTH");
+    read_pref_int(fp, eDEFAULT_HEIGHT, "DEFAULT_HEIGHT");
+    read_pref_boolean(fp, eAUTO_PLACE_WINDOWS, "AUTO_PLACE_WINDOWS");
+    read_pref_boolean(fp, eINITIAL_WINDOW_ICONIC, "INITIAL_WINDOW_ICONIC");
+    read_pref_boolean(fp, eTITLEISWINDOWTITLE, "TITLEISWINDOWTITLE");
+    read_pref_boolean(fp, eUSEICONBAR, "USEICONBAR");
+    read_pref_boolean(fp, eUSETEXTBUTTONBAR, "USETEXTBUTTONBAR");
+    read_pref_boolean(fp, eTWIRLING_TRANSFER_ICON, "TWIRLING_TRANSFER_ICON");
+    read_pref_boolean(fp, eSECURITYICON, "SECURITYICON");
+    read_pref_int(fp, eTWIRL_INCREMENT, "TWIRL_INCREMENT");
+    read_pref_string(fp, eSAVE_MODE, "SAVE_MODE");
+    read_pref_string(fp, eFULL_HOSTNAME, "FULL_HOSTNAME");
+    read_pref_int(fp, eLOAD_LOCAL_FILE, "LOAD_LOCAL_FILE");
+    read_pref_boolean(fp, eEDIT_COMMAND_USE_XTERM, "EDIT_COMMAND_USE_XTERM");
+    read_pref_boolean(fp, eCONFIRM_EXIT, "CONFIRM_EXIT");
+    read_pref_boolean(fp, eDEFAULT_FANCY_SELECTIONS, "DEFAULT_FANCY_SELECTIONS");
+    read_pref_boolean(fp, eCATCH_PRIOR_AND_NEXT, "CATCH_PRIOR_AND_NEXT");
+    read_pref_boolean(fp, eSIMPLE_INTERFACE, "SIMPLE_INTERFACE");
+    read_pref_boolean(fp, ePROTECT_ME_FROM_MYSELF, "PROTECT_ME_FROM_MYSELF");
+    read_pref_boolean(fp, eGETHOSTBYNAME_IS_EVIL, "GETHOSTBYNAME_IS_EVIL");
+#ifdef __sgi
+    read_pref_boolean(fp, eDEBUGGING_MALLOC, "DEBUGGING_MALLOC");
+#endif
+    read_pref_boolean(fp, eUSEAFSKLOG, "USEAFSKLOG");
+    read_pref_boolean(fp, eSEND_REFERER, "SEND_REFERER");
+    read_pref_boolean(fp, eSEND_AGENT, "SEND_AGENT");
+    read_pref_boolean(fp, eEXPAND_URLS, "EXPAND_URLS");
+    read_pref_boolean(fp, eEXPAND_URLS_WITH_NAME, "EXPAND_URLS_WITH_NAME");
+    read_pref_string(fp, eDEFAULT_PROTOCOL, "DEFAULT_PROTOCOL");
+    read_pref_string(fp, eMETER_FOREGROUND, "METER_FOREGROUND");
+    read_pref_string(fp, eMETER_BACKGROUND, "METER_BACKGROUND");
+    read_pref_string(fp, eMETER_FONT_FOREGROUND, "METER_FONT_FOREGROUND");
+    read_pref_string(fp, eMETER_FONT_BACKGROUND, "METER_FONT_BACKGROUND");
+    read_pref_boolean(fp, eMETER, "METER");
+    read_pref_boolean(fp, eBACKUP_FILES, "BACKUP_FILES");
+    read_pref_string(fp, ePIX_BASENAME, "PIX_BASENAME");
+    read_pref_int(fp, ePIX_COUNT, "PIX_COUNT");
+    read_pref_string(fp, eACCEPT_LANGUAGE_STR, "ACCEPT_LANGUAGE_STR");
+    read_pref_int(fp, eFTP_REDIAL, "FTP_REDIAL");
+    read_pref_int(fp, eFTP_REDIAL_SLEEP, "FTP_REDIAL_SLEEP");
+    read_pref_int(fp, eFTP_FILENAME_LENGTH, "FTP_FILENAME_LENGTH");
+    read_pref_int(fp, eFTP_ELLIPSIS_LENGTH, "FTP_ELLIPSIS_LENGTH");
+    read_pref_int(fp, eFTP_ELLIPSIS_MODE, "FTP_ELLIPSIS_MODE");
+    read_pref_boolean(fp, eTITLE_ISWINDOW_TITLE, "TITLE_ISWINDOW_TITLE");
+    read_pref_boolean(fp, eUSE_SCREEN_GAMMA, "USE_SCREEN_GAMMA");
+    read_pref_boolean(fp, eDISABLEMIDDLEBUTTON, "DISABLEMIDDLEBUTTON");
+    read_pref_boolean(fp, eHTTPTRACE, "HTTPTRACE");
+    read_pref_boolean(fp, eWWW2TRACE, "WWW2TRACE");
+    read_pref_boolean(fp, eHTMLWTRACE, "HTMLWTRACE");
+    read_pref_boolean(fp, eSRCTRACE, "SRCTRACE");
+    read_pref_boolean(fp, eCACHETRACE, "CACHETRACE");
+    read_pref_boolean(fp, eNUTTRACE, "NUTTRACE");
+    read_pref_boolean(fp, eANIMATEBUSYICON, "ANIMATEBUSYICON");
+    read_pref_boolean(fp, eSPLASHSCREEN, "SPLASHSCREEN");
+    read_pref_boolean(fp, eINSTALL_COLORMAP, "INSTALL_COLORMAP");
+    read_pref_boolean(fp, eIMAGEVIEWINTERNAL, "IMAGEVIEWINTERNAL");
+    read_pref_int(fp, eURLEXPIRED, "URLEXPIRED");
+    read_pref_int(fp, ePOPUPCASCADEMAPPINGDELAY, "POPUPCASCADEMAPPINGDELAY");
+    read_pref_boolean(fp, eFRAME_HACK, "FRAME_HACK");
+    read_pref_boolean(fp, eCLIPPING, "CLIPPING");
+    read_pref_int(fp, eMAX_CLIPPING_SIZE_X, "MAX_CLIPPING_SIZE_X");
+    read_pref_int(fp, eMAX_CLIPPING_SIZE_Y, "MAX_CLIPPING_SIZE_Y");
+    read_pref_boolean(fp, eUSE_LONG_TEXT_NAMES, "USE_LONG_TEXT_NAMES");
+    read_pref_string(fp, eTOOLBAR_LAYOUT, "TOOLBAR_LAYOUT");
+
+    read_pref_boolean (fp, eUSETHREADVIEW, "USETHREADVIEW");
+    read_pref_boolean (fp, eSHOWREADGROUPS, "SHOWREADGROUPS");
+    read_pref_boolean (fp, eNOTHREADJUMPING, "NOTHREADJUMPING");
+    read_pref_boolean (fp, eSHOWALLGROUPS, "SHOWALLGROUPS");
+    read_pref_boolean (fp, eSHOWALLARTICLES, "SHOWALLARTICLES");
+    read_pref_boolean (fp, eUSEBACKGROUNDFLUSH, "USEBACKGROUNDFLUSH");
+    read_pref_int     (fp, eBACKGROUNDFLUSHTIME, "BACKGROUNDFLUSHTIME");
+    read_pref_boolean (fp, ePREVISUNREAD, "PREVISPREVUNREAD");
+    read_pref_boolean (fp, eNEXTISUNREAD, "NEXTISNEXTUNREAD");
+    read_pref_boolean (fp, eUSENEWSRC, "USENEWSRC");
+    read_pref_string  (fp, eNEWSRCPREFIX, "NEWSRCPREFIX");
+    read_pref_int (fp, eNEWSAUTHORWIDTH, "NEWSAUTHORWIDTH");
+    read_pref_int (fp, eNEWSSUBJECTWIDTH, "NEWSSUBJECTWIDTH");
+
+
+    read_pref_boolean(fp, eFOCUS_FOLLOWS_MOUSE, "FOCUS_FOLLOWS_MOUSE");
+    read_pref_boolean(fp, eSESSION_HISTORY_ON_RBM, "SESSION_HISTORY_ON_RBM");
+    read_pref_int(fp, eNUMBER_OF_ITEMS_IN_RBM_HISTORY,
+		   "NUMBER_OF_ITEMS_IN_RBM_HISTORY");
+
+    read_pref_boolean (fp, eUSESHORTNEWSRC, "USESHORTNEWSRC");
 
     fclose(fp);
-
 #endif
     
     return successful;
@@ -244,10 +395,86 @@ Boolean read_preferences_file(prefsStructP inPrefsStruct) {
                  disk. 
  ***************************************************************************/
 static Boolean revert_preferences_file(prefsStructP inPrefsStruct) {
-
-
+    return read_preferences_file(inPrefsStruct);
 }
 
+/****************************************************************************
+   Function: read_pref_string(FILE *fp, long pref_id, char *string)
+   Desc:     
+ ***************************************************************************/
+static Boolean read_pref_string(FILE *fp, long pref_id, char *string) {
+    char *buf,*val;
+
+#if PREFS_FILE_IO
+    if (!(buf = malloc(strlen(string)+4+256))) return 0;
+    if (fgets(buf,strlen(string)+4+256,fp)) {
+        if (*(buf+strlen(string)) == ':' && !strncmp(buf,string,strlen(string))) {
+            val = strndup(buf+strlen(string)+2,strlen(buf)-strlen(string)-2);
+            set_pref(pref_id,val);
+        }
+    } free(buf);
+#endif
+    return 1;
+}
+
+/****************************************************************************
+   Function: read_pref_int(FILE *fp, long pref_id, char *string)
+   Desc:     
+ ***************************************************************************/
+static Boolean read_pref_int(FILE *fp, long pref_id, char *string) {
+    char *buf,*bend; int i;
+
+#if PREFS_FILE_IO
+    if (!(buf = malloc(strlen(string)+4+256))) return 0;
+    if (fgets(buf,strlen(string)+4+256,fp)) {
+        if (*(buf+strlen(string)) == ':' && !strncmp(buf,string,strlen(string))) {
+            bend = buf + strlen(buf) - 1;
+            i = strtod(buf+strlen(string)+1,&bend);
+            set_pref(pref_id,&i);
+        }
+    } free(buf);
+#endif
+    return 1;
+}
+
+/****************************************************************************
+   Function: read_pref_boolean(FILE *fp, long pref_id, char *string)
+   Desc:     
+ ***************************************************************************/
+static Boolean read_pref_boolean(FILE *fp, long pref_id, char *string) {
+    char *buf; int i;
+
+#if PREFS_FILE_IO
+    if (!(buf = malloc(strlen(string)+4+5))) return 0;
+    if (fgets(buf,strlen(string)+4+5,fp)) {
+        if (*(buf+strlen(string)) == ':' && !strncmp(buf,string,strlen(string))) {
+            i = (*(buf+strlen(string)+2) == 'T') ? 1 : 0;
+            set_pref(pref_id,&i);
+        }
+    } free(buf);
+#endif
+    return 1;
+}
+
+/****************************************************************************
+   Function: read_pref_float(FILE *fp, long pref_id, char *string)
+   Desc:     
+ ***************************************************************************/
+static Boolean read_pref_float(FILE *fp, long pref_id, char *string) {
+    char *buf,*bend; float narf;
+
+#if PREFS_FILE_IO
+    if (!(buf = malloc(strlen(string)+4+256))) return 0;
+    if (fgets(buf,strlen(string)+4+256,fp)) {
+        if (*(buf+strlen(string)) == ':' && !strncmp(buf,string,strlen(string))) {
+            bend = buf+strlen(buf)-1;
+            narf = strtof(buf+strlen(string)+1,&bend);
+            set_pref(pref_id,&narf);
+        }
+    } free(buf);
+#endif
+    return 1;
+}
 
 /****************************************************************************
    Function: write_pref_string(FILE *fp, long pref_id, char *string)
@@ -351,9 +578,11 @@ static Boolean write_preferences_file(prefsStructP inPrefsStruct) {
 
     Boolean successful = 1;
     FILE *fp;
-    
-    
-    if(!(fp=fopen(prefs_file_pathname, "w"))) {   
+
+    if (!prefs_file_pathname) return 0;
+
+    fprintf(stderr,"Writing prefs to: %s\n",prefs_file_pathname);
+    if(!(fp=fopen(prefs_file_pathname, "w+"))) {
         fprintf(stderr, "Error: Can't open preferences file for writing\n");
         return 0;
     }
@@ -508,14 +737,11 @@ static Boolean write_preferences_file(prefsStructP inPrefsStruct) {
 		   "NUMBER_OF_ITEMS_IN_RBM_HISTORY");
 
     write_pref_boolean (fp, eUSESHORTNEWSRC, "USESHORTNEWSRC");
-    fclose(fp);
+    fflush(fp); fclose(fp);
     return successful;
-    
 #endif
     
 }
-
-
 
 /****************************************************************************
  ****************************************************************************
