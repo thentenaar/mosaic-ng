@@ -579,8 +579,6 @@ static Boolean write_preferences_file(prefsStructP inPrefsStruct) {
     FILE *fp;
 
     if (!prefs_file_pathname) return 0;
-
-    fprintf(stderr,"Writing prefs to: %s\n",prefs_file_pathname);
     if(!(fp=fopen(prefs_file_pathname, "w+"))) {
         fprintf(stderr, "Error: Can't open preferences file for writing\n");
         return 0;

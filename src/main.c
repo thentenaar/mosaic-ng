@@ -75,6 +75,7 @@
 #include "kcms.h"
 
 char *userPath=NULL;
+extern char *cached_global_hist_fname;
 
 void mo_exit (void)
 {
@@ -84,6 +85,7 @@ void mo_exit (void)
     mo_write_global_history ();
 
   preferences_armegeddon();
+  if (cached_global_hist_fname) free(cached_global_hist_fname);
 
   exit (0);
 }

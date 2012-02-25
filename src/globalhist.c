@@ -504,7 +504,7 @@ mo_status mo_wipe_global_history (mo_window *win)
  * remarks: 
  *   
  ****************************************************************************/
-static char *cached_global_hist_fname = NULL;
+char *cached_global_hist_fname = NULL;
 mo_status mo_setup_global_history (void)
 {
   char *home, *histfn, *filename;
