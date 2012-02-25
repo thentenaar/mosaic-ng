@@ -687,9 +687,6 @@ void *get_pref(long pref_id) {
         case  eNOPROXY_SPECFILE:
             return (void *)(thePrefsStructP->RdataP->noproxy_specfile);
             break;
-        case  eMAX_WAIS_RESPONSES:
-            return (void *)&(thePrefsStructP->RdataP->max_wais_responses);
-            break;
         case  eKIOSK:
             return (void *)&(thePrefsStructP->RdataP->kiosk);
             break;
@@ -1246,10 +1243,6 @@ void set_pref(long pref_id, void *incoming) {
         case  eNOPROXY_SPECFILE:
             thePrefsStructP->RdataP->noproxy_specfile =
                 (char *)incoming;
-            break;
-        case  eMAX_WAIS_RESPONSES:
-            thePrefsStructP->RdataP->max_wais_responses =
-                *((int *)incoming);
             break;
         case  eKIOSK:
             thePrefsStructP->RdataP->kiosk =

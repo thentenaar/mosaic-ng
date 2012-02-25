@@ -1312,7 +1312,6 @@ GetNoProxy(char *access, char *site)
 		if      (!strcmp(access,"http"))    portnum = 80;
 		else if (!strcmp(access,"gopher"))  portnum = 70;
 		else if (!strcmp(access,"ftp"))     portnum = 21;
-		else if (!strcmp(access,"wais"))    portnum = 210;
 	}
 
 	while (p != NULL) {

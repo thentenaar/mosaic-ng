@@ -159,7 +159,6 @@ typedef struct
     
 /* services */
     
-    int max_wais_responses;
     Boolean kiosk;
     Boolean kioskPrint;
     Boolean kioskNoExit;

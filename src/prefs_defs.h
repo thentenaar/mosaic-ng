@@ -111,7 +111,6 @@ enum pref_item {
     ePRINT_PAPER_SIZE_US, 
     ePROXY_SPECFILE, 
     eNOPROXY_SPECFILE, 
-    eMAX_WAIS_RESPONSES, 
     eKIOSK, 
     eKIOSKPRINT,
     eKIOSKNOEXIT, 

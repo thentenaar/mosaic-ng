@@ -19,10 +19,6 @@
 **	needs to select it when it has been loaded.  A superclass needs to be
 **	defined which accepts select and select_anchor.
 */
-#include "../config.h"
-#ifndef DEFAULT_WAIS_GATEWAY
-#define DEFAULT_WAIS_GATEWAY "http://www.ncsa.uiuc.edu:8001/"
-#endif
 
 /* Implements:
 */
@@ -96,16 +92,9 @@ PRIVATE void HTAccessInit NOARGS			/* Call me once */
 {
 extern HTProtocol HTTP, HTFile, HTTelnet, HTTn3270, HTRlogin;
 extern HTProtocol HTFTP, HTNews, HTGopher, HTMailto, HTNNTP;
-#ifdef DIRECT_WAIS
-extern HTProtocol HTWAIS;
-#endif
     HTRegisterProtocol(&HTFTP);
     HTRegisterProtocol(&HTNews);
     HTRegisterProtocol(&HTGopher);
-#ifdef DIRECT_WAIS
-    HTRegisterProtocol(&HTWAIS);
-#endif
-
     HTRegisterProtocol(&HTTP);
     HTRegisterProtocol(&HTFile);
     HTRegisterProtocol(&HTTelnet);
@@ -229,12 +218,6 @@ PRIVATE int get_physical ARGS3(
 			}
 
 		}
-
-#ifndef DIRECT_WAIS
-		if (!gateway && 0==strcmp(tmp_access, "wais")) {
-			gateway = DEFAULT_WAIS_GATEWAY;
-		}
-#endif
 
 		/* proxy servers have precedence over gateway servers */
 		if (proxy) {

@@ -284,7 +284,6 @@ char *global_type_map;
 char *personal_type_map;
 
 int tweak_gopher_types;
-int max_wais_responses;
 int useAFS;
 int ftp_timeout_val;
 int ftpRedial;
@@ -585,10 +584,6 @@ char *mo_check_for_proxy (char *access)
 	else if (strcmp(access, "ftp") == 0)
 	{
 		return(Rdata.ftp_proxy);
-	}
-	else if (strcmp(access, "wais") == 0)
-	{
-		return(Rdata.wais_proxy);
 	}
 	else if (strcmp(access, "gopher") == 0)
 	{
@@ -4320,7 +4315,6 @@ splash_goto:
     gunzip_program = get_pref_string(eGUNZIP_COMMAND);
 
     tweak_gopher_types = get_pref_boolean(eTWEAK_GOPHER_TYPES);
-    max_wais_responses = get_pref_int(eMAX_WAIS_RESPONSES);
     ftp_timeout_val = get_pref_int(eFTP_TIMEOUT_VAL);
     ftpRedial=get_pref_int(eFTP_REDIAL);
     ftpRedialSleep=get_pref_int(eFTP_REDIAL_SLEEP);

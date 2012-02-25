@@ -8,7 +8,6 @@
 #include "HTFile.h"
 #include "HTFormat.h"
 #include "HTMIME.h"
-#include "HTWSRC.h"
 
 #include "tcp.h"
 #include "HTUtils.h"
@@ -53,7 +52,6 @@ PUBLIC void HTFormatInit NOARGS
   HTSetConversion("application/x-html", "www/present", HTMosaicHTMLPresent, 1.0, 0.0, 0.0);
 
   HTSetConversion("text/plain", "www/present", HTPlainPresent,	1.0, 0.0, 0.0);
-  HTSetConversion("application/x-wais-source", "*", HTWSRCConvert, 1.0, 0.0, 0.0);
 
   /* These should override everything else. */
   HTLoadTypesConfigFile (personal_type_map);
@@ -379,9 +377,6 @@ PUBLIC void HTFileInit NOARGS
       HTSetSuffix(".man",  "application/x-troff-man", "binary", 1.0);
       HTSetSuffix(".me",   "application/x-troff-me", "binary", 1.0);
       HTSetSuffix(".ms",   "application/x-troff-ms", "binary", 1.0);
-
-      HTSetSuffix(".src",	"application/x-wais-source", "binary", 1.0);
-      HTSetSuffix(".wsrc",	"application/x-wais-source", "binary", 1.0); /* xtra */
 
       HTSetSuffix(".zip", "application/zip", "binary", 1.0);
 

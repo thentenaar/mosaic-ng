@@ -250,51 +250,6 @@ static char *mo_grok_alternate_title (char *url, char *ref)
         }
     }
 
-  /* If we got here, assume we should use 'ref' if possible
-     for the WAIS title. */
-  if (!strncmp (url, "wais:", 5) || 
-      !strncmp (url, "http://info.cern.ch:8001/", 25) ||
-      !strncmp (url, "http://info.cern.ch.:8001/", 26) ||
-      !strncmp (url, "http://www.ncsa.uiuc.edu:8001/", 30))
-    {
-      /* It's a WAIS server. */
-      /* Do we have a ref? */
-      if (ref)
-        {
-          title = strdup (ref);
-          goto done;
-        }
-      else
-        {
-          /* Nope, no ref.  Make up a title. */
-          foo1 = url + 7;
-          foo2 = strstr (foo1, ":");
-          /* If there's a trailing colon (always should be.. ??)... */
-          if (foo2)
-            {
-              char *server = (char *) malloc ((foo2 - foo1 + 2));
-              
-/*              bcopy (foo1, server, (foo2 - foo1));*/
-              memcpy(server, foo1, (foo2 - foo1));
-              server[(foo2 - foo1)] = '\0';
-              
-              title = (char *) malloc ((strlen (server) + 32) * sizeof (char));
-              sprintf (title, "%s %s", "WAIS server at" , server);
-              
-              /* OK, we got a title... */
-              free (server);
-
-              goto done;
-            }
-          else
-            {
-              /* Aw hell... */
-              title = strdup ("WAIS server" );
-              goto done;
-            }
-        }
-    }
-
   if (!strncmp (url, "news:", 5))
     {
       /* It's a news source. */

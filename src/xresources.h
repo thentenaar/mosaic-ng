@@ -204,8 +204,6 @@ static XtResource resources[] = {
   { "simpleInterface", "SimpleInterface", XtRBoolean, sizeof (Boolean),
       offset (simple_interface), XtRString, "False" },
 
-  { "maxWaisResponses", "MaxWaisResponses", XtRInt, sizeof (int),
-      offset (max_wais_responses), XtRString, "200" },
   { "delayImageLoads", "DelayImageLoads", XtRBoolean, sizeof (Boolean),
       offset (delay_image_loads), XtRString, "False" },
 /*SWP*/

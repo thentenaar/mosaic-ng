@@ -831,10 +831,6 @@ char *xurl;
 				xurl = (char *)malloc(strlen(url) + (10 * sizeof(char)));
 				sprintf(xurl, "gopher://%s", url);
 			}
-			else if (!strncmp(url, "wais.", 5)) {
-				xurl = (char *)malloc(strlen(url) + (8 * sizeof(char)));
-				sprintf(xurl, "wais://%s", url);
-			}
 			else {
 				xurl=fileOrServer(url);
 			}
