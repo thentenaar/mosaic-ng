@@ -811,12 +811,6 @@ XmxCallback (menubar_cb)
       mo_open_another_window (win, URLPRIMER_PAGE_DEFAULT, 
                               NULL, NULL);
       break;
-#ifndef PRERELEASE
-    case mo_cc:
-	do_comment=1;
-	CommentCard(win);
-      break;
-#endif
     case mo_techsupport:        
         {
             char subj[128];
@@ -1372,10 +1366,6 @@ char buf[BUFSIZ];
 	DEFINE_MENUBAR("On URLS..." ,"U",menubar_cb,mo_help_url,NULL)
 	SPACER()
 	DEFINE_MENUBAR("Mail Tech Support..." ,"M",menubar_cb,mo_techsupport,NULL)
-#ifndef PRERELEASE
-	SPACER()
-	DEFINE_MENUBAR("Comment Card..." ,"C",menubar_cb,mo_cc,NULL)
-#endif
 	NULL_MENUBAR()
 
 	/* News Format Sub-Menu */
@@ -1467,10 +1457,6 @@ char buf[BUFSIZ];
 	DEFINE_MENUBAR("Help on Version " MO_VERSION_STRING "..." ,"V",menubar_cb,mo_help_onversion,NULL)
 	DEFINE_MENUBAR("On Window..." ,"O",menubar_cb,mo_help_onwindow,NULL)
 	DEFINE_MENUBAR("On FAQ..." ,"F",menubar_cb,mo_help_faq,NULL)
-#ifndef PRERELEASE
-	SPACER()
-	DEFINE_MENUBAR("Comment Card..." ,"C",menubar_cb,mo_cc,NULL)
-#endif
 	NULL_MENUBAR()
 
 	/* The Simple Menubar */

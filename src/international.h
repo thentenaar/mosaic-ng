@@ -189,7 +189,6 @@ typedef enum {
 	INT_HELP_ONHTML,
 	INT_HELP_ONURLS,
 	INT_HELP_MAILTECHSUPPORT,
-	INT_HELP_COMMENTCARD,
 
 	/*
 	 * Documents Menubar

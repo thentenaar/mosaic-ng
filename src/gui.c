@@ -3740,12 +3740,6 @@ static XmxCallback (fire_er_up)
   win = mo_open_window 
     (toplevel, startup_document ? startup_document : init_document, NULL);
 
-  /* Check the Comment Card */
-#ifdef PRERELEASE
-  do_comment=0; /* Don't actually display the cc if we aren't in final release */
-#endif
-  CommentCard(win);
-
   XtVaGetValues(win->scrolled_win,
 		WbNbodyColors,
 		&(win->body_color),
