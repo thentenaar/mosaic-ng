@@ -469,7 +469,7 @@ mo_status mo_do_window_text (mo_window *win, char *url, char *txt,
      are only jumping around inside a document. */
   if (url && *url)
     {
-      if (register_visit)
+      if (register_visit && (!win->current_node || (win->current_node && strcmp(win->current_node->url,url))))
         mo_record_visit (win, url, txt, txthead, ref, last_modified, expires);
       else
         {
