@@ -125,7 +125,7 @@ typedef enum
   "http://web.archive.org/web/19970606162156/http://www.ncsa.uiuc.edu./SDG/Software/XMosaic/help-on-version-2.7b5.html"
 
 #undef HOME_PAGE_DEFAULT
-#define HOME_PAGE_DEFAULT "http://web.archive.org/web/19970606162318/http://www.ncsa.uiuc.edu./SDG/Software/Mosaic/NCSAMosaicHome.html"
+#define HOME_PAGE_DEFAULT "http://web.archive.org/web/19970117154957/http://www.ncsa.uiuc.edu./SDG/Software/Mosaic/NCSAMosaicHome.html"
 
 #ifndef WHATSNEW_PAGE_DEFAULT
 #define WHATSNEW_PAGE_DEFAULT \
