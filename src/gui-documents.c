@@ -639,9 +639,19 @@ mo_status mo_reload_window_text (mo_window *win, int reload_images_also)
     reloading=1;
   }
 
-  win->current_node->text = mo_pull_er_over (win->current_node->url, 
-                                             &win->current_node->texthead);
-
+  /* Handle reloading special URLs */
+  if((win->current_node->text = mo_special_urls(win->current_node->url))){
+      if(win->current_node->text[0]=='0') {
+          win->current_node->url  = &win->current_node->text[1];
+          win->current_node->text = mo_pull_er_over (win->current_node->url, &win->current_node->texthead);
+      } else {
+          mo_do_window_text (win, win->current_node->url, win->current_node->text, win->current_node->text, 1,
+                             NULL, NULL, NULL);
+      }
+  } else {
+      win->current_node->text = mo_pull_er_over (win->current_node->url,
+                                                 &win->current_node->texthead);
+  }
 
   /* AF */
   if (HTTP_last_modified)
@@ -799,10 +809,6 @@ mo_status mo_load_window_text (mo_window *win, char *url, char *ref)
             interrupted = 0;
             newtext = mo_pull_er_over (canon, &newtexthead);
 
-    /* 
-	 * added so MCCIRequestGetURL could return failed when
-	 * url fails
-	 */
             if (newtext)
                 if ( (!strncmp(newtext, "<H1>ERROR<H1>", 10)) ||
                      (!strncmp(newtext, 
