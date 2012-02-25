@@ -59,7 +59,6 @@
 #include "mo-www.h"
 #include "gui-menubar.h"
 #include "proxy.h"
-#include "pan.h"
 #include "pixmaps.h"
 #include "libnut/system.h"
 #include "libwww2/HTAABrow.h"
@@ -174,8 +173,6 @@ extern void _XEditResCheckMessages();
 
 #include "libhtmlw/HTML.h"
 #include "xresources.h"
-#include "cci.h"
-
 
 #include "bitmaps/iconify.xbm"
 #include "bitmaps/iconify_mask.xbm"
@@ -249,7 +246,6 @@ extern Pixmap *IconPix,*IconPixSmall,*IconPixBig;
 
 void mo_post_upload_window(mo_window *win);
 
-extern void MoCCINewConnection();
 void mo_gui_update_meter(int level,char *text);
 
 int animateCursor();
@@ -258,9 +254,6 @@ void stopBusyAnimation();
 
 extern int force_dump_to_file;
 extern char *HTAppVersion;
-
-/* from cciBindings.c */
-extern int cci_event;
 
 /* for the -geometry fix (kludge) - DXP 8/30/95 */
 int userSpecifiedGeometry = 0;
@@ -391,14 +384,9 @@ extern int www2Trace;
 extern int htmlwTrace;
 extern int nutTrace;
 
-int cciTrace=0;
 int srcTrace=0;
 int cacheTrace=0;
 #endif
-
-
-/* from cciBindings.c */
-extern int cci_get;
 
 char *HTReferer = NULL;
 
@@ -922,7 +910,6 @@ extern int sleep_interrupt;
 XmxCallback (icon_pressed_cb)
 {
   sleep_interrupt = connect_interrupt = 1;
-  if (cci_event) MoCCISendEventOutput(MOSAIC_GLOBE);
 }
 
 
@@ -934,8 +921,6 @@ char buf[BUFSIZ];
 	if (!win || !win->current_node || !win->current_node) {
 		return;
 	}
-
-	if (cci_event)MoCCISendEventOutput(AUTHENTICATION_BUTTON);
 
 	mo_gui_check_security_icon(win->current_node->authType);
 
@@ -986,8 +971,6 @@ static XmxCallback (url_field_cb)
   if(!get_pref_boolean(eFOCUS_FOLLOWS_MOUSE))
     XtSetKeyboardFocus(win->base, win->view);
     
-  if (cci_event) MoCCISendEventOutput(MOSAIC_URL_TEXT_FIELD);
-
   url = XmxTextGetString (win->url_text);
   if (!url || (!strlen(url)))
     return;
@@ -1003,8 +986,6 @@ static XmxCallback (url_field_cb)
 	free(url);
   }
 
-  if (cci_event) MoCCISendEventOutput(LINK_LOADED);
-  
   return;
 }
 
@@ -1035,8 +1016,6 @@ static XmxCallback (anchor_cb)
 
   if (!win)
     return;
-
-  if (cci_event) MoCCISendEventOutput(MOSAIC_URL_TRIGGER);
 
   /* if shift was down, make this a Load to Local Disk -- amb */
   old_binx_flag = win->binary_transfer;
@@ -1113,8 +1092,6 @@ static XmxCallback (anchor_cb)
         /* Just do mo_load_window_text go get the xterm forked off. */
         mo_load_window_text (win, url, reftext);
     }
-
-  if (cci_event) MoCCISendEventOutput(LINK_LOADED);
 
   win->binary_transfer = old_binx_flag;
   free (href);
@@ -1224,8 +1201,6 @@ XmxCallback (submit_form_callback)
 
   mo_busy ();
 
-  if (cci_event) MoCCISendEventOutput(FORM_SUBMIT);
-
   /* Initial query: Breathing space. */
   len = 16;
 
@@ -1268,8 +1243,7 @@ XmxCallback (submit_form_callback)
   }
 #endif
 
-  if ((my_strcasecmp (method, "POST") == 0) ||
- 	(my_strcasecmp (method, "cciPOST") == 0))
+  if (!my_strcasecmp (method, "POST"))
     do_post_urlencoded = 1;
 
   len += strlen (url);
@@ -1340,9 +1314,6 @@ XmxCallback (submit_form_callback)
 
   if (do_post_urlencoded)
     {
-	if (!my_strcasecmp(method,"cciPOST"))
-		MoCCIFormToClient(NULL, NULL, NULL,NULL,1);
-
       	mo_post_access_document (win, url, 
 				 (plaintext?"text/plain":
 				  "application/x-www-form-urlencoded"),
@@ -1756,11 +1727,6 @@ static XmxEventHandler (mo_view_keypress_handler)
           gui_news_next(win);
           break;
 
-      case XK_A: /* Annotate. */
-      case XK_a: 
-          mo_post_annotate_win (win, 0, 0, NULL, NULL, NULL, NULL);
-          break;
-          
       case XK_B: /* Back. */
       case XK_b:
           mo_back_node (win);
@@ -3119,16 +3085,12 @@ mo_status mo_delete_window (mo_window *win)
   if (win->hotlist_win)
     XtDestroyWidget(win->hotlist_win);
   POPDOWN (techsupport_win);
-  POPDOWN (annotate_win);
   POPDOWN (search_win);
   POPDOWN (searchindex_win);
   POPDOWN (mailto_win);
   POPDOWN (mailto_form_win);
   POPDOWN (news_win);
   POPDOWN (links_win);
-#ifdef HAVE_AUDIO_ANNOTATIONS
-  POPDOWN (audio_annotate_win);
-#endif
   XtPopdown (win->base);
 
       /* we really should be doing this :-) BJS */
@@ -3336,17 +3298,10 @@ static mo_window *mo_open_window_internal (Widget base, mo_window *parent)
   win->links_win = 0;
   win->news_fsb_win = 0;
   win->mail_fsb_win = 0;
-  win->annotate_win = 0;
   win->search_win = win->search_win_text = 0;
   win->searchindex_win = win->searchindex_win_label = win->searchindex_win_text = 0;
   win->src_search_win=0;
   win->src_search_win_text=0;
-  win->cci_win = win->cci_win_text = (Widget) 0;
-  win->cci_accept_toggle = win->cci_off_toggle = (Widget) 0;
-#ifdef HAVE_AUDIO_ANNOTATIONS
-  win->audio_annotate_win = 0;
-#endif
-
   win->history = NULL;
   win->current_node = 0;
   win->reloading = 0;
@@ -3375,11 +3330,6 @@ static mo_window *mo_open_window_internal (Widget base, mo_window *parent)
 
   win->mail_format = 0;
 
-#ifdef HAVE_AUDIO_ANNOTATIONS
-  win->record_fnam = 0;
-  win->record_pid = 0;
-#endif
-  
   win->print_text = 0;
   win->print_format = 0;
 
@@ -3423,9 +3373,6 @@ static mo_window *mo_open_window_internal (Widget base, mo_window *parent)
                       (win->delay_image_loads ? XmxSet : XmxNotSet));
   XmxRSetSensitive (win->menubar, mo_expand_images_current,
                     win->delay_image_loads ? XmxSensitive : XmxNotSensitive);
-  XmxRSetSensitive (win->menubar, mo_annotate, XmxSensitive);
-  XmxRSetSensitive (win->menubar, mo_annotate_edit, XmxNotSensitive);
-  XmxRSetSensitive (win->menubar, mo_annotate_delete, XmxNotSensitive);
 
   tableSupportEnabled = win->table_support = get_pref_boolean(eENABLE_TABLES);
   XmxRSetToggleState (win->menubar, mo_table_support,
@@ -3703,9 +3650,6 @@ mo_window *mo_open_another_window (mo_window *win, char *url, char *ref,
   neww->target_anchor = target_anchor;
 
   return_stat = mo_load_window_text (neww, url, ref); 
-
-  if ((cci_get) && (return_stat == mo_fail))
-	return (mo_window *) NULL;
 
   return neww;
 }
@@ -4423,7 +4367,6 @@ splash_goto:
     httpTrace=get_pref_boolean(eHTTPTRACE);
     www2Trace=get_pref_boolean(eWWW2TRACE);
     htmlwTrace=get_pref_boolean(eHTMLWTRACE);
-    cciTrace=get_pref_boolean(eCCITRACE);
     srcTrace=get_pref_boolean(eSRCTRACE);
     cacheTrace=get_pref_boolean(eCACHETRACE);
     nutTrace=get_pref_boolean(eNUTTRACE);
@@ -4431,7 +4374,6 @@ splash_goto:
     if (get_pref_boolean(eHTTPTRACE) ||
         get_pref_boolean(eWWW2TRACE) ||
         get_pref_boolean(eHTMLWTRACE) ||
-        get_pref_boolean(eCCITRACE) ||
         get_pref_boolean(eSRCTRACE) ||
         get_pref_boolean(eCACHETRACE) ||
         get_pref_boolean(eNUTTRACE)) {
@@ -4593,7 +4535,6 @@ splash_goto:
 
   mo_setup_default_hotlist ();
   mo_write_default_hotlist (); /* amb */
-  mo_setup_pan_list ();
 
   if(get_pref_boolean(eHOTLIST_ON_RBM))
     mo_init_hotmenu();
@@ -4658,17 +4599,6 @@ splash_goto:
     setup_imagekill();
 
     mo_open_initial_window ();
-
-#ifndef DISABLE_TRACE
-    if (srcTrace) {
-        fprintf(stderr,"cciPort resourced to %d\n",get_pref_int(eCCIPORT));
-    }
-#endif
-
-    if ((get_pref_int(eCCIPORT) > 1023 ) &&  (get_pref_int(eCCIPORT) < 65536))
-    {	
-        MoCCIStartListening(toplevel,get_pref_int(eCCIPORT));
-    }
 
     XtAppMainLoop (app_context);
 }

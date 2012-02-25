@@ -77,17 +77,6 @@ typedef struct
     Boolean track_pointer_motion;
     Boolean track_full_url_names;
 
-/* annotations */
-    
-    Boolean annotations_on_top;
-    Boolean confirm_delete_annotation;
-    char *annotation_server;
-    
-/* audio */
-
-    char *record_command_location;
-    char *record_command;
-    
 /* cache */
 
     Boolean reload_pragma_no_cache;
@@ -99,10 +88,6 @@ typedef struct
     char *xterm_command;
     char *mail_filter_command;
        
-/* directories */
-
-    char *private_annotation_directory;
-
 /* document */
     
     char *home_document;                  
@@ -174,8 +159,6 @@ typedef struct
     
 /* services */
     
-    int cciPort;
-    int max_num_of_cci_connections;
     int max_wais_responses;
     Boolean kiosk;
     Boolean kioskPrint;
@@ -256,7 +239,6 @@ typedef struct
     Boolean httpTrace;
     Boolean www2Trace;
     Boolean htmlwTrace;
-    Boolean cciTrace;
     Boolean srcTrace;
     Boolean cacheTrace;
     Boolean nutTrace;

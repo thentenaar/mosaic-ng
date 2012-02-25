@@ -375,17 +375,11 @@ static Boolean write_preferences_file(prefsStructP inPrefsStruct) {
     write_pref_boolean(fp, eDISPLAY_URLS_NOT_TITLES, "DISPLAY_URLS_NOT_TITLES");
     write_pref_boolean(fp, eTRACK_POINTER_MOTION, "TRACK_POINTER_MOTION");
     write_pref_boolean(fp, eTRACK_FULL_URL_NAMES, "TRACK_FULL_URL_NAMES");
-    write_pref_boolean(fp, eANNOTATIONS_ON_TOP, "ANNOTATIONS_ON_TOP");
-    write_pref_boolean(fp, eCONFIRM_DELETE_ANNOTATION, "CONFIRM_DELETE_ANNOTATION");
-    write_pref_string(fp, eANNOTATION_SERVER, "ANNOTATION_SERVER");
-    write_pref_string(fp, eRECORD_COMMAND_LOCATION, "RECORD_COMMAND_LOCATION");
-    write_pref_string(fp, eRECORD_COMMAND, "RECORD_COMMAND");
     write_pref_boolean(fp, eRELOAD_PRAGMA_NO_CACHE, "RELOAD_PRAGMA_NO_CACHE");
     write_pref_string(fp, eSENDMAIL_COMMAND, "SENDMAIL_COMMAND");
     write_pref_string(fp, eEDIT_COMMAND, "EDIT_COMMAND");
     write_pref_string(fp, eXTERM_COMMAND, "XTERM_COMMAND");
     write_pref_string(fp, eMAIL_FILTER_COMMAND, "MAIL_FILTER_COMMAND");
-    write_pref_string(fp, ePRIVATE_ANNOTATION_DIRECTORY, "PRIVATE_ANNOTATION_DIRECTORY");
     write_pref_string(fp, eHOME_DOCUMENT, "HOME_DOCUMENT");
     write_pref_string(fp, eTMP_DIRECTORY, "TMP_DIRECTORY");
     write_pref_string(fp, eDOCS_DIRECTORY, "DOCS_DIRECTORY");
@@ -424,9 +418,6 @@ static Boolean write_preferences_file(prefsStructP inPrefsStruct) {
     write_pref_boolean(fp, ePRINT_PAPER_SIZE_US, "PRINT_PAPER_SIZE_US");
     write_pref_string(fp, ePROXY_SPECFILE, "PROXY_SPECFILE");
     write_pref_string(fp, eNOPROXY_SPECFILE, "NOPROXY_SPECFILE");
-    write_pref_int(fp, eCCIPORT, "CCIPORT");
-    write_pref_int(fp, eMAX_NUM_OF_CCI_CONNECTIONS, "MAX_NUM_OF_CCI_CONNECTIONS");
-    write_pref_int(fp, eMAX_WAIS_RESPONSES, "MAX_WAIS_RESPONSES");
     write_pref_boolean(fp, eKIOSK, "KIOSK");
     write_pref_boolean(fp, eKIOSKNOEXIT, "KIOSKNOEXIT");
     write_pref_boolean(fp, eKEEPALIVE, "KEEPALIVE");
@@ -481,7 +472,6 @@ static Boolean write_preferences_file(prefsStructP inPrefsStruct) {
     write_pref_boolean(fp, eHTTPTRACE, "HTTPTRACE");
     write_pref_boolean(fp, eWWW2TRACE, "WWW2TRACE");
     write_pref_boolean(fp, eHTMLWTRACE, "HTMLWTRACE");
-    write_pref_boolean(fp, eCCITRACE, "CCITRACE");
     write_pref_boolean(fp, eSRCTRACE, "SRCTRACE");
     write_pref_boolean(fp, eCACHETRACE, "CACHETRACE");
     write_pref_boolean(fp, eNUTTRACE, "NUTTRACE");
@@ -568,21 +558,6 @@ void *get_pref(long pref_id) {
         case  eTRACK_FULL_URL_NAMES:
             return (void *)&(thePrefsStructP->RdataP->track_full_url_names);
             break;
-        case  eANNOTATIONS_ON_TOP:
-            return (void *)&(thePrefsStructP->RdataP->annotations_on_top);
-            break;
-        case  eCONFIRM_DELETE_ANNOTATION:
-            return (void *)&(thePrefsStructP->RdataP->confirm_delete_annotation);
-            break;
-        case  eANNOTATION_SERVER:
-            return (void *)(thePrefsStructP->RdataP->annotation_server);
-            break;
-        case  eRECORD_COMMAND_LOCATION:
-            return (void *)(thePrefsStructP->RdataP->record_command_location);
-            break;
-        case  eRECORD_COMMAND:
-            return (void *)(thePrefsStructP->RdataP->record_command);
-            break;
         case  eRELOAD_PRAGMA_NO_CACHE:
             return (void *)&(thePrefsStructP->RdataP->reload_pragma_no_cache);
             break;
@@ -597,9 +572,6 @@ void *get_pref(long pref_id) {
             break;
         case  eMAIL_FILTER_COMMAND:
             return (void *)(thePrefsStructP->RdataP->mail_filter_command);
-            break;
-        case  ePRIVATE_ANNOTATION_DIRECTORY:
-            return (void *)(thePrefsStructP->RdataP->private_annotation_directory);
             break;
         case  eHOME_DOCUMENT:
             return (void *)(thePrefsStructP->RdataP->home_document);
@@ -714,12 +686,6 @@ void *get_pref(long pref_id) {
             break;
         case  eNOPROXY_SPECFILE:
             return (void *)(thePrefsStructP->RdataP->noproxy_specfile);
-            break;
-        case  eCCIPORT:
-            return (void *)&(thePrefsStructP->RdataP->cciPort);
-            break;
-        case  eMAX_NUM_OF_CCI_CONNECTIONS:
-            return (void *)&(thePrefsStructP->RdataP->max_num_of_cci_connections);
             break;
         case  eMAX_WAIS_RESPONSES:
             return (void *)&(thePrefsStructP->RdataP->max_wais_responses);
@@ -890,9 +856,6 @@ void *get_pref(long pref_id) {
             break;
         case eHTMLWTRACE:
             return (void *)&(thePrefsStructP->RdataP->htmlwTrace);
-            break;
-        case eCCITRACE:
-            return (void *)&(thePrefsStructP->RdataP->cciTrace);
             break;
         case eSRCTRACE:
             return (void *)&(thePrefsStructP->RdataP->srcTrace);
@@ -1112,26 +1075,6 @@ void set_pref(long pref_id, void *incoming) {
             thePrefsStructP->RdataP->track_full_url_names =
                 *((Boolean *)incoming);
             break;
-        case  eANNOTATIONS_ON_TOP:
-            thePrefsStructP->RdataP->annotations_on_top =
-                *((Boolean *)incoming);
-            break;
-        case  eCONFIRM_DELETE_ANNOTATION:
-            thePrefsStructP->RdataP->confirm_delete_annotation =
-                *((Boolean *)incoming);
-            break;
-        case  eANNOTATION_SERVER:
-            thePrefsStructP->RdataP->annotation_server =
-                (char *)incoming;
-            break;
-        case  eRECORD_COMMAND_LOCATION:
-            thePrefsStructP->RdataP->record_command_location =
-                (char *)incoming;
-            break;
-        case  eRECORD_COMMAND:
-            thePrefsStructP->RdataP->record_command =
-                (char *)incoming;
-            break;
         case  eRELOAD_PRAGMA_NO_CACHE:
             thePrefsStructP->RdataP->reload_pragma_no_cache =
                 *((Boolean *)incoming);
@@ -1150,10 +1093,6 @@ void set_pref(long pref_id, void *incoming) {
             break;
         case  eMAIL_FILTER_COMMAND:
             thePrefsStructP->RdataP->mail_filter_command =
-                (char *)incoming;
-            break;
-        case  ePRIVATE_ANNOTATION_DIRECTORY:
-            thePrefsStructP->RdataP->private_annotation_directory =
                 (char *)incoming;
             break;
         case  eHOME_DOCUMENT:
@@ -1307,14 +1246,6 @@ void set_pref(long pref_id, void *incoming) {
         case  eNOPROXY_SPECFILE:
             thePrefsStructP->RdataP->noproxy_specfile =
                 (char *)incoming;
-            break;
-        case  eCCIPORT:
-            thePrefsStructP->RdataP->cciPort =
-                *((int *)incoming);
-            break;
-        case  eMAX_NUM_OF_CCI_CONNECTIONS:
-            thePrefsStructP->RdataP->max_num_of_cci_connections =
-                *((int *)incoming);
             break;
         case  eMAX_WAIS_RESPONSES:
             thePrefsStructP->RdataP->max_wais_responses =
@@ -1531,10 +1462,6 @@ void set_pref(long pref_id, void *incoming) {
             break;
         case eHTMLWTRACE:
             thePrefsStructP->RdataP->htmlwTrace =
-                *((Boolean *)incoming);
-            break;
-        case eCCITRACE:
-            thePrefsStructP->RdataP->cciTrace =
                 *((Boolean *)incoming);
             break;
         case eSRCTRACE:

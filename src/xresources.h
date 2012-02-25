@@ -108,10 +108,6 @@ static XtResource resources[] = {
       offset (mail_filter_command), XtRString, NULL },
   { "printCommand", "PrintCommand", XtRString, sizeof (char *),
       offset (print_command), XtRString, "lpr" },
-  { "cciPort","CCIPort",XtRInt,sizeof (int),
-      offset (cciPort), XtRString, "0" },
-  { "maxNumCCIConnect","MaxNumCCIConnect",XtRInt,sizeof (int),
-      offset (max_num_of_cci_connections), XtRString, "0" },
   { "loadLocalFile","LoadLocalFile",XtRInt,sizeof(int),
       offset (load_local_file), XtRString, "1"},
   { "editCommand", "EditCommand", XtRString, sizeof (char *),
@@ -145,10 +141,6 @@ static XtResource resources[] = {
       offset (addHotlistAddsRBM), XtRString, "True" },
   { "addRBMAddsRBM", "AddRBMAddsRBM", XtRBoolean, sizeof (Boolean),
       offset (addRBMAddsRBM), XtRString, "True" },
-  { "personalAnnotationDirectory", "PersonalAnnotationDirectory", XtRString, 
-      sizeof (char *),
-      offset (private_annotation_directory), XtRString, 
-      ".mosaic-personal-annotations" },
   /* Whether selections should be fancy, by default. */
   { "fancySelections", "FancySelections", XtRBoolean,
       sizeof (Boolean), offset (default_fancy_selections), 
@@ -159,8 +151,6 @@ static XtResource resources[] = {
       offset (default_author_email), XtRString, NULL },
   { "signature", "Signature", XtRString, sizeof (char *),
       offset (signature), XtRString, NULL },
-  { "annotationsOnTop", "AnnotationsOnTop", XtRBoolean, sizeof (Boolean),
-      offset (annotations_on_top), XtRString, "False" },
 
   { "colorsPerInlinedImage", "ColorsPerInlinedImage", XtRInt, sizeof (int),
       offset (colors_per_inlined_image), XtRString, "50" },
@@ -172,50 +162,6 @@ static XtResource resources[] = {
   { "gunzipCommand", "GunzipCommand", XtRString, 
       sizeof (char *), offset (gunzip_command), XtRString, "gunzip -f -n" },
 
-#if defined(__hpux)
-  { "recordCommandLocation", "RecordCommandLocation", XtRString, 
-      sizeof (char *), offset (record_command_location), XtRString,
-      "/usr/audio/bin/srecorder" },
-#else
-#if defined(__sgi)
-  { "recordCommandLocation", "RecordCommandLocation", XtRString, 
-      sizeof (char *), offset (record_command_location), XtRString,
-      "/usr/sbin/recordaiff" },
-#else
-#if defined (sun)
-  { "recordCommandLocation", "RecordCommandLocation", XtRString, 
-      sizeof (char *), offset (record_command_location), XtRString,
-      "/usr/demo/SOUND/record" },
-#else
-  { "recordCommandLocation", "RecordCommandLocation", XtRString, 
-      sizeof (char *), offset (record_command_location), XtRString,
-      "/bin/true" },
-#endif /* if sun */
-#endif /* if sgi */
-#endif /* ifdef */
-
-#ifdef __hpux
-  { "recordCommand", "RecordCommand", XtRString, sizeof (char *),
-      offset (record_command), XtRString,
-      "srecorder -au" },
-#else
-#if defined(__sgi)
-  { "recordCommand", "RecordCommand", XtRString, sizeof (char *),
-      offset (record_command), XtRString,
-      "recordaiff -n 1 -s 8 -r 8000" },
-#else
-#if defined (sun)
-  { "recordCommand", "RecordCommand", XtRString, sizeof (char *),
-      offset (record_command), XtRString,
-      "record" },
-#else
-  { "recordCommand", "RecordCommand", XtRString, sizeof (char *),
-      offset (record_command), XtRString,
-      "true" },
-#endif /* if sun */
-#endif /* if sgi */
-#endif /* ifdef */
-
   { "gethostbynameIsEvil", "GethostbynameIsEvil", XtRBoolean, sizeof (Boolean),
       offset (gethostbyname_is_evil), XtRString, "False" },
   { "autoPlaceWindows", "AutoPlaceWindows", XtRBoolean, sizeof (Boolean),
@@ -225,8 +171,6 @@ static XtResource resources[] = {
 
   { "tmpDirectory", "TmpDirectory", XtRString, sizeof (char *),
       offset (tmp_directory), XtRString, NULL },
-  { "annotationServer", "AnnotationServer", XtRString, sizeof (char *),
-      offset (annotation_server), XtRString, NULL },
   { "catchPriorAndNext", "CatchPriorAndNext", XtRBoolean, sizeof (Boolean),
       offset (catch_prior_and_next), XtRString, "True" },
 
@@ -235,9 +179,6 @@ static XtResource resources[] = {
   { "reverseInlinedBitmapColors", "ReverseInlinedBitmapColors", XtRBoolean,
       sizeof (Boolean),
       offset (reverse_inlined_bitmap_colors), XtRString, "False" },
-  { "confirmDeleteAnnotation", "ConfirmDeleteAnnotation", 
-      XtRBoolean, sizeof (Boolean),
-      offset (confirm_delete_annotation), XtRString, "True"},
   { "tweakGopherTypes", "TweakGopherTypes", XtRBoolean, sizeof (Boolean),
       offset (tweak_gopher_types), XtRString, "True" },
 
@@ -376,9 +317,6 @@ static XtResource resources[] = {
 
   { "htmlwTrace", "HtmlwTrace", XtRBoolean, sizeof (Boolean),
       offset (htmlwTrace), XtRString, "False" },
-
-  { "cciTrace", "CciTrace", XtRBoolean, sizeof (Boolean),
-      offset (cciTrace), XtRString, "False" },
 
   { "srcTrace", "SrcTrace", XtRBoolean, sizeof (Boolean),
       offset (srcTrace), XtRString, "False" },
@@ -570,8 +508,6 @@ static XrmOptionDescRec options[] = {
   {"-kiosk",  "*kiosk",               XrmoptionNoArg,  "True"},
   {"-kioskPrint",  "*kioskPrint",     XrmoptionNoArg,  "True"},
   {"-kioskNoExit",  "*kioskNoExit",   XrmoptionNoArg,  "True"},
-  {"-cciPort",  "*cciPort",   	      XrmoptionSepArg,  "0"},
-  {"-maxNumCCIConnect",  "*maxNumCCIConnect",  XrmoptionSepArg,  "0"},
   {"-install",  "*nothingUseful",     XrmoptionNoArg,  "True"},
 };
 

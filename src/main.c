@@ -61,12 +61,10 @@
 #include "mosaic.h"
 #include "main.h"
 #include "gui.h"
-#include "pan.h"
 #include "child.h"
 #include "newsrc.h"
 #include "hotlist.h"
 #include "globalhist.h"
-#include "cciBindings2.h"
 
 #include <signal.h>
 #include <sys/utsname.h>
@@ -84,7 +82,6 @@ void mo_exit (void)
   newsrc_kill ();
   if (get_pref_boolean(eUSE_GLOBAL_HISTORY))
     mo_write_global_history ();
-  mo_write_pan_list ();
 
   preferences_armegeddon();
 
@@ -228,7 +225,6 @@ main (int argc, char **argv, char **envp)
   signal (SIGPIPE, SIG_IGN);
 
   InitChildProcessor();
-  MoCCIPreInitialize();
 
 #ifdef SVR4
   signal(SIGCLD, (void (*)())ChildTerminated);

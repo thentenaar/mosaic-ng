@@ -54,7 +54,6 @@
 #define FONTNAME "-adobe-courier-medium-r-normal-*-17-*-*-*-*-*-iso8859-1"
 
 #define TRANS_HTTP 0
-#define TRANS_CCI 1
 
 #define PROXY 0
 #define PROXY_DOMAIN 1

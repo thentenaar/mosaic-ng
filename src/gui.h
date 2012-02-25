@@ -86,7 +86,6 @@ int mo_gui_check_icon (int);
 void mo_gui_clear_icon (void);
 void mo_gui_done_with_icon (void);
 void kill_splash();
-void MoCCINewConnection();
 void mo_gui_update_meter(int level,char *text);
 int animateCursor();
 void createBusyCursors(Widget bob);

@@ -95,8 +95,6 @@ extern char *saveFileName;
 
 extern Widget tolevel;
 extern mo_window *current_win;
-extern int cci_docommand;
-
 
 XmxOptionMenuStruct *format_opts;
 
@@ -260,10 +258,6 @@ mo_status mo_save_window(mo_window *win, char *fname,
 	char *buf, *final, tmpbuf[80];
 	int final_len;
 
-	/* don't display dialog if command issued by cci application */
-	if (cci_docommand)
-		return mo_fail;
-
 	buf=my_strerror(errno);
 	if (!buf || !*buf || !strcmp(buf,"Error 0")) {
 		sprintf(tmpbuf,"Uknown Error" );
@@ -282,33 +276,13 @@ mo_status mo_save_window(mo_window *win, char *fname,
 		free(final);
 		final=NULL;
 	}
-    }
-  else {
-
-      if (!cci_docommand)
-	{
-          HTML_Print_Headers=
-			XmToggleButtonGetState(win->print_header_toggle_save);
-          HTML_Print_Footers=
-			XmToggleButtonGetState(win->print_footer_toggle_save);
-          HTML_Print_Paper_Size_A4= 
-			XmToggleButtonGetState(win->print_a4_toggle_save);
-	}
-      else /* cci app telling mosaic to save a file */
-	{
-	  if (save_format == mo_postscript)
-	  {
-	    HTML_Print_Headers = 1;
-	    HTML_Print_Footers = 1;
-	    HTML_Print_Paper_Size_A4 = 0;
-	  }
-	  else
-	  {
-	    HTML_Print_Headers = 0;
-	    HTML_Print_Footers = 0;
-	    HTML_Print_Paper_Size_A4 = 0;
-	  }
-  	}
+    } else {
+      HTML_Print_Headers=
+		XmToggleButtonGetState(win->print_header_toggle_save);
+      HTML_Print_Footers=
+		XmToggleButtonGetState(win->print_footer_toggle_save);
+      HTML_Print_Paper_Size_A4= 
+		XmToggleButtonGetState(win->print_a4_toggle_save);
 
       if (save_format == mo_plaintext)
         {
@@ -1306,28 +1280,9 @@ mo_status mo_print_window(mo_window *win,
   int retValue;
 
   fnam = mo_tmpnam(win->current_node->url);
-
-  if (cci_docommand)
-  {
-    if (print_format == mo_postscript)
-    {
-      HTML_Print_Headers= 1;
-      HTML_Print_Footers= 1;
-      HTML_Print_Paper_Size_A4=0;
-    }
-    else
-    {
-      HTML_Print_Headers= 0;
-      HTML_Print_Footers= 0;
-      HTML_Print_Paper_Size_A4=0;
-    }
-  }
-  else
-  {
-    HTML_Print_Headers=XmToggleButtonGetState(win->print_header_toggle_print);
-    HTML_Print_Footers=XmToggleButtonGetState(win->print_footer_toggle_print);
-    HTML_Print_Paper_Size_A4=XmToggleButtonGetState(win->print_a4_toggle_print);
-  }
+  HTML_Print_Headers=XmToggleButtonGetState(win->print_header_toggle_print);
+  HTML_Print_Footers=XmToggleButtonGetState(win->print_footer_toggle_print);
+  HTML_Print_Paper_Size_A4=XmToggleButtonGetState(win->print_a4_toggle_print);
 
       fp = fopen (fnam, "w");
       if (!fp)
@@ -1725,11 +1680,6 @@ char *ptr=NULL,*tptr=NULL,*my_str=NULL;
 	}
 
 	searchlen=strlen(win->current_node->text);
-
-	/* search the first hit every time if by cci application */ 
-	if (cci_docommand) {
-		win->src_search_pos=0;
-	}
 
 	/*
 	 * If we are going forwards, the start position is the current
@@ -2308,7 +2258,7 @@ mo_status mo_search_window(mo_window *win,char *str, int backward, int caseless,
   int rc;
 
   /* search the first hit every time if by cci application */ 
-  if (cci_docommand || news)
+  if (news)
   {
     ((ElementRef *)win->search_start)->id = 0;
   }
@@ -2344,13 +2294,6 @@ mo_status mo_search_window(mo_window *win,char *str, int backward, int caseless,
 
    if (rc == -1)
    {
-     if (cci_docommand) {
-	if (news) {
-		((ElementRef *)win->search_start)->id = 0;
-	}
-	return mo_fail;
-     }
-     else
      {
        /* No match was found. */
        if (!news) {

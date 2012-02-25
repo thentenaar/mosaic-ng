@@ -57,15 +57,11 @@
 #include "gui-documents.h"
 #include "gui-extras.h"
 #include "mo-www.h"
-#include "annotate.h"
 #include "history.h"
 #include "libhtmlw/HTML.h"
-#include "cci.h"
-#include "cciBindings.h"
 
 /*SWP*/
 extern char pre_title[80];
-extern int cci_event;
 extern char *cached_url;
 extern int binary_transfer;
 extern char *startup_document, *home_document;
@@ -76,12 +72,6 @@ extern int do_meta;
 #ifndef DISABLE_TRACE
 extern int srcTrace;
 #endif
-
-/* from cciBindings.c */
-extern int cci_get;
-
-/* ADC ugly hack ZZZ */
-int CCIprotocol_handler_found;
 
 int loading_inlined_images = 0;
 char *url_base_override = NULL;
@@ -99,8 +89,6 @@ static mo_status mo_snarf_scrollbar_values (mo_window *win);
 static mo_status mo_reset_document_headers (mo_window *win);
 static void mo_back_possible (mo_window *win);
 static void mo_forward_possible (mo_window *win);
-static void mo_annotate_edit_possible (mo_window *win);
-static void mo_annotate_edit_impossible (mo_window *win);
 static void mo_set_text (Widget w, char *txt, char *ans, int id, 
                          char *target_anchor, void *cached_stuff);
 static mo_status mo_post_load_window_text (mo_window *win, char *url, 
@@ -277,23 +265,6 @@ mo_status mo_forward_impossible (mo_window *win)
     return mo_succeed;
 }
 
-/* ---------------------- mo_annotate_edit_possible ----------------------- */
-
-static void mo_annotate_edit_possible (mo_window *win)
-{
-  XmxRSetSensitive (win->menubar, mo_annotate_edit, XmxSensitive);
-  XmxRSetSensitive (win->menubar, mo_annotate_delete, XmxSensitive);
-  return;
-}
-
-static void mo_annotate_edit_impossible (mo_window *win)
-{
-  XmxRSetSensitive (win->menubar, mo_annotate_edit, XmxNotSensitive);
-  XmxRSetSensitive (win->menubar, mo_annotate_delete, XmxNotSensitive);
-  return;
-}
-
-
 /* ------------------------------------------------------------------------ */
 
 static void mo_set_text (Widget w, char *txt, char *ans, int id, 
@@ -304,12 +275,8 @@ static void mo_set_text (Widget w, char *txt, char *ans, int id,
   loading_inlined_images = 1;
   interrupted = 0;
   mo_set_image_cache_nuke_threshold ();
-  if (get_pref_boolean(eANNOTATIONS_ON_TOP))
-    HTMLSetText (w, txt, ans ? ans : "\0", "\0", id, target_anchor, 
-                 cached_stuff);
-  else
-    HTMLSetText (w, txt, "\0", ans ? ans : "\0", id, target_anchor, 
-                 cached_stuff);
+  HTMLSetText (w, txt, "\0", ans ? ans : "\0", id, target_anchor, 
+               cached_stuff);
   loading_inlined_images = 0;
   interrupted = 0;
   mo_gui_done_with_icon ();
@@ -345,7 +312,7 @@ mo_status mo_do_window_text (mo_window *win, char *url, char *txt,
                              char *last_modified,
                              char *expires)
 {
-    char /**line,*/ *ans;
+    char /**line,*/ *ans = NULL;
     Boolean did_we_image_delay=0;
 
         /*reset the global for imagekill */
@@ -358,11 +325,6 @@ mo_status mo_do_window_text (mo_window *win, char *url, char *txt,
             did_we_image_delay = 1;
         }
     }
-/************************************/
-/* send document over cci if needed */
- if (txt != NULL)
- 	MoCCISendBrowserViewOutput(url, "text/html", txt, strlen(txt));
-/************************************/
 
           /* TRACK APPLICATION MODE */
       {
@@ -442,16 +404,6 @@ mo_status mo_do_window_text (mo_window *win, char *url, char *txt,
 
   mo_here_we_are_son (url);
   
-  {
-    /* Since mo_fetch_annotation_links uses the communications code,
-       we need to play games with binary_transfer. */
-    int tmp = binary_transfer;
-    binary_transfer = 0;
-    ans = mo_fetch_annotation_links (url, get_pref_boolean(eANNOTATIONS_ON_TOP));
-
-    binary_transfer = tmp;
-  }
-
   /* If there is a BASE tag in the document that contains a "real"
      URL, this will be non-NULL by the time we exit and base_callback
      will have been called. */
@@ -559,12 +511,6 @@ mo_status mo_do_window_text (mo_window *win, char *url, char *txt,
   else
     mo_forward_impossible (win);
 
-  if (win->current_node && 
-      mo_is_editable_annotation (win, win->current_node->text))
-    mo_annotate_edit_possible (win);
-  else
-    mo_annotate_edit_impossible (win);
-
   mo_gui_check_security_icon(win->current_node->authType);
 
   /* every time we load a new page set the focus to hotkeys. we do
@@ -624,10 +570,6 @@ mo_status mo_set_win_current_node (mo_window *win, mo_node *node)
 
   mo_busy ();
   mo_set_current_cached_win (win);
-
-  /********* Send Anchor history to CCI if CCI wants it */
-  MoCCISendAnchorToCCI(win->current_node->url, 0);
-  /*****************************************************/
 
   r = mo_do_window_text (win, win->current_node->url, 
                          win->current_node->text, 
@@ -837,9 +779,6 @@ mo_status mo_load_window_text (mo_window *win, char *url, char *ref)
         }
         url = mo_url_canonicalize_keep_anchor 
             (url, win->current_node ? win->current_node->url : "");
-      /********* Send Anchor history to CCI if CCI wants it */
-        MoCCISendAnchorToCCI(url, 1);
-      /*****************************************************/
     }
     else
     {
@@ -858,24 +797,6 @@ mo_status mo_load_window_text (mo_window *win, char *url, char *ref)
         {
             char *canon = mo_url_canonicalize (url, "");
             interrupted = 0;
-
-
-    /* ADC ZZZZ   ugly hack below:  */
- 
-        CCIprotocol_handler_found = 0;
- 
-        /********* Send Anchor history to CCI if CCI wants to handle it */
-        MoCCISendAnchorToCCI(url,3);
-        /*****************************************************/
- 
-        if (CCIprotocol_handler_found)
-            return return_stat;         /* success */
- 
-
-
-	/********* Send Anchor history to CCI if CCI wants it */
-            MoCCISendAnchorToCCI(url,1);
-	/*****************************************************/
             newtext = mo_pull_er_over (canon, &newtexthead);
 
     /* 
@@ -888,10 +809,6 @@ mo_status mo_load_window_text (mo_window *win, char *url, char *ref)
                                "<HEAD><TITLE>404 Not Found</TITLE></HEAD>",
                                28)))
                     return_stat = mo_fail;
-
-	/* Yes this is a really big hack (ETG) */
-            if (win->target_anchor && *(win->target_anchor)) 
-                MoCCIAddAnchorToURL(canon, url);
 
         /* AF */
             if (HTTP_last_modified) {
@@ -941,29 +858,12 @@ mo_status mo_load_window_text (mo_window *win, char *url, char *ref)
         }
         else if (newtext)
         {
-        
                 /* Not a telnet session and not an override, but text present
                    (the "usual" case): */
-
-                /* first check if we are using cci Get, if so, don't display
-                   the error message */
-
-            if (cci_get && (return_stat == mo_fail) ) 
-            {
-#ifndef DISABLE_TRACE
-                if (srcTrace) {
-                    fprintf(stderr,"MCCI GET has passed in a wrong url\n");
-                }
-#endif
-                mo_not_busy();
-            }
-            else
-            {
               special_urls:
                     /* Set the window text. */
-                mo_do_window_text (win, url, newtext, newtexthead, (do_meta==1?0:2), 
-                                   ref, last_modified, expires);
-            }
+              mo_do_window_text (win, url, newtext, newtexthead, (do_meta==1?0:2), 
+                                 ref, last_modified, expires);
         }
         else
         {
@@ -972,33 +872,14 @@ mo_status mo_load_window_text (mo_window *win, char *url, char *ref)
             mo_not_busy ();
         }
 
-/********* Send Anchor history to CCI if CCI wants it */
-    MoCCISendAnchorToCCI(url,2);
-/*********************************************/
-
-    /* first check if we are using cci Get, if so, don't display
-	 the error message */
-    if (cci_get && (return_stat == mo_fail) ) 
-    {
-#ifndef DISABLE_TRACE
-	if (srcTrace) {
-		fprintf(stderr,"MCCI GET has passed in a wrong url\n");
-	}
-#endif
+    if (win && win->current_node) {
+        mo_gui_check_security_icon(win->current_node->authType);
     }
-    else
-        if (win && win->current_node) {
-            mo_gui_check_security_icon(win->current_node->authType);
-        }
 /*
  outtahere:
 */
     if (last_modified) free(last_modified);
     if (expires)       free(expires);
-
-/*
-  if (cci_event) MoCCISendEventOutput(LINK_LOADED);
-*/
 
   /* If news: URL, then we need to auto-scroll to the >>> marker if it
 	is here. We use a hacked version of the searching function here
@@ -1018,13 +899,10 @@ static mo_status mo_post_load_window_text (mo_window *win, char *url,
                                     char *content_type, char *post_data, 
                                     char *ref)
 {
-  char *newtext = NULL, *newtexthead = NULL, *actionID;
+  char *newtext = NULL, *newtexthead = NULL;
   mo_busy ();
 
   win->target_anchor = mo_url_extract_anchor (url);
-
-  actionID = strdup(url);       /* make a copy of url for cci's register id */
-
 
   /* If we're just referencing an anchor inside a document,
      do the right thing. */
@@ -1061,16 +939,6 @@ static mo_status mo_post_load_window_text (mo_window *win, char *url,
       /* Set binary_transfer as per current window. */
       binary_transfer = win->binary_transfer;
       mo_set_current_cached_win (win);
-
-      {
-        char *canon = mo_url_canonicalize (url, "");
-        interrupted = 0;
-
-	if (!MoCCIFormToClient(actionID, NULL, content_type, post_data, 0))
-        	newtext = mo_post_pull_er_over (canon, content_type, 
-			post_data, &newtexthead);
-        free (canon);
-      }
 
       {
         /* Check use_this_url_instead from HTAccess.c. */
@@ -1118,10 +986,6 @@ static mo_status mo_post_load_window_text (mo_window *win, char *url,
     }
 /*
  outtahere:
-*/
-
-/*
-  if (cci_event) MoCCISendEventOutput(LINK_LOADED);
 */
 
   return mo_succeed;

@@ -128,11 +128,7 @@ ReadProxies(char *filename)
 		strcpy(p->transport, psb);
 
 		p->alive = 0;
-
-		if (strcmp(p->transport,"CCI") == 0)
-			p->trans_val = TRANS_CCI;
-		else
-			p->trans_val = TRANS_HTTP;
+		p->trans_val = TRANS_HTTP;
 
 		/*
 		** Read the domain

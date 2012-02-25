@@ -235,14 +235,6 @@ typedef enum
 #define MO_MACHINE_TYPE "Unknown Platform"
 #endif
 
-#ifdef __hpux
-#define HAVE_AUDIO_ANNOTATIONS
-#else
-#if defined(__sgi) || defined(sun)
-#define HAVE_AUDIO_ANNOTATIONS
-#endif /* if */
-#endif /* ifdef */
-
 /* Be safe... some URL's get very long. */
 #define MO_LINE_LENGTH 2048
 
@@ -316,11 +308,9 @@ typedef struct mo_window
   Widget news_win;           /* News Post/Followup*/
   Widget news_fsb_win;
   Widget news_sub_win;       /* News Subscribe Window */
-  Widget annotate_win;
   Widget src_search_win;         /* source window document search */
   Widget search_win;         /* internal document search */
   Widget searchindex_win;    /* network index search */
-  Widget cci_win;	     /* common client interface control window */
   Widget mailto_win;
   Widget mailto_form_win;
     Widget links_win;     /* window with list of links */
@@ -341,10 +331,6 @@ typedef struct mo_window
   */
     
        
-#ifdef HAVE_AUDIO_ANNOTATIONS
-  Widget audio_annotate_win;
-#endif
-
         /* USER INTERFACE BITS 'n PIECES */
     struct toolbar tools[BTN_COUNT];
 
@@ -469,20 +455,7 @@ typedef struct mo_window
   Boolean dashed_underlines;
   Boolean dashed_visited_underlines;
 
-#ifdef HAVE_AUDIO_ANNOTATIONS
-  Widget audio_start_button;
-  Widget audio_stop_button;
-  pid_t record_pid;
-  char *record_fnam;
-#endif
-
-  Widget annotate_author;
-  Widget annotate_title;
-  Widget annotate_text;
-  Widget delete_button;
   Widget include_fsb;
-  int annotation_mode;
-  int editing_id;
 
   char *cached_url;
 
@@ -497,10 +470,6 @@ typedef struct mo_window
   Widget src_search_backwards_toggle;
   int src_search_pos;
 
-  Widget cci_win_text;
-  Widget cci_accept_toggle;
-  Widget cci_off_toggle;
-
   int binary_transfer;
   int delay_image_loads;
 /*SWP*/
@@ -514,24 +483,6 @@ typedef struct mo_window
   Widget unsubgroup;
 
   struct mo_window *next;
-
-#ifdef GRPAN_PASSWD
-  Widget passwd_label;
-  Widget annotate_passwd;
-  Widget passwd_toggle;
-#endif
-  XmxMenuRecord *pubpri_menu;
-  int pubpri;  /* one of mo_annotation_[public,private] */
-  XmxMenuRecord *audio_pubpri_menu;
-  int audio_pubpri;  /* one of mo_annotation_[public,private] */
-#ifdef NOPE_NOPE_NOPE
-  XmxMenuRecord *title_menu;
-  int title_opt;  /* mo_document_title or mo_document_url */
-  Widget annotate_toggle;
-  Widget crossref_toggle;
-  Widget checkout_toggle;
-  Widget checkin_toggle;
-#endif
 
   int agent_state;
   Boolean have_focus;
@@ -558,9 +509,6 @@ typedef struct mo_node
      effectively 0 (according to the XmList widget). */
   int position;
 
-  /* The type of annotation this is (if any) */
-  int annotation_type;
-
   /* This is returned from HTMLPositionToId. */
   int docid;
 
@@ -584,12 +532,6 @@ typedef enum
   mo_fail = 0, mo_succeed
 } mo_status;
 
-typedef enum
-{
-  mo_annotation_public = 0, mo_annotation_workgroup, mo_annotation_private
-} mo_pubpri_token;
-
-
 /* ---------------------------- a few globals ----------------------------- */
 
 extern Display *dsp;
@@ -607,7 +549,6 @@ typedef enum
   mo_proxy, mo_no_proxy,
   mo_reload_document, mo_reload_document_and_images, 
   mo_refresh_document, mo_clear_image_cache,
-  mo_cci,
   mo_document_source, mo_document_edit, mo_document_date, mo_search,
   mo_open_document, mo_open_local_document, mo_save_document,
   mo_mail_document, mo_print_document,
@@ -627,11 +568,6 @@ typedef enum
   mo_help_about, mo_help_onwindow, mo_help_onversion, mo_help_faq,
   mo_techsupport, mo_help_html, mo_help_url, mo_cc,
   mo_whats_new,
-  mo_annotate,
-#ifdef HAVE_AUDIO_ANNOTATIONS
-  mo_audio_annotate,
-#endif
-  mo_annotate_edit, mo_annotate_delete,
   mo_checkout, mo_checkin,
   mo_fancy_selections,
   mo_default_underlines, mo_l1_underlines, mo_l2_underlines, mo_l3_underlines,

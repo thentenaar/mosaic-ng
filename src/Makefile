@@ -11,20 +11,20 @@ LIBS = $(PROGRAM_LIBS) $(X_LIBS) $(PNG_LIBS) $(WAIS_LIBS) $(JPEG_LIBS) $(KRB_LIB
 CFILES = main.c gui.c  gui-dialogs.c gui-menubar.c gui-documents.c gui-news.c\
   newsrc.c\
   gui-extras.c mo-www.c hotlist.c history.c\
-  annotate.c pan.c grpan.c grpan-www.c audan.c globalhist.c img.c\
+  globalhist.c img.c\
   picread.c xpmhash.c xpmread.c gifread.c pixmaps.c\
   medcut.c hotfile.c child.c mailto.c readJPEG.c readPNG.c\
-  accept.c cciServer.c cciBindings.c cciBindings2.c support.c bla.c\
+  accept.c\
   comment.c kcms.c md5.c proxy-dialogs.c proxy-misc.c gui-popup.c gui-ftp.c\
   prefs.c
 
 OBJS = main.o gui.o gui-dialogs.o gui-menubar.o gui-documents.o gui-news.o\
   newsrc.o\
   gui-extras.o mo-www.o hotlist.o history.o\
-  annotate.o pan.o grpan.o grpan-www.o audan.o globalhist.o img.o\
+  globalhist.o img.o\
   picread.o xpmhash.o xpmread.o gifread.o pixmaps.o\
   medcut.o hotfile.o child.o mailto.o readJPEG.o readPNG.o\
-  accept.o cciServer.o cciBindings.o cciBindings2.o support.o bla.o\
+  accept.o\
   comment.o kcms.o md5.o proxy-dialogs.o proxy-misc.o gui-popup.o gui-ftp.o\
   prefs.o
 
@@ -61,12 +61,11 @@ tags:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 main.o: mosaic.h ../libXmx/Xmx.h toolbar.h prefs.h prefs_defs.h 
-main.o: main.h gui.h pan.h child.h globalhist.h cciBindings2.h 
-main.o: cci.h port.h cciServer.h kcms.h
+main.o: main.h gui.h child.h globalhist.h port.h kcms.h
 
 gui.o: mosaic.h ../libXmx/Xmx.h toolbar.h prefs.h prefs_defs.h gui.h port.h
-gui.o: gui-documents.h main.h mo-www.h gui-menubar.h proxy.h pan.h pixmaps.h
-gui.o: ../libwww2/HTAAUtil.h ../libhtmlw/HTML.h xresources.h cci.h
+gui.o: gui-documents.h main.h mo-www.h gui-menubar.h proxy.h pixmaps.h
+gui.o: ../libwww2/HTAAUtil.h ../libhtmlw/HTML.h xresources.h
 gui.o: pixmaps/*.xpm 
 gui.o: bitmaps/*.xbm
 
@@ -75,15 +74,14 @@ gui-dialogs.o: gui-dialogs.h gui-documents.h gui.h mo-www.h
 gui-dialogs.o: ../libhtmlw/HTML.h ../libnut/system.h
 
 gui-menubar.o: mosaic.h ../libXmx/Xmx.h toolbar.h prefs.h prefs_defs.h
-gui-menubar.o: main.h ../libhtmlw/HTML.h gui.h grpan.h gui-ftp.h gui-popup.h
-gui-menubar.o: hotlist.h gui-dialogs.h gui-news.h cci.h port.h
-gui-menubar.o: cciBindings.h cciBindings2.h cciServer.h history.h pan.h
-gui-menubar.o: annotate.h mo-www.h globalhist.h proxy.h
+gui-menubar.o: main.h ../libhtmlw/HTML.h gui.h gui-ftp.h gui-popup.h
+gui-menubar.o: hotlist.h gui-dialogs.h gui-news.h port.h
+gui-menubar.o: history.h mo-www.h globalhist.h proxy.h
 gui-menubar.o: ../libwww2/HTAAUtil.h
 
 gui-documents.o: mosaic.h ../libXmx/Xmx.h toolbar.h prefs.h prefs_defs.h 
-gui-documents.o: gui.h gui-documents.h gui-extras.h mo-www.h annotate.h 
-gui-documents.o: history.h ../libhtmlw/HTML.h cci.h port.h cciBindings.h
+gui-documents.o: gui.h gui-documents.h gui-extras.h mo-www.h 
+gui-documents.o: history.h ../libhtmlw/HTML.h port.h 
 
 gui-news.o: mosaic.h ../libXmx/Xmx.h toolbar.h prefs.h prefs_defs.h gui.h
 gui-news.o: gui-news.h ../libnut/system.h ../libhtmlw/HTML.h newsrc.h
@@ -115,26 +113,11 @@ history.o: mosaic.h ../libXmx/Xmx.h toolbar.h prefs.h prefs_defs.h
 history.o: gui.h mo-www.h gui-popup.h ../libhtmlw/HTML.h
 history.o: hotlist.h ../libwww2/HTAAUtil.h
 
-annotate.o: mosaic.h ../libXmx/Xmx.h toolbar.h prefs.h prefs_defs.h gui.h
-annotate.o: mo-www.h pan.h grpan.h bitmaps/annotate.xbm ../libnut/system.h
-
-pan.o: mosaic.h ../libXmx/Xmx.h toolbar.h prefs.h prefs_defs.h pan.h
-pan.o: ../libhtmlw/HTML.h
-
-grpan.o: mosaic.h ../libXmx/Xmx.h toolbar.h prefs.h prefs_defs.h grpan.h
-grpan.o: grpan-www.h pan.h mo-www.h
-
-grpan-www.o: mosaic.h ../libXmx/Xmx.h toolbar.h prefs.h prefs_defs.h
-grpan-www.o: grpan-www.h
-
-audan.o: mosaic.h ../libXmx/Xmx.h toolbar.h prefs.h prefs_defs.h audan.h
-audan.o: gui.h pan.h mo-www.h ../libnut/system.h
-
 globalhist.o: mosaic.h ../libXmx/Xmx.h toolbar.h prefs.h prefs_defs.h
 globalhist.o: mo-www.h globalhist.h ../libhtmlw/HTML.h ../libnut/system.h
 
 img.o: mosaic.h ../libXmx/Xmx.h toolbar.h prefs.h prefs_defs.h gui.h img.h
-img.o: mo-www.h globalhist.h picread.h ../libhtmlw/HTML.h cci.h port.h
+img.o: mo-www.h globalhist.h picread.h ../libhtmlw/HTML.h port.h
 img.o: bitmaps/gopher_image.xbm bitmaps/gopher_movie.xbm
 img.o: bitmaps/gopher_menu.xbm bitmaps/gopher_text.xbm
 img.o: bitmaps/gopher_sound.xbm bitmaps/gopher_index.xbm
@@ -167,32 +150,6 @@ readJPEG.o: mosaic.h ../libXmx/Xmx.h toolbar.h prefs.h prefs_defs.h readJPEG.h
 readPNG.o: mosaic.h ../libXmx/Xmx.h toolbar.h prefs.h prefs_defs.h readPNG.h
 
 accept.o: port.h accept.h memStuffForPipSqueeks.h
-
-cciServer.o: mosaic.h ../libXmx/Xmx.h toolbar.h prefs.h prefs_defs.h
-cciServer.o: memStuffForPipSqueeks.h cci.h port.h accept.h
-
-cciBindings.o: cci.h port.h mosaic.h ../libXmx/Xmx.h
-cciBindings.o: toolbar.h prefs.h prefs_defs.h gui.h
-cciBindings.o: cciServer.h cciBindings.h cciBindings2.h pan.h mo-www.h
-cciBindings.o: annotate.h ../libhtmlw/HTML.h
-
-cciBindings2.o: mosaic.h ../libXmx/Xmx.h
-cciBindings2.o: toolbar.h prefs.h prefs_defs.h gui.h cci.h port.h
-cciBindings2.o: cciBindings2.h cciServer.h list.h memStuffForPipSqueeks.h
-cciBindings2.o: ../libwww2/HTFormat.h ../libwww2/HTUtils.h
-cciBindings2.o: ../libwww2/HTString.h
-cciBindings2.o: ../libwww2/HTStream.h ../libwww2/HTAtom.h ../libwww2/HTList.h
-cciBindings2.o: ../libwww2/HTAnchor.h
-
-support.o: cci.h port.h
-
-bla.o: cciServer.h cci.h port.h list.h
-bla.o: memStuffForPipSqueeks.h ../libwww2/HTPlain.h ../libwww2/HTStream.h
-bla.o: ../libwww2/HTUtils.h ../libwww2/HTString.h
-bla.o: ../libwww2/HTAnchor.h ../libwww2/HTList.h ../libwww2/HTAtom.h 
-bla.o: ../libwww2/HTFormat.h ../libwww2/HText.h ../libwww2/HTFile.h 
-bla.o: ../libwww2/HTAccess.h ../libwww2/tcp.h ../libwww2/HTML.h
-bla.o: ../libwww2/HTMLDTD.h ../libwww2/SGML.h ../libwww2/HTCompressed.h
 
 comment.o: mosaic.h ../libXmx/Xmx.h toolbar.h
 comment.o: prefs.h prefs_defs.h gui.h comment.h

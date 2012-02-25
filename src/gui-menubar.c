@@ -56,17 +56,11 @@
 #include "main.h"
 #include "libhtmlw/HTML.h"
 #include "gui.h"
-#include "grpan.h"
 #include "gui-ftp.h"
 #include "gui-popup.h" /* for callback struct definition */
 #include "gui-dialogs.h"
 #include "gui-news.h"
-#include "cci.h"
-#include "cciBindings.h"
-#include "cciBindings2.h"
 #include "history.h"
-#include "pan.h"
-#include "annotate.h"
 #include "mo-www.h"
 #include "globalhist.h"
 #include "proxy.h"
@@ -100,9 +94,6 @@ extern char *home_document;
 extern Widget toplevel;
 extern mo_window *current_win;
 
-/* from cciBindings.c */
-extern int cci_event;	/* send window event to application?? */
-
 #ifndef PRERELEASE
 extern char do_comment;
 #endif
@@ -117,8 +108,6 @@ static XmxCallback (exit_confirm_cb);
 static void mo_post_exitbox (void);
 static long wrapFont (char *name);
 static XmxCallback (clear_history_confirm_cb);
-static mo_status mo_do_delete_annotation (mo_window *win);
-static XmxCallback (delete_annotation_confirm_cb);
 static XmxCallback (agent_menubar_cb);
 static mo_status mo_file_exists (char *filename);
 static void mo_grok_menubar (char *filename);
@@ -543,51 +532,6 @@ static XmxCallback (clear_history_confirm_cb)
   return;
 }
 
-/* ----------------------- mo_do_delete_annotation ------------------------ */
-
-/* Presumably we're on an annotation. */
-static mo_status mo_do_delete_annotation (mo_window *win)
-{
-  char *author, *title, *text, *fname;
-  int id;
-
-  if (!win->current_node)
-    return mo_fail;
-
-  if (win->current_node->annotation_type == mo_annotation_private)
-    {
-      mo_grok_pan_pieces (win->current_node->url,
-                          win->current_node->text,
-                          &title, &author, &text, 
-                          &id, &fname);
-      
-      mo_delete_annotation (win, id);
-    }
-  else if (win->current_node->annotation_type == mo_annotation_workgroup)
-    {
-      mo_delete_group_annotation (win, win->current_node->url);
-    }
-
-  return mo_succeed;
-}
-
-static XmxCallback (delete_annotation_confirm_cb)
-{
-  mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
-
-  if (!win->current_node)
-    return;
-
-  if (!mo_is_editable_annotation (win, win->current_node->text))
-    return;
-  
-  if (XmxExtractToken ((int)client_data))
-    mo_do_delete_annotation (win);
-  
-  return;
-}
-
-
 /* --------------------------agent menubar_cb ------------------------------ */
 
 void mo_set_agents(mo_window *win, int which) {
@@ -634,93 +578,69 @@ XmxCallback (menubar_cb)
   switch (i)
     {
     case mo_reload_document:
-      if (cci_event) MoCCISendEventOutput(MOSAIC_RELOAD_CURRENT);
       mo_reload_window_text (win, 0);
       break;
     case mo_reload_document_and_images:
-      if (cci_event) MoCCISendEventOutput(FILE_RELOAD_IMAGES);
       mo_reload_window_text (win, 1);
       break;
     case mo_refresh_document:
-      if (cci_event) MoCCISendEventOutput(FILE_REFRESH_CURRENT);
       mo_refresh_window_text (win);
       break;
     case mo_re_init:
-      if (cci_event) MoCCISendEventOutput(OPTIONS_RELOAD_CONFIG_FILES);
       mo_re_init_formats ();
       break;
     case mo_clear_image_cache:
-      if (cci_event) MoCCISendEventOutput(OPTIONS_FLUSH_IMAGE_CACHE);
       XmUpdateDisplay (win->base);
       mo_flush_image_cache (win);
       /* Force a complete reload...nothing else we can do -- SWP */
       mo_reload_window_text (win, 1);
       break;
     case mo_clear_passwd_cache:
-      if (cci_event) MoCCISendEventOutput(OPTIONS_FLUSH_PASSWD_CACHE);
       mo_flush_passwd_cache (win);
       break;
-    case mo_cci:
-      if (cci_event) MoCCISendEventOutput(FILE_CCI);
-      MoDisplayCCIWindow(win);
-      break;
     case mo_document_source:
-      if (cci_event) MoCCISendEventOutput(FILE_VIEW_SOURCE);
       mo_post_source_window (win);
       break;
     case mo_document_edit:
-      if (cci_event) MoCCISendEventOutput(FILE_EDIT_SOURCE);
       mo_edit_source(win);
       break;
     case mo_search:
-      if (cci_event) MoCCISendEventOutput(FILE_FIND_IN_CURRENT);
       mo_post_search_window (win);
       break;
     case mo_open_document:
-      if (cci_event) MoCCISendEventOutput(MOSAIC_OPEN_URL);
       mo_post_open_window (win);
       break;
     case mo_open_local_document:
-      if (cci_event) MoCCISendEventOutput(FILE_OPEN_LOCAL);
       mo_post_open_local_window (win);
       break;
     case mo_save_document:
-      if (cci_event) MoCCISendEventOutput(MOSAIC_SAVE_AS);
       mo_post_save_window (win);
       break;
     case mo_mail_document:
-      if (cci_event) MoCCISendEventOutput(FILE_MAIL_TO);
       mo_post_mail_window (win);
       break;
     case mo_print_document:
-      if (cci_event) MoCCISendEventOutput(FILE_PRINT);
       mo_post_print_window (win);
       break;
     case mo_new_window:
-      if (cci_event) MoCCISendEventOutput(MOSAIC_NEW);
       mo_open_another_window (win, home_document, NULL, NULL);
       break;
     case mo_clone_window:
-      if (cci_event) MoCCISendEventOutput(MOSAIC_CLONE);
       mo_duplicate_window (win);
       break;
     case mo_close_window:
-      if (cci_event) MoCCISendEventOutput(MOSAIC_CLOSE);
       mo_delete_window (win);
       break;
     case mo_exit_program:
-      if (cci_event) MoCCISendEventOutput(FILE_EXIT_PROGRAM);
       mo_post_exitbox ();
       break;
 #ifdef KRB4
     case mo_kerberosv4_login:
-      if (cci_event) MoCCISendEventOutput(FILE_KERBEROS_V4_LOGIN);
       scheme_login(HTAA_KERBEROS_V4);
       break;
 #endif
 #ifdef KRB5
     case mo_kerberosv5_login:
-      if (cci_event) MoCCISendEventOutput(FILE_KERBEROS_V5_LOGIN);
       scheme_login(HTAA_KERBEROS_V5);
       break;
 #endif
@@ -731,45 +651,35 @@ XmxCallback (menubar_cb)
 	ShowNoProxyDialog(win);
 	break;
     case mo_home_document:
-      if (cci_event) MoCCISendEventOutput(MOSAIC_HOME_DOCUMENT);
       mo_access_document (win, home_document);
       break;
     case mo_network_starting_points:
-      if (cci_event) MoCCISendEventOutput(NAVIGATE_INTERNET_STARTING_POINTS);
       mo_access_document (win, NETWORK_STARTING_POINTS_DEFAULT);
       break;
     case mo_internet_metaindex:
-      if (cci_event) 
-	MoCCISendEventOutput(NAVIGATE_INTERNET_RESOURCES_META_INDEX);
       mo_access_document (win, INTERNET_METAINDEX_DEFAULT);
       break;
     case mo_mosaic_demopage:
-      if (cci_event) MoCCISendEventOutput(HELP_DEMO);
       mo_open_another_window
         (win, DEMO_PAGE_DEFAULT,
          NULL, NULL);
       break;
     case mo_mosaic_manual:
-      if (cci_event) MoCCISendEventOutput(HELP_MANUAL);
       mo_open_another_window
         (win, mo_assemble_help_url ("mosaic-docs.html"),
          NULL, NULL);
       break;
 
     case mo_back:
-      if (cci_event) MoCCISendEventOutput(MOSAIC_BACK);
       mo_back_node (win);
       break;
     case mo_forward:
-      if (cci_event) MoCCISendEventOutput(MOSAIC_FORWARD);
       mo_forward_node (win);
       break;
     case mo_history_list:
-      if (cci_event) MoCCISendEventOutput(NAVIGATE_WINDOW_HISTORY);
       mo_post_history_win (win);
       break;
     case mo_clear_global_history:
-      if (cci_event) MoCCISendEventOutput(OPTIONS_CLEAR_GLOBAL_HISTORY);
       XmxSetUniqid (win->id);
       XmxMakeQuestionDialog
         (win->base, "Are you sure you want to clear the global history?" ,
@@ -777,11 +687,9 @@ XmxCallback (menubar_cb)
       XtManageChild (Xmx_w);
       break;
     case mo_hotlist_postit:
-      if (cci_event) MoCCISendEventOutput(NAVIGATE_HOTLIST);
       mo_post_hotlist_win (win);
       break;
     case mo_register_node_in_default_hotlist:
-      if (cci_event) MoCCISendEventOutput(NAVIGATE_ADD_CURRENT_TO_HOTLIST);
       if (win->current_node)
         {
           mo_add_node_to_current_hotlist (win);
@@ -807,11 +715,6 @@ XmxCallback (menubar_cb)
       HTMLClearSelection (win->scrolled_win);
       XmxSetArg (WbNfancySelections, win->pretty ? True : False);
       XmxSetValues (win->scrolled_win);
-      if (cci_event)
-      {
-	if (win->pretty) MoCCISendEventOutput(OPTIONS_FANCY_SELECTIONS_ON);
-	else MoCCISendEventOutput(OPTIONS_FANCY_SELECTIONS_OFF);
-      }
       break;
 
       */
@@ -836,13 +739,6 @@ XmxCallback (menubar_cb)
     case mo_binary_transfer:
       win->binary_transfer =
         (win->binary_transfer ? 0 : 1);
-      if (cci_event)
-      {
-	if (win->binary_transfer) 
-		MoCCISendEventOutput(OPTIONS_LOAD_TO_LOCAL_DISK_ON);  
-	else
-		MoCCISendEventOutput(OPTIONS_LOAD_TO_LOCAL_DISK_OFF);
-      }
       break;
     case mo_delay_image_loads:
       win->delay_image_loads =
@@ -851,16 +747,8 @@ XmxCallback (menubar_cb)
       XmxSetValues (win->scrolled_win);
       XmxRSetSensitive (win->menubar, mo_expand_images_current,
                         win->delay_image_loads ? XmxSensitive : XmxNotSensitive);
-      if (cci_event)
-      {
-	if (win->delay_image_loads)
-		MoCCISendEventOutput(OPTIONS_DELAY_IMAGE_LOADING_ON);
-	else
-		MoCCISendEventOutput(OPTIONS_DELAY_IMAGE_LOADING_OFF);
-      }
       break;
     case mo_expand_images_current:
-      if (cci_event) MoCCISendEventOutput(OPTIONS_LOAD_IMAGES_IN_CURRENT);
       XmxSetArg (WbNdelayImageLoads, False);
       XmxSetValues (win->scrolled_win);
       mo_refresh_window_text (win);
@@ -871,123 +759,65 @@ XmxCallback (menubar_cb)
       imageViewInternal = win->image_view_internal = (win->image_view_internal ? 0 : 1);
       break;
     case mo_large_fonts:
-      if (cci_event) MoCCISendEventOutput(OPTIONS_FONTS_TL);
-      mo_set_fonts (win, i);
-    break;
     case mo_regular_fonts:
-      if (cci_event) MoCCISendEventOutput(OPTIONS_FONTS_TR);
-      mo_set_fonts (win, i);
-    break;
     case mo_small_fonts:
-      if (cci_event) MoCCISendEventOutput(OPTIONS_FONTS_TS);
-      mo_set_fonts (win, i);
-    break;
     case mo_large_helvetica:
-      if (cci_event) MoCCISendEventOutput(OPTIONS_FONTS_HL);
-      mo_set_fonts (win, i);
-    break;
     case mo_regular_helvetica:
-      if (cci_event) MoCCISendEventOutput(OPTIONS_FONTS_HR);
-      mo_set_fonts (win, i);
-    break;
     case mo_small_helvetica:
-      if (cci_event) MoCCISendEventOutput(OPTIONS_FONTS_HS);
-      mo_set_fonts (win, i);
-    break;
     case mo_large_newcentury:
-      if (cci_event) MoCCISendEventOutput(OPTIONS_FONTS_NCL);
-      mo_set_fonts (win, i);
-    break;
     case mo_regular_newcentury:
-      if (cci_event) MoCCISendEventOutput(OPTIONS_FONTS_NCR);
-      mo_set_fonts (win, i);
-    break;
     case mo_small_newcentury:
-      if (cci_event) MoCCISendEventOutput(OPTIONS_FONTS_NCS);
-      mo_set_fonts (win, i);
-    break;
     case mo_large_lucidabright:
-      if (cci_event) MoCCISendEventOutput(OPTIONS_FONTS_LBL);
-      mo_set_fonts (win, i);
-    break;
     case mo_regular_lucidabright:
-      if (cci_event) MoCCISendEventOutput(OPTIONS_FONTS_LBR);
-      mo_set_fonts (win, i);
-    break;
-    case mo_small_lucidabright:
-      if (cci_event) MoCCISendEventOutput(OPTIONS_FONTS_LBS);
       mo_set_fonts (win, i);
     break;
 
     case mo_default_underlines:
-      if (cci_event) MoCCISendEventOutput(OPTIONS_ANCHOR_UNDERLINES_DU);
-      mo_set_underlines (win, i);
-    break;
     case mo_l1_underlines:
-      if (cci_event) MoCCISendEventOutput(OPTIONS_ANCHOR_UNDERLINES_LU);
-      mo_set_underlines (win, i);
-    break;
     case mo_l2_underlines:
-      if (cci_event) MoCCISendEventOutput(OPTIONS_ANCHOR_UNDERLINES_MU);
-      mo_set_underlines (win, i);
-    break;
     case mo_l3_underlines:
-      if (cci_event) MoCCISendEventOutput(OPTIONS_ANCHOR_UNDERLINES_HU);
-      mo_set_underlines (win, i);
-    break;
     case mo_no_underlines:
-      if (cci_event) MoCCISendEventOutput(OPTIONS_ANCHOR_UNDERLINES_NU);
       mo_set_underlines (win, i);
     break;
     case mo_help_about:
-      if (cci_event) MoCCISendEventOutput(HELP_ABOUT);
       mo_open_another_window
         (win, mo_assemble_help_url ("help-about.html"),
          NULL, NULL);
       break;
     case mo_help_onwindow:
-      if (cci_event) MoCCISendEventOutput(HELP_ON_WINDOW);
       mo_open_another_window
         (win, mo_assemble_help_url ("help-on-docview-window.html"),
          NULL, NULL);
       break;
     case mo_whats_new:
-      if (cci_event) MoCCISendEventOutput(HELP_WHATS_NEW);
       mo_open_another_window
         (win, WHATSNEW_PAGE_DEFAULT,
          NULL, NULL);
       break;
     case mo_help_onversion:
-      if (cci_event) MoCCISendEventOutput(HELP_ON_VERSION);
       mo_open_another_window
         (win, MO_HELP_ON_VERSION_DOCUMENT,
          NULL, NULL);
       break;
     case mo_help_faq:
-      if (cci_event) MoCCISendEventOutput(HELP_ON_FAQ);
       mo_open_another_window (win, mo_assemble_help_url ("mosaic-faq.html"), 
                               NULL, NULL);
       break;
     case mo_help_html:
-      if (cci_event) MoCCISendEventOutput(HELP_ON_HTML);
       mo_open_another_window (win, HTMLPRIMER_PAGE_DEFAULT, 
                               NULL, NULL);
       break;
     case mo_help_url:
-      if (cci_event) MoCCISendEventOutput(HELP_ON_URLS);
       mo_open_another_window (win, URLPRIMER_PAGE_DEFAULT, 
                               NULL, NULL);
       break;
 #ifndef PRERELEASE
     case mo_cc:
-	if (cci_event) MoCCISendEventOutput(HELP_COMMENT_CARD);
 	do_comment=1;
 	CommentCard(win);
       break;
 #endif
     case mo_techsupport:        
-        if (cci_event) MoCCISendEventOutput(HELP_MAIL_TECH_SUPPORT);
-
         {
             char subj[128];
             
@@ -999,28 +829,19 @@ XmxCallback (menubar_cb)
         
 /*      mo_post_techsupport_win (win);*/
       break;
-    case mo_annotate:
-      if (cci_event) MoCCISendEventOutput(ANNOTATE_ANNOTATE);
-      mo_post_annotate_win (win, 0, 0, NULL, NULL, NULL, NULL);
-      break;
     case mo_news_prev:
-      if (cci_event) MoCCISendEventOutput(NEWS_PREV);
       gui_news_prev(win);
       break;
     case mo_news_next:
-      if (cci_event) MoCCISendEventOutput(NEWS_NEXT);
       gui_news_next(win);
       break;
     case mo_news_prevt:
-      if (cci_event) MoCCISendEventOutput(NEWS_PREV_THREAD);
-      gui_news_prevt(win);
+       gui_news_prevt(win);
       break;
     case mo_news_nextt:
-      if (cci_event) MoCCISendEventOutput(NEWS_NEXT_THREAD);
       gui_news_nextt(win);
       break;
     case mo_news_index:
-      if (cci_event) MoCCISendEventOutput(NEWS_INDEX);
       gui_news_index(win);
       break;
     case mo_news_flush:
@@ -1103,40 +924,33 @@ XmxCallback (menubar_cb)
       break;
     case mo_news_groups:
     case mo_news_list:
-      if (cci_event) MoCCISendEventOutput(NEWS_LIST_GROUPS);
       gui_news_list(win);
       break;
     case mo_news_fmt0:
-      if (cci_event) MoCCISendEventOutput(NEWS_FORMAT_TV);
       HTSetNewsConfig (1,-1,-1,-1,-1,-1,-1,-1);
       XmxRSetToggleState (win->menubar, mo_news_fmt1, XmxNotSet);
       XmxRSetToggleState (win->menubar, mo_news_fmt0, XmxSet);
       mo_reload_window_text (win, 0);
       break;
     case mo_news_fmt1:
-      if (cci_event) MoCCISendEventOutput(NEWS_FORMAT_GV);
       HTSetNewsConfig (0,-1,-1,-1,-1,-1,-1,-1);
       XmxRSetToggleState (win->menubar, mo_news_fmt0, XmxNotSet);
       XmxRSetToggleState (win->menubar, mo_news_fmt1, XmxSet);
       mo_reload_window_text (win, 0);
       break;
     case mo_news_post:
-      if (cci_event) MoCCISendEventOutput(NEWS_POST);
       mo_post_news_win(win);
       break;
     case mo_news_follow:
-      if (cci_event) MoCCISendEventOutput(NEWS_FOLLOW_UP);
       mo_post_follow_win(win);
       break;
 
 
       /* Handle FTP stuff here */
     case mo_ftp_put:
-      if (cci_event) MoCCISendEventOutput (FTP_PUT);
-      mo_handle_ftpput (win);
+       mo_handle_ftpput (win);
       break;
     case mo_ftp_mkdir:
-      if (cci_event) MoCCISendEventOutput (FTP_MKDIR);
       mo_handle_ftpmkdir (win);
       break;
 
@@ -1153,58 +967,6 @@ XmxCallback (menubar_cb)
     case mo_links_window:
         mo_post_links_window(win);
         break;
-#ifdef HAVE_AUDIO_ANNOTATIONS
-    case mo_audio_annotate:
-      if (cci_event) MoCCISendEventOutput(ANNOTATE_AUDIO_ANNOTATE);
-      mo_post_audio_annotate_win (win);
-      break;
-#endif
-    case mo_annotate_edit:
-      /* OK, let's be smart.
-         If we get here, we know we're viewing an editable
-         annotation.
-         We also know the filename (just strip the leading
-         file: off the URL).
-         We also know the ID, by virtue of the filename
-         (just look for PAN-#.html. */
-      if (cci_event) MoCCISendEventOutput(ANNOTATE_EDIT_THIS_ANNOTATION);
-      if (win->current_node)
-        {
-          char *author, *title, *text, *fname;
-          int id;
-          
-          if (win->current_node->annotation_type == mo_annotation_private)
-            {
-              mo_grok_pan_pieces (win->current_node->url,
-                                  win->current_node->text,
-                                  &title, &author, &text, 
-                                  &id, &fname);
-              
-              mo_post_annotate_win (win, 1, id, title, author, text, fname);
-            }
-          else if (win->current_node->annotation_type == mo_annotation_workgroup)
-            {
-              mo_grok_grpan_pieces (win->current_node->url,
-                                    win->current_node->text,
-                                    &title, &author, &text, 
-                                    &id, &fname);
-              mo_post_annotate_win (win, 1, id, title, author, text, fname);
-            }
-        }
-      break;
-    case mo_annotate_delete:
-      if (cci_event) MoCCISendEventOutput(ANNOTATE_DELETE_THIS_ANNOTATION);
-      if (get_pref_boolean(eCONFIRM_DELETE_ANNOTATION))
-        {
-          XmxSetUniqid (win->id);
-          XmxMakeQuestionDialog
-            (win->base, "Are you sure you want to delete this annotation?" ,
-             "NCSA Mosaic: Delete Annotation" , delete_annotation_confirm_cb, 1, 0);
-          XtManageChild (Xmx_w);
-        }
-      else
-        mo_do_delete_annotation (win);
-      break;
     default:
       if (i >= DOCUMENTS_MENU_COUNT_OFFSET)
         mo_access_document (win, urllist[i - DOCUMENTS_MENU_COUNT_OFFSET]);
@@ -1224,7 +986,6 @@ static XmxMenubarStruct *agent_menuspec;
 static XmxMenubarStruct *opts_menuspec;
 static XmxMenubarStruct *navi_menuspec;
 static XmxMenubarStruct *help_menuspec;
-static XmxMenubarStruct *anno_menuspec;
 static XmxMenubarStruct *newsfmt_menuspec;
 static XmxMenubarStruct *newsgrpfmt_menuspec;
 static XmxMenubarStruct *newsartfmt_menuspec;
@@ -1236,15 +997,10 @@ static XmxMenubarStruct *file_simple_menuspec;
 static XmxMenubarStruct *navi_simple_menuspec;
 static XmxMenubarStruct *opts_simple_menuspec;
 static XmxMenubarStruct *help_simple_menuspec;
-static XmxMenubarStruct *anno_simple_menuspec;
 static XmxMenubarStruct *simple_menuspec;
 
 /* --------------------------- format options ----------------------------- */
 extern XmxOptionMenuStruct *format_opts;
-
-/* -------------------------- annotation options -------------------------- */
-extern XmxOptionMenuStruct *pubpri_opts;
-
 
 #ifndef DISABLE_TRACE
 /* ----------------------- macros for menubar stuff ----------------------- */
@@ -1475,13 +1231,6 @@ char buf[BUFSIZ];
 	DEFINE_OPTIONS("HTML",mo_html,XmxNotSet)
 	NULL_OPTIONS()
 
-/* -------------------------- annotation options --------------------------- */
-	ALLOC_OPTIONS(pubpri_opts,4)
-	DEFINE_OPTIONS("Personal Annotation",mo_annotation_private,XmxSet)
-	DEFINE_OPTIONS("Workgroup Annotation",mo_annotation_workgroup,XmxNotSet)
-	DEFINE_OPTIONS("Public Annotation",mo_annotation_public,XmxNotSet)
-	NULL_OPTIONS()
-
 /* ----------------------- full menubar interface -------------------------- */
 	/* File Menu */
 	ALLOC_MENUBAR(file_menuspec,32)
@@ -1502,8 +1251,6 @@ char buf[BUFSIZ];
 	DEFINE_MENUBAR("Save As..." ,"S",menubar_cb,mo_save_document,NULL)
 	DEFINE_MENUBAR("Print..." ,"P",menubar_cb,mo_print_document,NULL)
 	DEFINE_MENUBAR("Mail To..." ,"M",menubar_cb,mo_mail_document,NULL)
-	SPACER()
-	DEFINE_MENUBAR("CCI..." ,"D",menubar_cb,mo_cci,NULL)
 /*SWP -- 7/17/95*/
 #if defined(KRB4) || defined(KRB5)
 	SPACER()
@@ -1631,17 +1378,6 @@ char buf[BUFSIZ];
 #endif
 	NULL_MENUBAR()
 
-	/* Annotation Menu */
-	ALLOC_MENUBAR(anno_menuspec,6)
-	DEFINE_MENUBAR("Annotate..." ,"A",menubar_cb,mo_annotate,NULL)
-#ifdef HAVE_AUDIO_ANNOTATIONS
-	DEFINE_MENUBAR("Audio Annotate..." ,"u",menubar_cb,mo_audio_annotate,NULL)
-#endif
-	SPACER()
-	DEFINE_MENUBAR("Edit This Annotation..." ,"E",menubar_cb,mo_annotate_edit,NULL)
-	DEFINE_MENUBAR("Delete This Annotation..." ,"D",menubar_cb,mo_annotate_delete,NULL)
-	NULL_MENUBAR()
-
 	/* News Format Sub-Menu */
 	ALLOC_MENUBAR(newsfmt_menuspec,3)
 	DEFINE_MENUBAR("<Thread View" ,"T",menubar_cb,mo_news_fmt0,NULL)
@@ -1683,7 +1419,6 @@ char buf[BUFSIZ];
 	DEFINE_MENUBAR("File" ,"F",NULL,0,file_menuspec)
 	DEFINE_MENUBAR("Options" ,"O",NULL,0,opts_menuspec)
 	DEFINE_MENUBAR("Navigate" ,"N",NULL,0,navi_menuspec)
-	DEFINE_MENUBAR("Annotate" ,"A",NULL,0,anno_menuspec)
 	DEFINE_MENUBAR("News" ,"w",NULL,0,news_menuspec)
 	DEFINE_MENUBAR("Help" ,"H",NULL,0,help_menuspec)
 	/* Dummy submenu. */
@@ -1738,23 +1473,11 @@ char buf[BUFSIZ];
 #endif
 	NULL_MENUBAR()
 
-	/* Annotation Menu */
-	ALLOC_MENUBAR(anno_simple_menuspec,6)
-	DEFINE_MENUBAR("Annotate..." ,"A",menubar_cb,mo_annotate,NULL)
-#ifdef HAVE_AUDIO_ANNOTATIONS
-	DEFINE_MENUBAR("Audio Annotate..." ,"u",menubar_cb,mo_audio_annotate,NULL)
-#endif
-	SPACER()
-	DEFINE_MENUBAR("Edit This Annotation..." ,"E",menubar_cb,mo_annotate_edit,NULL)
-	DEFINE_MENUBAR("Delete This Annotation..." ,"D",menubar_cb,mo_annotate_delete,NULL)
-	NULL_MENUBAR()
-
 	/* The Simple Menubar */
 	ALLOC_MENUBAR(simple_menuspec,7)
 	DEFINE_MENUBAR("File" ,"F",NULL,0,file_simple_menuspec)
 	DEFINE_MENUBAR("Options" ,"O",NULL,0,opts_simple_menuspec)
 	DEFINE_MENUBAR("Navigate" ,"N",NULL,0,navi_simple_menuspec)
-	DEFINE_MENUBAR("Annotate" ,"A",NULL,0,anno_simple_menuspec)
 	DEFINE_MENUBAR("Help" ,"H",NULL,0,help_simple_menuspec)
 	/* Dummy submenu. */
 	NULL_MENUBAR()

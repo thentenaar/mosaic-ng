@@ -59,8 +59,6 @@
 #include "globalhist.h"
 #include "picread.h"
 #include "libhtmlw/HTML.h"
-#include "cci.h"
-extern int cci_event;
 
 #ifndef DISABLE_TRACE
 extern int srcTrace;
@@ -175,7 +173,6 @@ extern Colormap installed_cmap;
 #define RETURN_IMGINFO_FROM_BITMAP(x) \
 { \
   MAKE_IMGINFO_FROM_BITMAP(x); \
-  if (cci_event) MoCCISendEventOutput(IMAGE_LOADED); \
   return x; \
 }
 
@@ -427,8 +424,6 @@ stuffcache:
 
         img_data->src = strdup(src);
 	free (src);
-	if (cci_event) MoCCISendEventOutput(IMAGE_LOADED);
-
 	return (ImageInfo *)img_data;
 /*
 	if (!wid && !hei) {
@@ -507,10 +502,6 @@ stuffcache:
 			}
 		}
 #endif
-
-		/*********************************************/
-		/* Send it through CCI if need be            */
-		MoCCISendBrowserViewFile(src, "unknown", fnam);
 	}
         
 	data = ReadBitmap(fnam, &width, &height, colrs, &bg);
@@ -766,8 +757,6 @@ int found_bg=0;
   if (srcTrace)
     fprintf (stderr, "[ImageResolve] Leaving...\n");
 #endif
-
-  if (cci_event) MoCCISendEventOutput(IMAGE_LOADED);
 
   return img_data;
 /*

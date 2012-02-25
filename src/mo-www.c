@@ -69,7 +69,6 @@ extern Pixmap *IconPixSmall;
 /*SWP*/
 Pixmap *tmp_pix=NULL;
 EASTER_EXTERNS
-extern int cci_docommand;
 #define __MAX_HOME_LEN__ 256
 #define __SRC__
 #include "../libwww2/HTAAUtil.h"
@@ -152,9 +151,6 @@ extern FILE *put_fp;
 
 /* From HTMIME.c - AF */
 extern char *HTTP_last_modified;
-
-/* From cciBindings.c */
-extern int cci_get;
 
 extern char *HTTP_expires;
 
@@ -393,16 +389,7 @@ static char *doit (char *url, char **texthead)
    if (HTMainText) {
 	char *txt = hack_htmlsrc();
 	*texthead = HTMainText->htmlSrcHead;
-
-	if (cci_get){
-		if (txt)
-			return txt;
-		else
-			/* take care of failed local access */
-			txt = strdup("<H1>ERROR</H1>"); 
-	}
 	return txt;
-		
    }
 
   /* Return proper error message if we experienced redirection. */
@@ -1031,7 +1018,6 @@ char *mo_url_canonicalize_local (char *url)
 #endif
 char *mo_tmpnam (char *url)
 {
-  extern void MoCCIAddFileURLToList(char *, char *);
   char *tmp = (char *)malloc (sizeof (char) * L_tmpnam);
   char *tmp_dir = get_pref_string(eTMP_DIRECTORY);
 
@@ -1040,7 +1026,6 @@ char *mo_tmpnam (char *url)
   if (!tmp_dir)
     {
       /* Fast path. */
-      if(url) MoCCIAddFileURLToList(tmp,url);
       return tmp;
     }
   else
@@ -1057,7 +1042,6 @@ char *mo_tmpnam (char *url)
         }
       
       /* No luck, just punt. */
-      if(url) MoCCIAddFileURLToList(tmp,url);
       return tmp;
 
     found_it:
@@ -1074,7 +1058,6 @@ char *mo_tmpnam (char *url)
           sprintf (tmp, "%s%s", tmp_dir, &(oldtmp[i]));
         }
 
-      MoCCIAddFileURLToList(tmp,url);
       free (oldtmp);
       return tmp;
     }
@@ -1677,11 +1660,6 @@ int res;
 
 		char *buf, *final, tmpbuf[80];
 		int final_len;
-
-		/* don't display dialog if command issued by cci application */
-		if (cci_docommand) {
-			return mo_fail;
-		}
 
 		buf=my_strerror(errno);
 		if (!buf || !*buf || !strcmp(buf,"Error 0")) {

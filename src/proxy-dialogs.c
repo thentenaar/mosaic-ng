@@ -481,7 +481,7 @@ int type;
 
 	static Widget  add, remove, edit;
 
-	XmString trans_string, http_string, cci_string, selected_string;
+	XmString trans_string, http_string, selected_string;
 	char *selected_text;
 
 	struct EditInfo *pEditInfo, *pEditDomainInfo, *pAddDomainInfo;
@@ -704,7 +704,7 @@ int type;
 
 	static Widget  add, remove, edit;
 
-	XmString trans_string, http_string, cci_string, selected_string;
+	XmString trans_string, http_string, selected_string;
 	char *selected_text;
 
 	struct EditInfo *pEditInfo, *pEditDomainInfo, *pAddDomainInfo;
@@ -968,7 +968,6 @@ int type;
 #ifdef OTHER_TRANSPORT
 	trans_string = XmStringCreateSimple("Transport Method");
 	http_string = XmStringCreateSimple("http");
-	cci_string = XmStringCreateSimple("cci");
 
 	/*
 	** If we're editing, start option menu with the value specified
@@ -983,15 +982,10 @@ int type;
 	pEditInfo->IF->trans_menu = XmVaCreateSimpleOptionMenu(rc2, "trans_menu",
 		trans_string, 'T', trans_val, NULL,
 		XmVaPUSHBUTTON, http_string, 'H', NULL, NULL,
-		XmVaPUSHBUTTON, cci_string, 'C', NULL, NULL,
 		NULL);
-
 
 	XmStringFree(trans_string);
 	XmStringFree(http_string);
-	XmStringFree(cci_string);
-		
-
 	XtManageChild(pEditInfo->IF->trans_menu);
 #endif
 
