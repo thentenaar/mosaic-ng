@@ -53,7 +53,6 @@
  ****************************************************************************/
 
 #include "mosaic.h"
-#include "comment.h"
 #include "pixmaps.h"
 #include "xpmread.h"
 #include "xpm.h"
