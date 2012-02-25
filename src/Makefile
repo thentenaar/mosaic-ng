@@ -15,7 +15,7 @@ CFILES = main.c gui.c  gui-dialogs.c gui-menubar.c gui-documents.c gui-news.c\
   picread.c xpmhash.c xpmread.c gifread.c pixmaps.c\
   medcut.c hotfile.c child.c mailto.c readJPEG.c readPNG.c\
   accept.c\
-  comment.c kcms.c md5.c proxy-dialogs.c proxy-misc.c gui-popup.c gui-ftp.c\
+  kcms.c md5.c proxy-dialogs.c proxy-misc.c gui-popup.c gui-ftp.c\
   prefs.c
 
 OBJS = main.o gui.o gui-dialogs.o gui-menubar.o gui-documents.o gui-news.o\
@@ -25,7 +25,7 @@ OBJS = main.o gui.o gui-dialogs.o gui-menubar.o gui-documents.o gui-news.o\
   picread.o xpmhash.o xpmread.o gifread.o pixmaps.o\
   medcut.o hotfile.o child.o mailto.o readJPEG.o readPNG.o\
   accept.o\
-  comment.o kcms.o md5.o proxy-dialogs.o proxy-misc.o gui-popup.o gui-ftp.o\
+  kcms.o md5.o proxy-dialogs.o proxy-misc.o gui-popup.o gui-ftp.o\
   prefs.o
 
 globalhist.o: globalhist.c ../libhtmlw/HTML.h
@@ -150,9 +150,6 @@ readJPEG.o: mosaic.h ../libXmx/Xmx.h toolbar.h prefs.h prefs_defs.h readJPEG.h
 readPNG.o: mosaic.h ../libXmx/Xmx.h toolbar.h prefs.h prefs_defs.h readPNG.h
 
 accept.o: port.h accept.h memStuffForPipSqueeks.h
-
-comment.o: mosaic.h ../libXmx/Xmx.h toolbar.h
-comment.o: prefs.h prefs_defs.h gui.h comment.h
 
 kcms.o: kcms.h
 

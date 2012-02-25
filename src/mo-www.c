@@ -53,7 +53,6 @@
  ****************************************************************************/
 #include "../config.h"
 #include "mosaic.h"
-#include "comment.h"
 #include "mo-www.h"
 #include "gui-dialogs.h"
 #include "gui.h"
