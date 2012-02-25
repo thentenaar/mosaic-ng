@@ -125,9 +125,6 @@ static XtResource resources[] = {
       "xterm",
     },
 #endif /* not _AIX */
-  { "globalHistoryFile", "GlobalHistoryFile", XtRString, 
-      sizeof (char *),
-      offset (global_history_file), XtRString, ".mosaic-global-history" },
   { "historyFile", "HistoryFile", XtRString, 
       sizeof (char *),
       offset (history_file), XtRString, ".mosaic-x-history" },
