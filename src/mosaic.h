@@ -139,7 +139,7 @@ typedef enum
 
 #ifndef HTMLPRIMER_PAGE_DEFAULT
 #define HTMLPRIMER_PAGE_DEFAULT \
-  "http://web.archive.org/web/19970606144528/http://www.ncsa.uiuc.edu./General/Internet/WWW/HTMLPrimer.html"
+  "http://web.archive.org/web/19970117080431/http://www.ncsa.uiuc.edu./General/Internet/WWW/HTMLPrimer.html"
 #endif /* not HTMLPRIMER_PAGE_DEFAULT */
 
 #ifndef URLPRIMER_PAGE_DEFAULT
