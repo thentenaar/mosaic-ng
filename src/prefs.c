@@ -382,7 +382,6 @@ static Boolean write_preferences_file(prefsStructP inPrefsStruct) {
     write_pref_string(fp, eMAIL_FILTER_COMMAND, "MAIL_FILTER_COMMAND");
     write_pref_string(fp, eHOME_DOCUMENT, "HOME_DOCUMENT");
     write_pref_string(fp, eTMP_DIRECTORY, "TMP_DIRECTORY");
-    write_pref_string(fp, eDOCS_DIRECTORY, "DOCS_DIRECTORY");
     write_pref_string(fp, eDEFAULT_FONT_CHOICE, "DEFAULT_FONT_CHOICE");
     write_pref_string(fp, eGLOBAL_HISTORY_FILE, "GLOBAL_HISTORY_FILE");
     write_pref_boolean(fp, eUSE_GLOBAL_HISTORY, "USE_GLOBAL_HISTORY");
@@ -578,9 +577,6 @@ void *get_pref(long pref_id) {
             break;
         case  eTMP_DIRECTORY:
             return (void *)(thePrefsStructP->RdataP->tmp_directory);
-            break;
-        case  eDOCS_DIRECTORY:
-            return (void *)(thePrefsStructP->RdataP->docs_directory);
             break;
         case  eDEFAULT_FONT_CHOICE:
             return (void *)(thePrefsStructP->RdataP->default_font_choice);
@@ -1098,10 +1094,6 @@ void set_pref(long pref_id, void *incoming) {
             break;
         case  eTMP_DIRECTORY:
             thePrefsStructP->RdataP->tmp_directory =
-                (char *)incoming;
-            break;
-        case  eDOCS_DIRECTORY:
-            thePrefsStructP->RdataP->docs_directory =
                 (char *)incoming;
             break;
         case  eDEFAULT_FONT_CHOICE:

@@ -157,16 +157,6 @@ static MO_SIGHANDLER_RETURNTYPE FatalProblem
   fprintf (stderr, "\nCongratulations, you have found a bug in\n");
   fprintf (stderr, "NCSA Mosaic %s on %s.\n\n", MO_VERSION_STRING, 
            MO_MACHINE_TYPE);
-  fprintf (stderr, "If a core file was generated in your directory,\n");
-  fprintf (stderr, "please do one of the following:\n\n");
-  fprintf (stderr, "  %% dbx /path/to/Mosaic /path/to/core\n");
-  fprintf (stderr, "  dbx> where\n\n");
-  fprintf (stderr, "OR\n\n");
-  fprintf (stderr, "  %% gdb /path/to/Mosaic /path/to/core\n");
-  fprintf (stderr, "  gdb> where\n\n");
-  fprintf (stderr, "Mail the results, and a description of what you were doing at the time,\n");
-  fprintf (stderr, "(include any URLs involved!) to %s.\n\nWe thank you for your support.\n\n", 
-           MO_DEVELOPER_ADDRESS);
   fprintf (stderr, "...exiting NCSA Mosaic now.\n\n");
 
   RealFatal ();

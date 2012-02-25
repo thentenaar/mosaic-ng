@@ -122,45 +122,39 @@ typedef enum
 
 #define MO_VERSION_STRING "2.7b6"
 #define MO_HELP_ON_VERSION_DOCUMENT \
-  mo_assemble_help_url ("help-on-version-2.7b5.html")
-#define MO_DEVELOPER_ADDRESS "mosaic-x@ncsa.uiuc.edu"
-
-#ifndef DOCS_DIRECTORY_DEFAULT
-#define DOCS_DIRECTORY_DEFAULT \
-  "http://www.ncsa.uiuc.edu/SDG/Software/XMosaic"
-#endif
+  "http://web.archive.org/web/19970606162156/http://www.ncsa.uiuc.edu./SDG/Software/XMosaic/help-on-version-2.7b5.html"
 
 #undef HOME_PAGE_DEFAULT
-#define HOME_PAGE_DEFAULT "about:xmosaic"
+#define HOME_PAGE_DEFAULT "http://web.archive.org/web/19970606162318/http://www.ncsa.uiuc.edu./SDG/Software/Mosaic/NCSAMosaicHome.html"
 
 #ifndef WHATSNEW_PAGE_DEFAULT
 #define WHATSNEW_PAGE_DEFAULT \
-  "http://www.ncsa.uiuc.edu/SDG/Software/Mosaic/Docs/whats-new.html"
+  "http://web.archive.org/web/19970606133005/http://www.ncsa.uiuc.edu./SDG/Software/Mosaic/Docs/whats-new.html"
 #endif /* not WHATSNEW_PAGE_DEFAULT */
 
 #ifndef DEMO_PAGE_DEFAULT
 #define DEMO_PAGE_DEFAULT \
-  "http://www.ncsa.uiuc.edu/demoweb/demo.html"
+  "http://web.archive.org/web/19970406124158/http://www.ncsa.uiuc.edu/demoweb/demo.html"
 #endif /* not DEMO_PAGE_DEFAULT */
 
 #ifndef HTMLPRIMER_PAGE_DEFAULT
 #define HTMLPRIMER_PAGE_DEFAULT \
-  "http://www.ncsa.uiuc.edu/General/Internet/WWW/HTMLPrimer.html"
+  "http://web.archive.org/web/19970606144528/http://www.ncsa.uiuc.edu./General/Internet/WWW/HTMLPrimer.html"
 #endif /* not HTMLPRIMER_PAGE_DEFAULT */
 
 #ifndef URLPRIMER_PAGE_DEFAULT
 #define URLPRIMER_PAGE_DEFAULT \
-  "http://www.ncsa.uiuc.edu/demoweb/url-primer.html"
+  "http://web.archive.org/web/19970606175415/http://www.ncsa.uiuc.edu./demoweb/url-primer.html"
 #endif /* not URLPRIMER_PAGE_DEFAULT */
 
 #ifndef NETWORK_STARTING_POINTS_DEFAULT
 #define NETWORK_STARTING_POINTS_DEFAULT \
-  "http://www.ncsa.uiuc.edu/SDG/Software/Mosaic/StartingPoints/NetworkStartingPoints.html"
+  "http://web.archive.org/web/19970803020918/http://www.ncsa.uiuc.edu./SDG/Software/Mosaic/StartingPoints/NetworkStartingPoints.html"
 #endif /* not NETWORK_STARTING_POINTS_DEFAULT */
 
 #ifndef INTERNET_METAINDEX_DEFAULT
 #define INTERNET_METAINDEX_DEFAULT \
-  "http://www.ncsa.uiuc.edu/SDG/Software/Mosaic/MetaIndex.html"
+  "http://web.archive.org/web/19970606132958/http://www.ncsa.uiuc.edu./SDG/Software/Mosaic/MetaIndex.html"
 #endif /* not INTERNET_METAINDEX_DEFAULT */
 
 #ifndef DOCUMENTS_MENU_SPECFILE

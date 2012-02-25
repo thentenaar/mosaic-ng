@@ -811,18 +811,6 @@ XmxCallback (menubar_cb)
       mo_open_another_window (win, URLPRIMER_PAGE_DEFAULT, 
                               NULL, NULL);
       break;
-    case mo_techsupport:        
-        {
-            char subj[128];
-            
-            sprintf (subj, "User Feedback -- NCSA Mosaic %s on %s.",
-                     MO_VERSION_STRING, MO_MACHINE_TYPE);
-      
-            mo_post_mailto_win(MO_DEVELOPER_ADDRESS,subj);
-        }
-        
-/*      mo_post_techsupport_win (win);*/
-      break;
     case mo_news_prev:
       gui_news_prev(win);
       break;
@@ -1364,8 +1352,6 @@ char buf[BUFSIZ];
 	SPACER()
 	DEFINE_MENUBAR("On HTML..." ,"H",menubar_cb,mo_help_html,NULL)
 	DEFINE_MENUBAR("On URLS..." ,"U",menubar_cb,mo_help_url,NULL)
-	SPACER()
-	DEFINE_MENUBAR("Mail Tech Support..." ,"M",menubar_cb,mo_techsupport,NULL)
 	NULL_MENUBAR()
 
 	/* News Format Sub-Menu */

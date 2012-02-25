@@ -619,25 +619,15 @@ char *mo_check_for_proxy (char *access)
 char *mo_assemble_help_url (char *file)
 {
   char *tmp;
-  char *docs_directory = get_pref_string(eDOCS_DIRECTORY);
-
+  const char *docs_directory = "http://web.archive.org/web/19970606162156/http://www.ncsa.uiuc.edu./SDG/Software/XMosaic/";
   if (!file)
     return strdup ("http://lose.lose/lose");
 
   tmp = (char *)malloc ((strlen (file) + strlen (docs_directory) + 4) *
                         sizeof (char));
 
-  if (docs_directory[strlen(docs_directory)-1] == '/')
-    {
-      /* Trailing slash in docs_directory spec. */
-      sprintf (tmp, "%s%s", docs_directory, file);
-    }
-  else
-    {
-      /* No trailing slash. */
-      sprintf (tmp, "%s/%s", docs_directory, file);
-    }
-  
+  snprintf(tmp, (strlen (file) + strlen (docs_directory) + 4) * sizeof (char),
+            "%s%s", docs_directory, file);
   return tmp;
 }
 
@@ -4462,26 +4452,6 @@ splash_goto:
                 /* It can still be NULL when we leave here -- then we'll just
                    let tmpnam() do what it does best. */
             set_pref(eTMP_DIRECTORY, (void *)tmp_dir);
-        }
-    }
-
-        /* If there's no docs directory assigned by the X resource,
-     then look at MOSAIC_DOCS_DIRECTORY environment variable
-     and then at hardcoded default. */
-    {
-        char *docs_dir = get_pref_string(eDOCS_DIRECTORY);
-              
-        if (!docs_dir)
-        {
-            docs_dir = getenv ("MOSAIC_DOCS_DIRECTORY");
-            if (!docs_dir)
-                docs_dir = DOCS_DIRECTORY_DEFAULT;
-            if (!docs_dir || !*(docs_dir))
-            {
-                fprintf (stderr, "fatal error: nonexistent docs directory\n");
-                exit (-1);
-            }
-            set_pref(eDOCS_DIRECTORY, (void *)docs_dir);
         }
     }
 

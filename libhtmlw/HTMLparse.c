@@ -621,6 +621,18 @@ get_mark(start, endp)
 		return(NULL);
 	}
 
+	/* Remove the wayback toolbar for a more authentic feel */
+	if (!strncmp(start,"<!-- BEGIN WAYBACK TOOLBAR INSERT -->",37)) {
+		tchar = 0; ptr = start + 38;
+		while (!tchar) {
+			while (*ptr != 0 && *ptr != '<') ptr++; if (!*ptr) return NULL;
+			if (*ptr == '<' && !strncmp(ptr,"<!-- END WAYBACK TOOLBAR INSERT -->",35)) {
+				tchar = 1; ptr += 36; while (*ptr != '<') ptr++; start = ptr;
+				if (!*ptr) return NULL;
+			} else ptr++;
+		}
+	}
+
 	/* Better script kludge */
 	tchar = *(start+7); *(start+7) = 0;
 	if (caseless_equal(start,"<script")) {
