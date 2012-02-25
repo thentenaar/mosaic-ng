@@ -4468,30 +4468,8 @@ splash_goto:
   mo_setup_default_hotlist ();
   mo_write_default_hotlist (); /* amb */
 
-  if(get_pref_boolean(eHOTLIST_ON_RBM))
-    mo_init_hotmenu();
+  if(get_pref_boolean(eHOTLIST_ON_RBM)) mo_init_hotmenu();
 
-  /* Write pid into "~/.mosaicpid". */
-  {
-    char *home = getenv ("HOME"), *fnam;
-    FILE *fp;
-    
-        if (!home)
-            home = "/tmp";
-    
-        fnam = (char *)malloc (strlen (home) + 32);
-        sprintf (fnam, "%s/.mosaicpid", home);
-    
-        fp = fopen (fnam, "w");
-        if (fp)
-        {
-            fprintf (fp, "%d\n", getpid());
-            fclose (fp);
-        }
-    
-        free (fnam);
-    }
-  
     busy_cursor = XCreateFontCursor (dsp, XC_watch);
 
     XtRealizeWidget (toplevel);

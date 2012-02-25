@@ -408,7 +408,7 @@ static Boolean read_pref_string(FILE *fp, long pref_id, char *string) {
     if (!(buf = malloc(strlen(string)+4+256))) return 0;
     if (fgets(buf,strlen(string)+4+256,fp)) {
         if (*(buf+strlen(string)) == ':' && !strncmp(buf,string,strlen(string))) {
-            val = strndup(buf+strlen(string)+2,strlen(buf)-strlen(string)-2);
+            val = strndup(buf+strlen(string)+2,strlen(buf)-strlen(string)-3);
             set_pref(pref_id,val);
         }
     } free(buf);
