@@ -67,7 +67,6 @@ extern Pixmap *IconPixSmall;
 
 /*SWP*/
 Pixmap *tmp_pix=NULL;
-EASTER_EXTERNS
 #define __MAX_HOME_LEN__ 256
 #define __SRC__
 #include "../libwww2/HTAAUtil.h"
@@ -353,7 +352,6 @@ static char *doit (char *url, char **texthead)
 		set_pref(ePIX_COUNT, (void *)&tmp);
 		XmxApplyPixmapToLabelWidget(win->logo, IconPix[0]);
 	}
-	EASTER
   }
 
   XmxApplyPixmapToLabelWidget(win->logo, IconPix[0]);

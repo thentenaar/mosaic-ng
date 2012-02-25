@@ -166,8 +166,6 @@ struct pixload_info {
     {mag_20_xpm,&IconsTom[19],0},
     {mag_21_xpm,&IconsTom[20],0},
 
-    EASTER_ARRAY
-
     {unlock_none_xpm,&securityNone,0},
     {unlock_unknown_xpm,&securityUnknown,0},
     {lock_kerberos4_xpm,&securityKerberos4,0},
