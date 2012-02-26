@@ -1161,7 +1161,6 @@ static void pointer_motion_callback (Widget w, char *href)
   return;
 }
 
-
 XmxCallback (submit_form_callback)
 {
   mo_window *win = NULL;
@@ -1579,7 +1578,6 @@ void mo_presentation_mode(mo_window *win) {
  ****************************************************************************/
 static XmxEventHandler (mo_view_keypress_handler)
 {
-/*  char url[128]; /* buffer for news io */
   mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
   int _bufsize = 3, _count;
   char _buffer[3];
@@ -1884,6 +1882,29 @@ static XmxEventHandler (mo_view_keypress_handler)
   }
   
   return;
+}
+
+/* Callback to do mouse scrolling */
+static XmxEventHandler (mo_view_mousebutton_handler) {
+    mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
+    Widget sb; String params = "0";
+
+    if (!win) return;
+    switch (event->xbutton.button) {
+        case Button4:
+            XtVaGetValues (win->scrolled_win, XmNverticalScrollBar, (long)(&sb), NULL);
+            if (sb && XtIsManaged (sb)){
+                XtCallActionProc (sb, "IncrementUpOrLeft", event, &params, 1);
+            }
+        break;
+        case Button5:
+            XtVaGetValues (win->scrolled_win, XmNverticalScrollBar, (long)(&sb), NULL);
+            if (sb && XtIsManaged (sb)){
+                XtCallActionProc (sb, "IncrementDownOrRight", event, &params, 1);
+            }
+        break;
+    }
+
 }
 
 
@@ -2823,8 +2844,8 @@ static mo_status mo_fill_window (mo_window *win)
   XmxAddCallback (win->scrolled_win, WbNsubmitFormCallback,
                   submit_form_callback, 0);
   XtVaGetValues(win->scrolled_win, WbNview, (long)(&win->view), NULL);
-  XmxAddEventHandler
-    (win->view, KeyPressMask, mo_view_keypress_handler, 0);
+  XmxAddEventHandler(win->view, KeyPressMask, mo_view_keypress_handler, 0);
+  XmxAddEventHandler(win->view, ButtonReleaseMask, mo_view_mousebutton_handler, 0);
  /* now that the htmlWidget is created we can do this  */
   mo_make_popup(win->view);
 
