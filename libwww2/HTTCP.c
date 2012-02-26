@@ -569,38 +569,20 @@ int HTDoRead (int fildes, void *buf, unsigned nbyte)
   char *adtestbuf;
 
   ready = 0;
-  while (!ready)
-    {
+  while (!ready) {
         FD_ZERO(&readfds);
         FD_SET(fildes, &readfds);
 
 	  /* linux (and some other os's, I think) clear timeout... 
 	     let's reset it every time. bjs */
 	timeout.tv_sec = 0;
-	timeout.tv_usec = 100000;
+	timeout.tv_usec = 50000;
 
-#ifdef __hpux
-        ret = select(FD_SETSIZE, (int *)&readfds, NULL, NULL, &timeout);
-#else
         ret = select(FD_SETSIZE, &readfds, NULL, NULL, &timeout);
-#endif
-        if (ret < 0)
-          {
-                return -1;
-          }
-        else if (ret > 0)
-          {
-                ready = 1;
-          }
-        else
-          {
-                intr = HTCheckActiveIcon(1);
-                if (intr)
-                  {
-                        return HT_INTERRUPTED;
-                  }
-          }
-    }
+        ready = (ret > 0) ? 1 : 0;
+        if (!ret && HTCheckActiveIcon(1)) return HT_INTERRUPTED;
+        if (ret < 0) return -1;
+  }
 
   ret = read (fildes, buf, nbyte);
 

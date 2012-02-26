@@ -108,8 +108,9 @@ extern int ConfigView;
 
 void kill_splash();
 int splash_cc=1; /* 1 if we need to free colors, 0 if already popped down */
-XtIntervalId splashTimer;
 Widget splash=NULL;
+time_t splash_start;
+
 
 char *slab_words[] =
 {"MENU","TITLE","URL","TOOLS","STATUS","VIEW","GLOBE","SMALLGLOBE","TEXTTOOLS",NULL};
@@ -889,7 +890,7 @@ mo_status mo_set_current_cached_win (mo_window *win)
 }
 
 
-static connect_interrupt = 0;
+static int connect_interrupt = 0;
 extern int sleep_interrupt;
 
 XmxCallback (icon_pressed_cb)
@@ -1380,6 +1381,7 @@ void UpdateButtons (Widget w)
       XButtonEvent *bevent = &(event.xbutton);
       if (bevent->window == XtWindow (current_win->logo))
         {
+          if (bevent->button == Button1) { connect_interrupt = 1; if (splash) kill_splash(); }
           XtDispatchEvent(&event);
         }
       /* else just throw it away... users shouldn't be pressing buttons
@@ -1475,6 +1477,9 @@ int mo_gui_check_icon (int twirl)
   mo_window *win = current_win;
   int ret;
   static int cnt=0;
+
+  /* Kill the splash screen after 2-3 sec. */
+  if (splash && time(NULL)-splash_start >= 2) kill_splash();
 
   if (twirl!=(-1) && twirl>0) {
 	if (!makeBusy) {
@@ -2518,7 +2523,7 @@ Widget mo_fill_toolbar(mo_window *win, Widget top, int w, int h)
 		      &tmpFont,
 		      NULL);
 	if (!tmpFont) {
-		fprintf(stderr,"Toolbar Font: Could not load! The X Resource is Mosaic*ToolbarFont\nDefault font is: -adobe-times-bold-r-normal-*-12-*-*-*-*-*-iso8859-1\nExiting Mosaic.");
+		fprintf(stderr,"Toolbar Font: Could not load! The X Resource is Mosaic*ToolbarFont\nDefault font is: -adobe-times-bold-r-normal-*-12-*-*-*-*-*-iso10646-1\nExiting Mosaic.");
 
 		exit(1);
 	}
@@ -3191,6 +3196,7 @@ int mo_get_font_size_from_res(char *userfontstr,int *fontfamily)
 
 void kill_splash()
 {
+    if (!splash) return;
     if(splash_cc) {
         ReleaseSplashColors(splash);
     } else {
@@ -4016,8 +4022,7 @@ void mo_do_gui (int argc, char **argv)
 	}
     }
 
-
-        /* Motif setup. */
+    /* Motif setup. */
     XmxStartup ();
     XmxSetArg (XmNwidth,1);
     XmxSetArg (XmNheight,1);
@@ -4512,14 +4517,8 @@ splash_goto:
 #endif
 
     if(get_pref_boolean(eSPLASHSCREEN) && splash) {
-      /*Wait 3 secs, then popdown*/
-      if(splash_cc) {
-          splashTimer =
-              XtAppAddTimeOut(app_context, 1300,
-                              (XtTimerCallbackProc)kill_splash, NULL);
-      } else {
-          kill_splash();
-      }
+      if(!splash_cc) kill_splash();
+      else           splash_start = time(NULL);
     }
 
     createBusyCursors(toplevel);

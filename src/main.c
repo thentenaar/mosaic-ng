@@ -171,44 +171,7 @@ main (int argc, char **argv, char **envp)
   FILE *fp;
   int i;
 
-	userPath=getenv("PATH");
-
-/*
-	if (getenv("XKEYSYMDB")==NULL) {
-		fprintf(stderr,"If you have key binding problems, set the environment variable XKEYSYMDB\nto the location of the correct XKeysymDB file on your system.\n");
-	}
-*/
-
-/*
-	if (uname(&u)<0) {
-		perror("uname");
-	}
-	else {
-		if (!strcmp(u.sysname,"SunOS") && 
-		    (!strcmp(u.release,"5.0")
-		     || !strcmp(u.release,"5.1")
-		     || !strcmp(u.release,"5.2")
-		     || !strcmp(u.release,"5.3")
-		     || !strcmp(u.release,"5.4")
-		     || !strcmp(u.release,"5.5"))) {
-			if (getenv("XKEYSYMDB")==NULL) {
-				if (!(fp=fopen("/usr/openwin/lib/X11/XKeysymDB","r"))) {
-					if (!(fp=fopen("/usr/openwin/lib/XKeysymDB","r"))) {
-					}
-					else {
-						fclose(fp);
-						putenv("XKEYSYMDB=/usr/openwin/lib/XKeysymDB");
-					}
-				}
-				else {
-					fclose(fp);
-					putenv("XKEYSYMDB=/usr/openwin/lib/X11/XKeysymDB");
-				}
-			}
-		}
-	}
-*/
-
+  userPath=getenv("PATH");
   signal (SIGBUS, FatalProblem);
   signal (SIGSEGV, FatalProblem);
   signal (SIGILL, FatalProblem);
@@ -223,8 +186,6 @@ main (int argc, char **argv, char **envp)
 #else
   signal(SIGCHLD, (void (*)())ChildTerminated);
 #endif
-
-
 
 #ifdef SOCKS
   SOCKSinit(argv[0]);
