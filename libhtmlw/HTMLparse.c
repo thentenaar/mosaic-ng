@@ -1556,15 +1556,25 @@ AnchorTag(ptrp, startp, endp)
 	{
 		quoted = 1;
 		ptr++;
+	} else if (*ptr == '\'') {
+		quoted = 2;
+		ptr++;
 	}
 
 	start = ptr;
 	/*
 	 * Get tag value.  Either a quoted string or a single word
 	 */
-	if (quoted)
+	if (quoted == 1)
 	{
 		while ((*ptr != '\"')&&(*ptr != '\0'))
+		{
+			ptr++;
+		}
+	}
+	else if (quoted == 2)
+	{
+		while ((*ptr != '\'')&&(*ptr != '\0'))
 		{
 			ptr++;
 		}
