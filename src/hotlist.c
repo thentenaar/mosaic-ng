@@ -1257,12 +1257,11 @@ mo_status mo_setup_default_hotlist (void)
   default_hotlist = mo_read_hotlist(filename);
 
   /* Doesn't exist?  Bummer.  Make a new one. */
-  if (!default_hotlist)
-    {
+  if (!default_hotlist) {
       fprintf(stderr,"Could not find a hotlist. Creating a new one.\n");
       default_hotlist = mo_new_root_hotlist(filename, "Default");
       mo_write_default_hotlist();
-    } else free(filename);
+  }
   return mo_succeed;
 }
 
