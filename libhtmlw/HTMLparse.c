@@ -634,16 +634,16 @@ get_mark(start, endp)
 	}
 
 	/* Better script kludge */
-	tchar = *(start+7); *(start+7) = 0;
-	if (caseless_equal(start,"<script")) {
-		*(start+7) = tchar; ptr = start+7;
+	tchar = *(start+8); *(start+8) = 0;
+	if (caseless_equal(start,"<script ") || caseless_equal(start,"<script>")) {
+		*(start+8) = tchar; ptr = start+8;
 		while (*ptr != 0 && !comment) {
 			while (*ptr != '<' && *ptr != 0) ptr++;
 			if (*ptr != 0 && *(ptr+1) == '/') {
 				tchar = *(ptr+9); *(ptr+9) = 0;
-				if (caseless_equal(ptr,"</script>")) {
+				if (caseless_equal(ptr,"</script>") && tchar != '/') {
 					*(ptr+9) = tchar; ptr += 9; comment = 1;
-				} else ptr++;
+				} else { *(ptr+9) = tchar; ptr++; }
 			} else ptr++;
 		}
 
@@ -660,7 +660,7 @@ get_mark(start, endp)
 			mark->next = NULL;
 			return mark;
 		} else { *endp = ptr; return NULL; }
-	} else *(start+7) = tchar;
+	} else *(start+8) = tchar;
 
 	/* amb - check if we are in a comment, start tag is <!-- */
 	if (strncmp (start, "<!--", 4)==0)
