@@ -219,7 +219,7 @@ PUBLIC int HTParseInet ARGS2(SockA *,sin, WWW_CONST char *,str)
 #if 0
           fprintf (stderr, "=+= Fetching on '%s'\n", host);
 #endif
-          phost = gethostbyname (host);
+          alarm(10); phost = gethostbyname(host); alarm(0);
           if (!phost) 
             {
 #ifndef DISABLE_TRACE
