@@ -127,13 +127,10 @@ static XtResource resources[] = {
 #endif /* not _AIX */
   { "historyFile", "HistoryFile", XtRString, 
       sizeof (char *),
-      offset (history_file), XtRString, ".mosaic-x-history" },
-  { "defaultHotlistFile", "DefaultHotlistFile", XtRString, 
-      sizeof (char *),
-      offset (default_hotlist_file), XtRString, ".mosaic-hotlist-default" },
+      offset (history_file), XtRString, "mosaic-x-history" },
   { "defaultHotFile", "DefaultHotFile", XtRString, 
       sizeof (char *),
-      offset (default_hot_file), XtRString, ".mosaic-hot.html" },
+      offset (default_hot_file), XtRString, "mosaic-hot.html" },
   { "addHotlistAddsRBM", "AddHotlistAddsRBM", XtRBoolean, sizeof (Boolean),
       offset (addHotlistAddsRBM), XtRString, "True" },
   { "addRBMAddsRBM", "AddRBMAddsRBM", XtRBoolean, sizeof (Boolean),
@@ -186,9 +183,6 @@ static XtResource resources[] = {
       offset (track_pointer_motion), XtRString, "True" },
   { "trackFullURLs", "TrackFullURLs", XtRBoolean, sizeof (Boolean),
       offset (track_full_url_names), XtRString, "True" },
-
-  { "docsDirectory", "DocsDirectory", XtRString, sizeof (char *),
-      offset (docs_directory), XtRString, NULL },
 
   { "documentsMenuSpecfile", "DocumentsMenuSpecfile", XtRString, sizeof (char *),
       offset (documents_menu_specfile), XtRString, 
@@ -354,9 +348,6 @@ static XtResource resources[] = {
 
   { "meter", "Meter", XtRBoolean, sizeof (Boolean),
       offset (use_meter), XtRString, "True" },
-
-  { "backupDataFiles", "BackupDataFiles", XtRBoolean, sizeof (Boolean),
-      offset (backup_files), XtRString, "True" },
 
 /* Icon Animation Stuff - BJS */
   { "iconPixBasename", "IconPixBasename", XtRString, sizeof (char *),

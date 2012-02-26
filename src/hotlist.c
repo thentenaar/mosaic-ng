@@ -58,6 +58,7 @@
 #include "gui.h"
 #include "mo-www.h"
 #include <time.h>
+#include <pwd.h>
 #include <Xm/List.h>
 #include <Xm/TextF.h>
 #include <Xm/ToggleBG.h>
@@ -1069,25 +1070,13 @@ static mo_root_hotlist *mo_new_root_hotlist (char *filename, char *title)
  * and ready to go.
  * Return NULL if file does not exist or is not readable.
  */
-static mo_root_hotlist *mo_read_hotlist (char *filename, char *home)
+static mo_root_hotlist *mo_read_hotlist (char *filename)
 {
   mo_root_hotlist *list = NULL;
   FILE *fp;
   char line[MO_LINE_LENGTH];
   char *status, *name;
   int isnew;
-  char *oldfilename/*,*tmpfilename*/;
-  char *hotname;
-  char *tmp=get_pref_string(eDEFAULT_HOT_FILE);
-
-  hotname=(char *)calloc(strlen(home)+strlen(tmp)+5,sizeof(char));
-  sprintf(hotname,"%s/%s",home,tmp);
-
-  oldfilename = filename;
-  if (! (filename= malloc(strlen(filename) + 10)))
-    goto screwed_no_file;
-  sprintf(filename,"%s.html",oldfilename);
-  /* for backward compatibility */
 
   /* oldfilename: cookie 1
      filename: cookie 2
@@ -1099,45 +1088,7 @@ static mo_root_hotlist *mo_read_hotlist (char *filename, char *home)
 	be written out to the format 3 filename...so we don't have to worry
 	about converting anything. Groovy. --SWP */
 
-  if (!(fp=fopen(hotname,"r"))) {
-	fp = fopen (filename, "r");
-	if (!fp) {
-		fp = fopen (oldfilename, "r");
-		if (!fp) {
-			goto screwed_no_file;
-		}
-		else if (get_pref_boolean(eBACKUP_FILES)) {
-			char *tf=NULL,retBuf[BUFSIZ];
-
-			tf=(char *)calloc(strlen(oldfilename)+strlen(".backup")+5,sizeof(char));
-			sprintf(tf,"%s.backup",oldfilename);
-			if (my_copy(oldfilename,tf,retBuf,BUFSIZ-1,1)!=SYS_SUCCESS) {
-				fprintf(stderr,"%s\n",retBuf);
-			}
-			free(tf);
-		}
-	}
-	else if (get_pref_boolean(eBACKUP_FILES)) {
-		char *tf=NULL,retBuf[BUFSIZ];
-
-		tf=(char *)calloc(strlen(filename)+strlen(".backup")+5,sizeof(char));
-		sprintf(tf,"%s.backup",filename);
-		if (my_copy(filename,tf,retBuf,BUFSIZ-1,1)!=SYS_SUCCESS) {
-			fprintf(stderr,"%s\n",retBuf);
-		}
-		free(tf);
-	}
-  }
-  else if (get_pref_boolean(eBACKUP_FILES)) {
-	char *tf=NULL,retBuf[BUFSIZ];
-
-	tf=(char *)calloc(strlen(hotname)+strlen(".backup")+5,sizeof(char));
-	sprintf(tf,"%s.backup",hotname);
-	if (my_copy(hotname,tf,retBuf,BUFSIZ-1,1)!=SYS_SUCCESS) {
-		fprintf(stderr,"%s\n",retBuf);
-	}
-	free(tf);
-  }
+  if (!(fp=fopen(filename,"r"))) return NULL;
 
   status = fgets (line, MO_LINE_LENGTH, fp);
   if (!status || !(*line)) {
@@ -1177,11 +1128,8 @@ static mo_root_hotlist *mo_read_hotlist (char *filename, char *home)
 
   if (isnew)
     {
-      list = mo_new_root_hotlist(hotname, NULL);
+      list = mo_new_root_hotlist(filename, NULL);
       list->name = mo_read_new_hotlist((mo_hotlist *)list, fp);
-      if (isnew==1) {
-	fprintf(stderr,"Your hotlist has been updated to a new format!\n  It is now called '.mosaic-hot.html'.\n");
-      }
       goto done;
     }
   /* Go fetch the name on the next line. */
@@ -1192,13 +1140,6 @@ static mo_root_hotlist *mo_read_hotlist (char *filename, char *home)
   if (!name)
     goto screwed_open_file;
 
-  /* amb - display update message for 2.4 users */
-  {
-    fputs("Your hotlist file has been updated and is now saved as:\n", 
-	  stderr);
-    fputs(filename, stderr); 
-    putc('\n', stderr);
-  }
   /* Hey, whaddaya know, it is. */
   list = mo_new_root_hotlist (filename, name);
 
@@ -1295,35 +1236,33 @@ mo_status mo_dump_hotlist (mo_hotlist *list)
  */
 mo_status mo_setup_default_hotlist (void)
 {
-  char *home = getenv ("HOME");
-  char *default_filename = get_pref_string(eDEFAULT_HOTLIST_FILE);
   char *hot_filename = get_pref_string(eDEFAULT_HOT_FILE);
-  char *filename;
-  
-  /* This shouldn't happen. */
-  if (!home)
-    home = "/tmp";
-  
-  filename = (char *)malloc 
-    ((strlen (home) + strlen (default_filename) + 8) * sizeof (char));
-  sprintf (filename, "%s/%s", home, default_filename);
+  char *filename, *home; int len; struct passwd *pwdent;
+
+  /* Get the user's home directory */
+  home = strdup(getenv("HOME"));
+  if (!home && (pwdent = getpwuid(getuid()))) home = strdup(pwdent->pw_dir);
+  else if (!home) {
+    fprintf(stderr,"WARNING: Unable to determine location for hotlist. Using /tmp\n");
+    home = strdup("/tmp");
+  }
+
+  /* Get the filename */
+  len      = strlen(home) + strlen(hot_filename) + 10;
+  filename = (char *)malloc(len+1);
+  snprintf(filename, len+1, "%s/.mosaic/%s", home, hot_filename);
+  free(home);
 
   /* Try to load the default hotlist. */
-  default_hotlist = mo_read_hotlist (filename, home);
+  default_hotlist = mo_read_hotlist(filename);
+
   /* Doesn't exist?  Bummer.  Make a new one. */
   if (!default_hotlist)
     {
       fprintf(stderr,"Could not find a hotlist. Creating a new one.\n");
-      /* amb - doesn't have any hotlist, add the .html extension (ugh) */
-/*      sprintf(filename, "%s/%s.html", home, default_filename); */
-/* New hotlist format... SWP */
-      free(filename);
-      filename = (char *)malloc 
-	((strlen (home) + strlen (hot_filename) + 8) * sizeof (char));
-      sprintf (filename, "%s/%s", home, hot_filename);
-      default_hotlist = mo_new_root_hotlist (filename, "Default");
-    }
-  
+      default_hotlist = mo_new_root_hotlist(filename, "Default");
+      mo_write_default_hotlist();
+    } else free(filename);
   return mo_succeed;
 }
 
@@ -1333,7 +1272,7 @@ mo_status mo_setup_default_hotlist (void)
  */
 mo_status mo_write_default_hotlist (void)
 {
-  FILE *fp = fopen (default_hotlist->filename, "w");
+  FILE *fp = fopen (default_hotlist->filename, "w+");
 
   if (!fp)
     return mo_fail;
@@ -1357,7 +1296,7 @@ static XmxCallback (save_hot_cb)
   XmStringGetLtoR (((XmFileSelectionBoxCallbackStruct *)call_data)->value,
 		   XmSTRING_DEFAULT_CHARSET, &fname);
   pathEval (efname, fname);
-  fp = fopen (efname, "w");
+  fp = fopen (efname, "w+");
   if (!fp)
     {
 	char *buf, *final, tmpbuf[80];

@@ -371,19 +371,7 @@ static void mo_read_global_history (char *filename)
   int format;
 
   fp = fopen (filename, "r");
-  if (!fp) {
-    goto screwed_no_file;
-  }
-  else if (get_pref_boolean(eBACKUP_FILES)) {
-	char *tf=NULL,retBuf[BUFSIZ];
-
-	tf=(char *)calloc(strlen(filename)+strlen(".backup")+5,sizeof(char));
-	sprintf(tf,"%s.backup",filename);
-	if (my_copy(filename,tf,retBuf,BUFSIZ-1,1)!=SYS_SUCCESS) {
-		fprintf(stderr,"%s\n",retBuf);
-	}
-	free(tf);
-  }
+  if (!fp) goto screwed_no_file;
 
   status = fgets (line, MO_LINE_LENGTH, fp);
   if (!status || !(*line))

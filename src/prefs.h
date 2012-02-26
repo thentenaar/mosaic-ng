@@ -92,7 +92,6 @@ typedef struct
     
     char *home_document;                  
     char *tmp_directory;
-    char *docs_directory;
     
 /* fonts */
     
@@ -100,13 +99,11 @@ typedef struct
     
 /* history */
     
-    char *global_history_file;
     char *history_file;
     Boolean use_global_history;           
   
 /* hotlist */
     
-    char *default_hotlist_file;
     char *default_hot_file;
     char *documents_menu_specfile;
     Boolean addHotlistAddsRBM;
@@ -220,8 +217,7 @@ typedef struct
 	char * meterFontForeground;
 	char * meterFontBackground;
 	Boolean use_meter;
-	Boolean backup_files;
-    char * pix_basename;
+	char * pix_basename;
 	int pix_count;
 	char * acceptlanguage_str;
 	int ftpRedial;
@@ -231,7 +227,7 @@ typedef struct
 	int ftpEllipsisMode;
 	Boolean useScreenGamma;
 	float screen_gamma;
-    Boolean disableMiddleButton;
+	Boolean disableMiddleButton;
 
         /* newer in 2.7 */
 

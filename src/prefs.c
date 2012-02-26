@@ -71,7 +71,7 @@
 
 #define PREFS_FILE_IO 1
 
-#define PREFERENCES_FILENAME ".mosaic-preferences"
+#define PREFERENCES_FILENAME "mosaic-preferences"
 #define PREFERENCES_MAJOR_VERSION 1
 #define PREFERENCES_MINOR_VERSION 0
 
@@ -258,7 +258,7 @@ Boolean read_preferences_file(prefsStructP inPrefsStruct) {
     read_pref_string(fp, eDEFAULT_FONT_CHOICE, "DEFAULT_FONT_CHOICE");
     read_pref_boolean(fp, eUSE_GLOBAL_HISTORY, "USE_GLOBAL_HISTORY");
     read_pref_string(fp, eHISTORY_FILE, "HISTORY_FILE");
-    read_pref_string(fp, eDEFAULT_HOTLIST_FILE, "DEFAULT_HOTLIST_FILE");
+    read_pref_string(fp, eDEFAULT_HOT_FILE, "DEFAULT_HOTLIST_FILE");
     read_pref_boolean(fp, eADD_HOTLIST_ADDS_RBM, "ADD_HOTLIST_ADDS_RBM");
     read_pref_boolean(fp, eADD_RBM_ADDS_RBM, "ADD_RBM_ADDS_RBM");
     read_pref_string(fp, eDOCUMENTS_MENU_SPECFILE, "DOCUMENTS_MENU_SPECFILE");
@@ -328,7 +328,6 @@ Boolean read_preferences_file(prefsStructP inPrefsStruct) {
     read_pref_string(fp, eMETER_FONT_FOREGROUND, "METER_FONT_FOREGROUND");
     read_pref_string(fp, eMETER_FONT_BACKGROUND, "METER_FONT_BACKGROUND");
     read_pref_boolean(fp, eMETER, "METER");
-    read_pref_boolean(fp, eBACKUP_FILES, "BACKUP_FILES");
     read_pref_string(fp, ePIX_BASENAME, "PIX_BASENAME");
     read_pref_int(fp, ePIX_COUNT, "PIX_COUNT");
     read_pref_string(fp, eACCEPT_LANGUAGE_STR, "ACCEPT_LANGUAGE_STR");
@@ -611,7 +610,7 @@ static Boolean write_preferences_file(prefsStructP inPrefsStruct) {
     write_pref_string(fp, eDEFAULT_FONT_CHOICE, "DEFAULT_FONT_CHOICE");
     write_pref_boolean(fp, eUSE_GLOBAL_HISTORY, "USE_GLOBAL_HISTORY");
     write_pref_string(fp, eHISTORY_FILE, "HISTORY_FILE");
-    write_pref_string(fp, eDEFAULT_HOTLIST_FILE, "DEFAULT_HOTLIST_FILE");
+    write_pref_string(fp, eDEFAULT_HOT_FILE, "DEFAULT_HOTLIST_FILE");
     write_pref_boolean(fp, eADD_HOTLIST_ADDS_RBM, "ADD_HOTLIST_ADDS_RBM");
     write_pref_boolean(fp, eADD_RBM_ADDS_RBM, "ADD_RBM_ADDS_RBM");
     write_pref_string(fp, eDOCUMENTS_MENU_SPECFILE, "DOCUMENTS_MENU_SPECFILE");
@@ -681,7 +680,6 @@ static Boolean write_preferences_file(prefsStructP inPrefsStruct) {
     write_pref_string(fp, eMETER_FONT_FOREGROUND, "METER_FONT_FOREGROUND");
     write_pref_string(fp, eMETER_FONT_BACKGROUND, "METER_FONT_BACKGROUND");
     write_pref_boolean(fp, eMETER, "METER");
-    write_pref_boolean(fp, eBACKUP_FILES, "BACKUP_FILES");
     write_pref_string(fp, ePIX_BASENAME, "PIX_BASENAME");
     write_pref_int(fp, ePIX_COUNT, "PIX_COUNT");
     write_pref_string(fp, eACCEPT_LANGUAGE_STR, "ACCEPT_LANGUAGE_STR");
@@ -808,9 +806,6 @@ void *get_pref(long pref_id) {
             break;
         case  eUSE_GLOBAL_HISTORY:
             return (void *)&(thePrefsStructP->RdataP->use_global_history);
-            break;
-        case  eDEFAULT_HOTLIST_FILE:
-            return (void *)(thePrefsStructP->RdataP->default_hotlist_file);
             break;
         case  eDEFAULT_HOT_FILE:
             return (void *)(thePrefsStructP->RdataP->default_hot_file);
@@ -1020,9 +1015,6 @@ void *get_pref(long pref_id) {
             break;
         case eMETER:
             return (void *)&(thePrefsStructP->RdataP->use_meter);
-            break;
-        case eBACKUP_FILES:
-            return (void *)&(thePrefsStructP->RdataP->backup_files);
             break;
         case ePIX_BASENAME:
             return (void *)(thePrefsStructP->RdataP->pix_basename);
@@ -1327,10 +1319,6 @@ void set_pref(long pref_id, void *incoming) {
             thePrefsStructP->RdataP->use_global_history =
                 *((Boolean *)incoming);
             break;
-        case  eDEFAULT_HOTLIST_FILE:
-            thePrefsStructP->RdataP->default_hotlist_file =
-                (char *)incoming;
-            break;
         case  eDEFAULT_HOT_FILE:
             thePrefsStructP->RdataP->default_hot_file =
                 (char *)incoming;
@@ -1598,10 +1586,6 @@ void set_pref(long pref_id, void *incoming) {
             break;
         case eMETER:
             thePrefsStructP->RdataP->use_meter =
-                *((Boolean *)incoming);
-            break;
-        case eBACKUP_FILES:
-            thePrefsStructP->RdataP->backup_files =
                 *((Boolean *)incoming);
             break;
         case ePIX_BASENAME:
