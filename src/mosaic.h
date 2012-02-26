@@ -120,7 +120,7 @@ typedef enum
 /* -------------------------------- MACROS -------------------------------- */
 /* ------------------------------------------------------------------------ */
 
-#define MO_VERSION_STRING "2.7b6"
+#define MO_VERSION_STRING "2.7b7"
 #define MO_HELP_ON_VERSION_DOCUMENT \
   "http://web.archive.org/web/19970606162156/http://www.ncsa.uiuc.edu./SDG/Software/XMosaic/help-on-version-2.7b5.html"
 
