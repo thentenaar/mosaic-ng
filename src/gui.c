@@ -3964,15 +3964,8 @@ void HT_SetExtraHeaders(char **headers);
  ****************************************************************************/
 void mo_do_gui (int argc, char **argv)
 {
-#ifdef MONO_DEFAULT
-    int use_color = 0;
-#else
-    int use_color = 1;
-#endif
     int no_defaults = 0;
     int color_set = 0;
-    char* display_name = getenv("DISPLAY");
-    Display* dpy;
     XrmDatabase intDB,appDB;
     Widget intWidget;
     int i;
@@ -3985,27 +3978,9 @@ void mo_do_gui (int argc, char **argv)
      XtAppInitialize() in case we need to catch something first. */
     for (i = 1; i < argc; i++)
     {
-        if (!strcmp (argv[i], "-mono"))
-        {
-            use_color = 0;
-            color_set = 1;
-	    continue;
-        }
-        if (!strcmp (argv[i], "-color"))
-        {
-            use_color = 1;
-            color_set = 1;
-	    continue;
-        }
         if (!strcmp (argv[i], "-nd"))
         {
             no_defaults = 1;
-	    continue;
-        }
-        if (!strcmp (argv[i], "-display"))
-        {
-            display_name = argv[i + 1];
-            i++;
 	    continue;
         }
         if(!strcmp(argv[i], "-geometry")) {
@@ -4027,20 +4002,8 @@ void mo_do_gui (int argc, char **argv)
     XmxSetArg (XmNwidth,1);
     XmxSetArg (XmNheight,1);
     XmxSetArg (XmNmappedWhenManaged, False);
-    /*
-     * Awful expensive to open and close the display just to find
-     * rhe depth information.
-     */
-    if ((dpy=XOpenDisplay(display_name))!=NULL) {
-	if (!color_set) {
-		use_color = DisplayPlanes(dpy, DefaultScreen(dpy)) > 1;
-	}
-	XCloseDisplay(dpy);
-    }
-    else {
-	fprintf(stderr,"Couldn't open display: %s\n",(!display_name?"(NULL)":display_name));
-    }
 
+    XtSetLanguageProc(NULL,NULL,NULL);
     if (no_defaults)
     {
         toplevel = XtAppInitialize 
@@ -4049,18 +4012,9 @@ void mo_do_gui (int argc, char **argv)
     }
     else
     {
-        if (use_color)
-        {
-            toplevel = XtAppInitialize 
-                (&app_context, "Mosaic", options, XtNumber (options),
-                 &argc, argv, color_resources, Xmx_wargs, Xmx_n);
-        }
-        else
-        {
-            toplevel = XtAppInitialize 
-                (&app_context, "Mosaic", options, XtNumber (options),
-                 &argc, argv, mono_resources, Xmx_wargs, Xmx_n);
-        }
+         toplevel = XtAppInitialize
+             (&app_context, "Mosaic", options, XtNumber (options),
+              &argc, argv, color_resources, Xmx_wargs, Xmx_n);
     }
 
     Xmx_n=0;
