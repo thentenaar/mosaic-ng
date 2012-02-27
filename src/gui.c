@@ -3795,7 +3795,8 @@ mo_status mo_open_initial_window (void)
   /* Set a timer that will actually cause the window to open. */
   XtAppAddTimeOut (app_context, 10, 
                    (XtTimerCallbackProc)fire_er_up, (XtPointer)True);
-
+  XtAppAddTimeOut (app_context, 1500,
+                   (XtTimerCallbackProc)kill_splash, (XtPointer)True);
   return mo_succeed;
 }
 
