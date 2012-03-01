@@ -634,17 +634,14 @@ get_mark(start, endp)
 	}
 
 	/* Better script kludge */
-	tchar = *(start+8); *(start+8) = 0;
-	if (caseless_equal(start,"<script ") || caseless_equal(start,"<script>")) {
-		*(start+8) = tchar; ptr = start+8;
-		while (*ptr != 0 && !comment) {
-			while (*ptr != '<' && *ptr != 0) ptr++;
-			if (*ptr != 0 && *(ptr+1) == '/') {
-				tchar = *(ptr+9); *(ptr+9) = 0;
-				if (caseless_equal(ptr,"</script>") && tchar != '/') {
-					*(ptr+9) = tchar; ptr += 9; comment = 1;
-				} else { *(ptr+9) = tchar; ptr++; }
-			} else ptr++;
+	if (!strncasecmp(start,"<script ",8) || !strncasecmp(start,"<script>",8)) {
+		ptr = start+8; comment = 0;
+		while (*ptr) {
+			while (*ptr && *ptr != '<') ptr++;
+			if (*ptr) {
+				if (!strncasecmp(ptr,"</script>",9)) { comment = 1; break; }
+				else ptr++;
+			}
 		}
 
 		if (comment) {
@@ -660,7 +657,7 @@ get_mark(start, endp)
 			mark->next = NULL;
 			return mark;
 		} else { *endp = ptr; return NULL; }
-	} else *(start+8) = tchar;
+	}
 
 	/* amb - check if we are in a comment, start tag is <!-- */
 	if (strncmp (start, "<!--", 4)==0)
@@ -920,15 +917,12 @@ HTMLParse(old_list, str, hw)
 	struct mark_up *mark;
 	struct mark_up *list;
 	struct mark_up *current;
+	unsigned long x_start;
 
 #ifndef DISABLE_TRACE
-	if (htmlwTrace) {
-#ifndef VMS
-		gettimeofday(&Tv, &Tz);
+	if (htmlwTrace && str) {
+		gettimeofday(&Tv, NULL); x_start = (Tv.tv_sec*1000000)+Tv.tv_usec;
 		fprintf(stderr, "HTMLParse enter (%ld.%ld)\n", Tv.tv_sec, Tv.tv_usec);
-#else
-                fprintf(stderr, "HTMLParse enter (%s)\n", asctime(localtime(&clock)));
-#endif
 	}
 #endif
 
@@ -1155,12 +1149,10 @@ HTMLParse(old_list, str, hw)
 
 #ifndef DISABLE_TRACE
 	if (htmlwTrace) {
-#ifndef VMS
-		gettimeofday(&Tv, &Tz);
-		fprintf(stderr, "HTMLParse exit (%ld.%ld)\n", Tv.tv_sec, Tv.tv_usec);
-#else
-                fprintf(stderr, "HTMLParse exit (%s)\n", asctime(localtime(&clock)));
-#endif
+		gettimeofday(&Tv, NULL);
+
+		unsigned long diff = (Tv.tv_sec*1000000 + Tv.tv_usec) - x_start;
+		fprintf(stderr, "HTMLParse exit [%ld sec, %ld msec, %ld usec]\n", diff / 1000000, (diff % 1000000) / 1000, (diff % 1000000) % 1000);
 	}
 #endif
 
