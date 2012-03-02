@@ -36,6 +36,11 @@
 #include <sys/file.h>
 #endif
 
+#include <unistd.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
 /* Apparently needed for AIX 3.2. */
 #ifndef FD_SETSIZE
 #define FD_SETSIZE 256
@@ -149,7 +154,6 @@ PUBLIC WWW_CONST char * HTInetString ARGS1(SockA*,sin)
     return string;
 }
 
-
 /*	Parse a network node address and port
 **	-------------------------------------
 **
@@ -215,11 +219,36 @@ PUBLIC int HTParseInet ARGS2(SockA *,sin, WWW_CONST char *,str)
         }
       else
         {
-	  extern int h_errno;
+	  extern int h_errno; void (*oldchld)(int); pid_t pid; time_t xx; int elapsed = 0;
 #if 0
           fprintf (stderr, "=+= Fetching on '%s'\n", host);
 #endif
-          alarm(10); phost = gethostbyname(host); alarm(0);
+
+          /**
+           * This is really, really dirty...
+           *
+           * Figure out how long it'll take to resolve the hostname, by doing it in another thread.
+           * We see how long that thread runs, or kill it if it takes too long. Then, if it was
+           * within our threshold, we resolve.
+           */
+          if (!(pid = fork())) {
+              phost = gethostbyname(host);
+              exit(0);
+          } else {
+              if (pid > 0) {
+                  /* Restore the default SIGCHLD handler (for waitpid(2)) */
+                  oldchld = signal(SIGCHLD,SIG_DFL);
+                  xx = time(NULL);
+                  while(waitpid(pid,NULL,WNOHANG) != pid)
+                      if (HTCheckActiveIcon(0) || (time(NULL) - xx) >= 6) { xx = 0; kill(pid,SIGKILL); break; }
+                  elapsed = time(NULL) - xx;
+                  signal(SIGCHLD,oldchld);
+              }
+
+              /* Now, retrieve it ourselves */
+              phost = (elapsed < 6) ? gethostbyname(host) : NULL;
+          }
+
           if (!phost) 
             {
 #ifndef DISABLE_TRACE

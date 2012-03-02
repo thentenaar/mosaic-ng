@@ -1342,7 +1342,6 @@ static XmxCallback (link_callback)
   return;
 }
 
-
 /* Exported to libwww2. */
 void mo_gui_notify_progress (char *msg)
 {
@@ -1381,7 +1380,7 @@ void UpdateButtons (Widget w)
       XButtonEvent *bevent = &(event.xbutton);
       if (bevent->window == XtWindow (current_win->logo))
         {
-          if (bevent->button == Button1) { connect_interrupt = 1; if (splash) kill_splash(); }
+          if (bevent->button == Button1) connect_interrupt = 1;
           XtDispatchEvent(&event);
         }
       /* else just throw it away... users shouldn't be pressing buttons
@@ -1477,9 +1476,6 @@ int mo_gui_check_icon (int twirl)
   mo_window *win = current_win;
   int ret;
   static int cnt=0;
-
-  /* Kill the splash screen after 2-3 sec. */
-  if (splash && time(NULL)-splash_start >= 2) kill_splash();
 
   if (twirl!=(-1) && twirl>0) {
 	if (!makeBusy) {
@@ -3566,6 +3562,15 @@ static mo_window *mo_open_another_window_internal (mo_window *win)
   return newwin;
 }
 
+static mo_window *alarm_win = NULL;
+static char *alarm_url = NULL;
+
+void mo_gui_handle_alarm() {
+  if (splash) kill_splash();
+  if (!alarm_win || !alarm_url) return;
+  mo_load_window_text(alarm_win, alarm_url, NULL);
+  alarm_win = NULL; alarm_url = NULL;
+}
 
 /****************************************************************************
  * name:    mo_open_window
@@ -3584,11 +3589,13 @@ mo_window *mo_open_window (Widget parent, char *url, mo_window *parentw)
   mo_window *win = NULL;
 
   win = mo_make_window (parent, parentw);
-
   mo_set_current_cached_win (win);
 
-  mo_load_window_text (win, url, NULL);
+  /* Give the user something to go on */
+  mo_gui_notify_progress("Loading...");
+  mo_gui_update_meter(0,"0%");
 
+  alarm_win = win; alarm_url = url; alarm(1);
   return win;
 }
 
@@ -3724,11 +3731,6 @@ static XmxCallback (fire_er_up)
   if (!strstr (init_document, ":"))
     init_document = mo_url_canonicalize_local (init_document);
 
-/* SWP -- Done in mo_url_prepend_protcol
-  if (startup_document && !strstr (startup_document, ":"))
-    startup_document = mo_url_canonicalize_local (startup_document);
-*/
-
 /* set the geometry values - dxp */
 
   if(!userSpecifiedGeometry) {
@@ -3795,8 +3797,6 @@ mo_status mo_open_initial_window (void)
   /* Set a timer that will actually cause the window to open. */
   XtAppAddTimeOut (app_context, 10, 
                    (XtTimerCallbackProc)fire_er_up, (XtPointer)True);
-  XtAppAddTimeOut (app_context, 1500,
-                   (XtTimerCallbackProc)kill_splash, (XtPointer)True);
   return mo_succeed;
 }
 
@@ -4471,10 +4471,7 @@ splash_goto:
     signal (SIGUSR1, (void *)ProcessExternalDirective);
 #endif
 
-    if(get_pref_boolean(eSPLASHSCREEN) && splash) {
-      if(!splash_cc) kill_splash();
-      else           splash_start = time(NULL);
-    }
+    if(get_pref_boolean(eSPLASHSCREEN) && splash && !splash_cc) kill_splash();
 
     createBusyCursors(toplevel);
     MakePixmaps(toplevel);

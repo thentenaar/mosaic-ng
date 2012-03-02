@@ -172,9 +172,10 @@ main (int argc, char **argv, char **envp)
   int i;
 
   userPath=getenv("PATH");
-  signal (SIGBUS, FatalProblem);
-  signal (SIGSEGV, FatalProblem);
-  signal (SIGILL, FatalProblem);
+  signal(SIGBUS,  FatalProblem);
+  signal(SIGSEGV, FatalProblem);
+  signal(SIGILL,  FatalProblem);
+  signal(SIGALRM, mo_gui_handle_alarm);
 
   /* Since we're doing lots of TCP, just ignore SIGPIPE altogether. */
   signal (SIGPIPE, SIG_IGN);

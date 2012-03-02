@@ -77,6 +77,7 @@ mo_status mo_not_busy (void);
 mo_status mo_redisplay_window (mo_window *);
 mo_status mo_set_current_cached_win (mo_window *);
 mo_status mo_delete_window (mo_window *);
+void mo_gui_handle_alarm();
 mo_window *mo_open_window (Widget, char *, mo_window *);
 mo_window *mo_duplicate_window (mo_window *);
 mo_window *mo_open_another_window (mo_window *, char *, char *, char *);
