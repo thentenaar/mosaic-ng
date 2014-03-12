@@ -516,11 +516,11 @@ static void mo_load_history_list (mo_window *win, Widget list)
 
 static XmxCallback (mailhist_win_cb)
 {
-  mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
+  mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
   char *to, *subj;
   FILE *fp;
 
-  switch (XmxExtractToken ((int)client_data))
+  switch (XmxExtractToken(client_data))
     {
     case 0:
       XtUnmanageChild (win->mailhist_win);
@@ -660,9 +660,9 @@ static mo_status mo_post_mailhist_win (mo_window *win)
 
 static XmxCallback (history_win_cb)
 {
-  mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
+  mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
 
-  switch (XmxExtractToken ((int)client_data))
+  switch (XmxExtractToken(client_data))
     {
     case 0:
       XtUnmanageChild (win->history_win);
@@ -684,7 +684,7 @@ static XmxCallback (history_win_cb)
 
 static XmxCallback (history_list_cb)
 {
-  mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
+  mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
   XmListCallbackStruct *cs = (XmListCallbackStruct *)call_data;
   
   mo_visit_position (win, cs->item_position);

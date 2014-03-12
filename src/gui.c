@@ -950,7 +950,7 @@ char buf[BUFSIZ];
 
 static XmxCallback (url_field_cb)
 {
-  mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
+  mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
   char *url,*xurl;
   XmTextVerifyCallbackStruct *cbs = (XmTextVerifyCallbackStruct *) call_data;
 
@@ -994,7 +994,7 @@ static XmxCallback (anchor_cb)
   char *href, *reftext;
 /*  char *access;*/
   static char *referer = NULL;
-  mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
+  mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
   XButtonReleasedEvent *event = 
     (XButtonReleasedEvent *)(((WbAnchorCallbackData *)call_data)->event);
   int force_newwin = (event->button == Button2 ? 1 : 0);
@@ -1579,7 +1579,7 @@ void mo_presentation_mode(mo_window *win) {
  ****************************************************************************/
 static XmxEventHandler (mo_view_keypress_handler)
 {
-  mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
+  mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid(client_data));
   int _bufsize = 3, _count;
   char _buffer[3];
   KeySym _key;
@@ -1887,7 +1887,7 @@ static XmxEventHandler (mo_view_keypress_handler)
 
 /* Callback to do mouse scrolling */
 static XmxEventHandler (mo_view_mousebutton_handler) {
-    mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
+    mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid(client_data));
     Widget sb; String params = "0";
 
     if (!win) return;

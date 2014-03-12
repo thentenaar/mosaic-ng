@@ -132,7 +132,7 @@
 #endif /* if 0 */
 
 /* Prototypes for internal routines found in Xmx.c. */
-extern int _XmxMakeClientData (int);
+extern long _XmxMakeClientData (int);
 
 /* Marc's defines. */
 #undef  private

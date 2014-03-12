@@ -238,8 +238,8 @@ char * HTParse(aName, relatedName, wanted)
                   {
 #ifndef DISABLE_TRACE
                     if (www2Trace)
-                      fprintf (stderr, "[Parse] Copying '%s' to '%s', %d bytes\n", 
-                               p+1, p, strlen (p+1));
+                      fprintf (stderr, "[Parse] Copying '%s' to '%s', %lu bytes\n",
+                               p+1, p, strlen(p+1));
 #endif
 /*
                     bcopy (p+1, p, strlen(p+1));
@@ -248,7 +248,7 @@ char * HTParse(aName, relatedName, wanted)
 #ifndef DISABLE_TRACE
                     if (www2Trace)
                       fprintf (stderr, "[Parse] Setting '%c' to 0...\n",
-                               *(p + strlen (p+1)));
+                               *(p + strlen(p+1)));
 #endif
                     *(p + strlen (p+1)) = '\0';
                   }

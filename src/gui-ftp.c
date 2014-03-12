@@ -102,7 +102,7 @@ static XmxCallback (ftpput_win_cb)
   Widget fsbList;
   XmString st;
   XmStringTable selected_items;
-  mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
+  mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
 	
   XtUnmanageChild (win->ftpput_win);  /* Down with the box */
   fsbList = XmFileSelectionBoxGetChild (win->ftpput_win, XmDIALOG_LIST);
@@ -207,11 +207,11 @@ mo_status mo_handle_ftpmkdir(mo_window *win)
 /*---------------------  mo_post_ftpmkdir_window ---------------------------------*/
 static XmxCallback (ftpmkdir_win_cb)
 {
-  mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
+  mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
   char *dirpath, tbuf[MAX_BUF_LEN+1];
   int ret;
 
-  switch (XmxExtractToken ((int)client_data)) {
+  switch (XmxExtractToken(client_data)) {
   
   case 0: /* Create dir */
     XtUnmanageChild (win->ftpmkdir_win);

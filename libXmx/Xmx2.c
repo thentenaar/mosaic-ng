@@ -130,12 +130,12 @@ _XmxMenuCreateRecord (Widget base)
 
 /* args NOT used on Widget */
 public void
-XmxRSetSensitive (XmxMenuRecord *rec, int token, int state)
+XmxRSetSensitive (XmxMenuRecord *rec, long token, int state)
 {
   XmxMenuEntry *_entry;
 
   assert (state == XmxSensitive || state == XmxUnsensitive);
-  _entry = _XmxMenuGetEntryFromRecord (rec, XmxExtractToken (token));
+  _entry = _XmxMenuGetEntryFromRecord (rec, XmxExtractToken((XtPointer)token));
   /* XtSetSensitive propagates down Widget hierarchy. */
   if (_entry)
     XtSetSensitive (_entry->w, (state == XmxSensitive) ? True : False);
@@ -147,12 +147,12 @@ XmxRSetSensitive (XmxMenuRecord *rec, int token, int state)
 
 /* args not used */
 public void
-XmxRSetToggleState (XmxMenuRecord *rec, int token, int state)
+XmxRSetToggleState (XmxMenuRecord *rec, long token, int state)
 {
   XmxMenuEntry *_entry;
 
   assert (state == XmxSet || state == XmxUnset);
-  _entry = _XmxMenuGetEntryFromRecord (rec, XmxExtractToken (token));
+  _entry = _XmxMenuGetEntryFromRecord (rec, XmxExtractToken((XtPointer)token));
   if (_entry)
     XmToggleButtonGadgetSetState 
       (_entry->w, (state == XmxSet) ? True : False, False);
@@ -179,11 +179,11 @@ XmxRUnsetAllToggles (XmxMenuRecord *rec)
 
 /* args used on Widget */
 public void
-XmxRSetOptionMenuHistory (XmxMenuRecord *rec, int token)
+XmxRSetOptionMenuHistory (XmxMenuRecord *rec, long token)
 {
   XmxMenuEntry *_entry;
 
-  _entry = _XmxMenuGetEntryFromRecord (rec, XmxExtractToken (token));
+  _entry = _XmxMenuGetEntryFromRecord (rec, XmxExtractToken((XtPointer)token));
   if (_entry)
     {
       XmxSetArg (XmNmenuHistory, (XtArgVal)(_entry->w));
@@ -198,12 +198,12 @@ XmxRSetOptionMenuHistory (XmxMenuRecord *rec, int token)
 
 /* args used on Widget */
 public void
-XmxRSetValues (XmxMenuRecord *rec, int token)
+XmxRSetValues (XmxMenuRecord *rec, long token)
 {
   XmxMenuEntry *_entry;
 
   /* Strip out uniqid, if present. */
-  _entry = _XmxMenuGetEntryFromRecord (rec, XmxExtractToken (token));
+  _entry = _XmxMenuGetEntryFromRecord (rec, XmxExtractToken((XtPointer)token));
   if (_entry)
     XtSetValues (_entry->w, Xmx_wargs, Xmx_n);
 
@@ -215,12 +215,12 @@ XmxRSetValues (XmxMenuRecord *rec, int token)
 
 /* args irrelevant */
 public Widget
-XmxRGetWidget (XmxMenuRecord *rec, int token)
+XmxRGetWidget (XmxMenuRecord *rec, long token)
 {
   XmxMenuEntry *_entry;
 
   /* Strip out uniqid, if present. */
-  _entry = _XmxMenuGetEntryFromRecord (rec, XmxExtractToken (token));
+  _entry = _XmxMenuGetEntryFromRecord (rec, XmxExtractToken((XtPointer)token));
 
   if (_entry)
     return _entry->w;

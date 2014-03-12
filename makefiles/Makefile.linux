@@ -109,10 +109,8 @@ static_xlibs = /usr/X11R6/lib/libXpm.a /usr/X11R6/lib/libXm.a /usr/X11R6/lib/lib
 #### For inline PNG support, the following should be defined:
 #### The libraries currently used are PNGLIB 0.81 and ZLIB 0.95
 
-pngdir = /usr
-pngincludedir = $(pngdir)/include
-pnglibs = -lpng -lz -lm
-pngflags =  -I$(pngincludedir) -DHAVE_PNG
+pnglibs  = `libpng-config --L_opts` `libpng-config --libs` -lz -lm
+pngflags = `libpng-config --cflags` -DHAVE_PNG
 
 #### JPEG SUPPORT
 #### For inline JPEG support, the following should be defined:

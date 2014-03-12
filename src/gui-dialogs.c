@@ -138,7 +138,7 @@ static XmxCallback (print_print_footer_cb)
 static XmxCallback (save_print_a4_cb)
 {
 
-mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid ((int)client_data));
+mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
 
 	XmxSetToggleButton(win->print_a4_toggle_save,
 			   !XmToggleButtonGetState(win->print_a4_toggle_save));
@@ -153,7 +153,7 @@ static XmxCallback (print_url_cb)
 {
     int i;
     mo_window *win =
-        mo_fetch_window_by_id(XmxExtractUniqid ((int)client_data));
+        mo_fetch_window_by_id(XmxExtractUniqid(client_data));
 
     XmxSetToggleButton(win->print_doc_only,
                        !XmToggleButtonGetState(win->print_doc_only));
@@ -166,7 +166,7 @@ static XmxCallback (print_url_cb)
 static XmxCallback (mail_print_a4_cb)
 {
 
-mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid ((int)client_data));
+mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
 
 	XmxSetToggleButton(win->print_a4_toggle_mail,
 			   !XmToggleButtonGetState(win->print_a4_toggle_mail));
@@ -180,7 +180,7 @@ mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid ((int)client_data));
 static XmxCallback (print_print_a4_cb)
 {
 
-mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid ((int)client_data));
+mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
 
 	XmxSetToggleButton(win->print_a4_toggle_print,
 			   !XmToggleButtonGetState(win->print_a4_toggle_print));
@@ -194,7 +194,7 @@ mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid ((int)client_data));
 static XmxCallback (save_print_us_cb)
 {
 
-mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid ((int)client_data));
+mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
 
 	XmxSetToggleButton(win->print_a4_toggle_save,
 			   !XmToggleButtonGetState(win->print_a4_toggle_save));
@@ -208,7 +208,7 @@ mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid ((int)client_data));
 static XmxCallback (mail_print_us_cb)
 {
 
-mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid ((int)client_data));
+mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
 
 	XmxSetToggleButton(win->print_a4_toggle_mail,
 			   !XmToggleButtonGetState(win->print_a4_toggle_mail));
@@ -222,7 +222,7 @@ mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid ((int)client_data));
 static XmxCallback (print_print_us_cb)
 {
 
-mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid ((int)client_data));
+mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
 
 	XmxSetToggleButton(win->print_a4_toggle_print,
 			   !XmToggleButtonGetState(win->print_a4_toggle_print));
@@ -331,8 +331,7 @@ mo_status mo_save_window(mo_window *win, char *fname,
 static XmxCallback (save_win_cb)
 {
   char *fname = (char *)malloc (sizeof (char) * 128), efname[128+1];
-  mo_window *win = mo_fetch_window_by_id 
-    (XmxExtractUniqid ((int)client_data));
+  mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
   char *ptr=NULL;
 
   mo_busy ();
@@ -431,13 +430,9 @@ int n;
 
 
 static XmxCallback (format_optmenu_cb) {
-
-mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
-  
-	win->save_format = XmxExtractToken ((int)client_data);
-
+    mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
+    win->save_format = XmxExtractToken(client_data);
 	format_sensitive(win,win->save_format);
-
 	return;
 }
 
@@ -597,8 +592,7 @@ static char *temp_binary_fnam;
 static XmxCallback (savebinary_cancel_cb)
 {
 /*  char *cmd;*/
-  mo_window *win = mo_fetch_window_by_id
-    (XmxExtractUniqid ((int)client_data));
+  mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
 
   if (unlink(temp_binary_fnam)<0) 
     {
@@ -641,8 +635,7 @@ static XmxCallback (savebinary_win_cb)
   char *fname = (char *)malloc (sizeof (char) * 128), efname[128+1];
   char *cmd;
   int retValue;
-  mo_window *win = mo_fetch_window_by_id
-    (XmxExtractUniqid ((int)client_data));
+  mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
 
   mo_busy ();
 
@@ -746,7 +739,7 @@ static XmxCallback (open_local_win_cb)
 {
   char *fname = NULL, efname[128+1];
   char *url;
-  mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
+  mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
 
   XtUnmanageChild (win->open_local_win);
   
@@ -791,10 +784,10 @@ mo_status mo_post_open_local_window (mo_window *win)
 
 static XmxCallback (open_win_cb)
 {
-  mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
+  mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
   char *url,*xurl;
 
-  switch (XmxExtractToken ((int)client_data))
+  switch (XmxExtractToken(client_data))
     {
     case 0:
       XtUnmanageChild (win->open_win);
@@ -910,11 +903,11 @@ mo_status mo_post_open_window (mo_window *win)
 
 static XmxCallback (mail_win_cb)
 {
-  mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
+  mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
   char *to, *subj, *text = 0, *content_type;
   int free_text;
 
-  switch (XmxExtractToken ((int)client_data))
+  switch (XmxExtractToken(client_data))
     {
     case 0:
       XtUnmanageChild (win->mail_win);
@@ -1067,13 +1060,9 @@ int n;
 
 
 static XmxCallback (mail_fmtmenu_cb) {
-
-mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
-  
-	win->mail_format = XmxExtractToken ((int)client_data);
-
-	mail_sensitive(win,win->mail_format);
-
+    mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid(client_data));
+    win->mail_format = XmxExtractToken(client_data);
+    mail_sensitive(win,win->mail_format);
 	return;
 }
 
@@ -1341,11 +1330,11 @@ mo_status mo_print_window(mo_window *win,
 
 static XmxCallback (print_win_cb)
 {
-  mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
+  mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
   char *lpr;
   int retValue;
 
-  switch (XmxExtractToken ((int)client_data))
+  switch (XmxExtractToken(client_data))
     {
     case 0:
       XtUnmanageChild (win->print_win);
@@ -1456,13 +1445,9 @@ int n;
 
 
 static XmxCallback (print_fmtmenu_cb) {
-
-mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
-  
-	win->print_format = XmxExtractToken ((int)client_data);
-
-	print_sensitive(win,win->print_format);
-
+    mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
+    win->print_format = XmxExtractToken(client_data);
+    print_sensitive(win,win->print_format);
 	return;
 }
 
@@ -1804,14 +1789,13 @@ char *ptr=NULL,*tptr=NULL,*my_str=NULL;
 
 
 static XmxCallback(source_search_win_cb) {
-
-mo_window *win=mo_fetch_window_by_id(XmxExtractUniqid((int)client_data));
+    mo_window *win=mo_fetch_window_by_id(XmxExtractUniqid(client_data));
 
 	if (!win) {
 		win=current_win;
 	}
 
-	switch (XmxExtractToken((int)client_data)) {
+	switch (XmxExtractToken(client_data)) {
 		case 0: { /* search */
 			char *str=
 				XmxTextGetString(win->src_search_win_text);
@@ -2034,10 +2018,9 @@ mo_status mo_post_source_search_window(mo_window *win) {
 
 
 static XmxCallback (source_win_cb) {
+    mo_window *win=mo_fetch_window_by_id(XmxExtractUniqid(client_data));
 
-mo_window *win=mo_fetch_window_by_id(XmxExtractUniqid((int)client_data));
-
-	switch (XmxExtractToken((int)client_data)) {
+	switch (XmxExtractToken(client_data)) {
 		case 0: { /* Dismiss */
 			XtUnmanageChild(win->source_win);
 			if (win->src_search_win && XtIsManaged(win->src_search_win)) {
@@ -2330,13 +2313,13 @@ mo_status mo_search_window(mo_window *win,char *str, int backward, int caseless,
 
 static XmxCallback (search_win_cb)
 {
-  mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
+  mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
 
   if (!win) {
 	win=current_win;
   }
 
-  switch (XmxExtractToken ((int)client_data))
+  switch (XmxExtractToken(client_data))
     {
     case 0: /* search */
       {

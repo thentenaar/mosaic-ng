@@ -112,30 +112,29 @@ XmxZeroUniqid (void)
 }
 
 int
-XmxExtractUniqid (int cd)
+XmxExtractUniqid (XtPointer cd)
 {
   /* Pull the high 16 bits, if uniqid has been set. */
   if (Xmx_uniqid_has_been_set)
-    return (cd >> 16);
+    return (int)((long)cd >> 16);
   else
     return 0;
 }
 
 int
-XmxExtractToken (int cd)
+XmxExtractToken (XtPointer cd)
 {
   /* Pull the low 16 bits, if uniqid has been set. */
   if (Xmx_uniqid_has_been_set)
-    return ((cd << 16) >> 16);
+    return (int)(((long)cd << 16) >> 16);
   else
-    return cd;
+    return (int)((long)cd & 0xffff);
 }
 
 /* This function should be called by every Xmx routine
    when registering a callback or event handler. */
 /* This is PRIVATE but accessible to Xmx2.c also. */
-int
-_XmxMakeClientData (int token)
+long _XmxMakeClientData (int token)
 {
   if (Xmx_uniqid_has_been_set)
     return ((Xmx_uniqid << 16) | token);

@@ -584,8 +584,8 @@ PRIVATE void HTMIME_put_character ARGS2(HTStream *, me, char, c)
               me->format = HTAtom_for(me->value);
 #ifndef DISABLE_TRACE
               if (www2Trace)
-                fprintf (stderr, "[MIME_put_char] Got content-type value atom 0x%08x\n",
-                         (unsigned int)me->format);
+                fprintf (stderr, "[MIME_put_char] Got content-type value atom %p\n",
+                         me->format);
 #endif
               break;
 	    case CONTENT_TRANSFER_ENCODING:

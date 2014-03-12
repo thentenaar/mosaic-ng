@@ -84,7 +84,7 @@ static XmxCallback (include_fsb_cb)
   FILE *fp;
   char line[MO_LINE_LENGTH], *status;
 
-  mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
+  mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
 
   if (!win)
     return;
@@ -151,12 +151,12 @@ static XmxCallback (include_fsb_cb)
 
 static XmxCallback (mailto_win_cb)
 {
-  mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
+  mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
   char *msg, *subj, *to;
   long pos;
   
   
-  switch (XmxExtractToken ((int)client_data))
+  switch (XmxExtractToken(client_data))
     {
     case 0:  /* send */
       XtUnmanageChild (win->mailto_win);
@@ -220,10 +220,10 @@ static XmxCallback (mailto_win_cb)
 
 static XmxCallback (mailto_form_win_cb)
 {
-  mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
+  mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
   char *subj, *to, *namestr;
   
-  switch (XmxExtractToken ((int)client_data))
+  switch (XmxExtractToken(client_data))
     {
     case 0:  /* send */
       XtUnmanageChild (win->mailto_form_win);

@@ -132,7 +132,7 @@ mem_block *block;
 
 #ifndef DISABLE_TRACE
 	if (nutTrace) {
-		fprintf(stderr,"allocateBlock: block(%d)\n",sizeof(block));
+		fprintf(stderr,"allocateBlock: block(%lu)\n",sizeof(block));
 	}
 #endif
 
@@ -174,7 +174,7 @@ mem_block *block;
 
 #ifndef DISABLE_TRACE
 	if (nutTrace) {
-		fprintf(stderr,"allocateBlock: block->memory(%d)\n",sizeof(block->memory));
+		fprintf(stderr,"allocateBlock: block->memory(%lu)\n",sizeof(block->memory));
 	}
 #endif
 
@@ -222,7 +222,7 @@ int reallocateBlock(mem_block *block) {
 
 #ifndef DISABLE_TRACE
 	if (nutTrace) {
-		fprintf(stderr,"reallocateBlock: block->memory(%d)\n",sizeof(block->memory));
+		fprintf(stderr,"reallocateBlock: block->memory(%lu)\n",sizeof(block->memory));
 		fprintf(stderr,"reallocateBlock: Leaving\n");
 	}
 #endif
@@ -314,7 +314,7 @@ void *ptr=NULL;
 
 #ifndef DISABLE_TRACE
 	if (nutTrace) {
-		fprintf(stderr,"balloc: ptr(%d), block->nextFree(%d)\n",sizeof(ptr),block->nextFree);
+		fprintf(stderr,"balloc: ptr(%lu), block->nextFree(%d)\n",sizeof(ptr),block->nextFree);
 		fprintf(stderr,"balloc: Leaving\n");
 	}
 #endif

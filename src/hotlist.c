@@ -532,13 +532,11 @@ static void mo_visit_hotlist_position (mo_window *win, int position)
 
 static XmxCallback (edit_or_insert_hot_cb)
 {
-  mo_window *win = mo_fetch_window_by_id 
-    (XmxExtractUniqid ((int)client_data));
+  mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
   char *title;
   edit_or_insert_hot_info *eht_info;
 
-
-  switch (XmxExtractToken ((int)client_data))
+  switch (XmxExtractToken(client_data))
     {
     case 0:			/* Commit Edit */
       URL_Include_Set(win,0,0);
@@ -1288,7 +1286,7 @@ static XmxCallback (save_hot_cb)
 {
   char *fname = NULL, efname[MO_LINE_LENGTH];
   FILE *fp;
-  mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
+  mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
 
   XtUnmanageChild (win->save_hotlist_win);
   mo_busy ();
@@ -1334,7 +1332,7 @@ static XmxCallback (load_hot_cb)
 {
   char *fname = NULL, efname[MO_LINE_LENGTH];
   FILE *fp;
-  mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
+  mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
 
   XtUnmanageChild (win->load_hotlist_win);
   mo_busy ();
@@ -1462,9 +1460,8 @@ static void delete_hot_from_list (mo_hotlist *list, mo_hot_item *hotnode,
 
 static XmxCallback (remove_confirm_cb)
 {
-  mo_window *win = mo_fetch_window_by_id 
-    (XmxExtractUniqid ((int)client_data));
-  int position = XmxExtractToken ((int)client_data);
+  mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
+  int position = XmxExtractToken(client_data);
 
   if (position)
     {
@@ -1524,12 +1521,11 @@ static mo_status mo_delete_position_from_current_hotlist (mo_window *win,
 
 static XmxCallback (mailhot_win_cb)
 {
-  mo_window *win = mo_fetch_window_by_id 
-    (XmxExtractUniqid ((int)client_data));
+  mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
   char *to, *subj;
   FILE *fp;
 
-  switch (XmxExtractToken ((int)client_data))
+  switch (XmxExtractToken(client_data))
     {
     case 0:
       XtUnmanageChild (win->mailhot_win);
@@ -1694,9 +1690,9 @@ mo_hot_item *hotnode;
 
 static XmxCallback (hotlist_win_cb)
 {
-  mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
+  mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
 
-  switch (XmxExtractToken ((int)client_data))
+  switch (XmxExtractToken(client_data))
     {
     case 0:
       XtUnmanageChild (win->hotlist_win);
@@ -1895,7 +1891,7 @@ static XmxCallback (hotlist_win_cb)
 
 static XmxCallback (hotlist_list_cb)
 {
-  mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
+  mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
   XmListCallbackStruct *cs = (XmListCallbackStruct *)call_data;
 
   URL_Include_Set(win,0,0);

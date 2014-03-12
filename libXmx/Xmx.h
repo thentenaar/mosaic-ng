@@ -225,8 +225,8 @@ typedef struct _XmxMenuRecord
 extern int XmxMakeNewUniqid (void);
 extern void XmxSetUniqid (int);
 extern void XmxZeroUniqid (void);
-extern int XmxExtractUniqid (int);
-extern int XmxExtractToken (int);
+extern int XmxExtractUniqid (XtPointer);
+extern int XmxExtractToken (XtPointer);
 
 extern void XmxAddCallback (Widget, String, XtCallbackProc, int);
 extern void XmxAddEventHandler (Widget, EventMask, XtEventHandler, int);
@@ -348,12 +348,12 @@ extern char *XmxModalPromptForPassword (Widget parent, XtAppContext app,
                                         char *nostr);
 
 /* Xmx2.c */
-extern void XmxRSetSensitive (XmxMenuRecord *, int, int);
-extern void XmxRSetToggleState (XmxMenuRecord *, int, int);
+extern void XmxRSetSensitive (XmxMenuRecord *, long, int);
+extern void XmxRSetToggleState (XmxMenuRecord *, long, int);
 extern void XmxRUnsetAllToggles (XmxMenuRecord *);
-extern void XmxRSetOptionMenuHistory (XmxMenuRecord *, int);
-extern void XmxRSetValues (XmxMenuRecord *, int);
-extern Widget XmxRGetWidget (XmxMenuRecord *, int);
+extern void XmxRSetOptionMenuHistory (XmxMenuRecord *, long);
+extern void XmxRSetValues (XmxMenuRecord *, long);
+extern Widget XmxRGetWidget (XmxMenuRecord *, long);
 
 extern XmxMenuRecord *XmxRMakeOptionMenu (Widget, String, XtCallbackProc, 
                                           XmxOptionMenuStruct *);

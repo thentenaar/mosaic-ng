@@ -72,11 +72,11 @@ static void links_list_cb(Widget w, XtPointer client, XtPointer call);
 
 static XmxCallback (links_win_cb)
 {
-  mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
+  mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
   int *posns, pcount;
   char *text,*fnam,*url;
   
-  switch (XmxExtractToken ((int)client_data)){
+  switch (XmxExtractToken(client_data)) {
   case 0: /* GOTO */
       if(XmListGetSelectedPos(win->links_list, &posns, &pcount)){
           if(pcount && XmStringGetLtoR(win->links_items[posns[0]-1],

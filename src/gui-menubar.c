@@ -118,7 +118,7 @@ static void mo_try_to_grok_menubar (void);
 
 static XmxCallback (exit_confirm_cb)
 {
-  if (XmxExtractToken ((int)client_data))
+  if (XmxExtractToken(client_data))
     mo_exit ();
   else
     XtUnmanageChild (w);
@@ -516,9 +516,9 @@ mo_status mo_set_underlines (mo_window *win, int choice)
 
 static XmxCallback (clear_history_confirm_cb)
 {
-  mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
+  mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
   
-  if (XmxExtractToken ((int)client_data))
+  if (XmxExtractToken(client_data))
     {
       mo_window *w = NULL;
       mo_wipe_global_history (win);
@@ -548,10 +548,8 @@ void mo_set_agents(mo_window *win, int which) {
 
 
 static XmxCallback (agent_menubar_cb) {
-
-mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
-int i = XmxExtractToken ((int)client_data);
-
+    int i = XmxExtractToken(client_data);
+    mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
 	mo_set_agents(win,i);
 	return;
 }
@@ -562,8 +560,8 @@ int i = XmxExtractToken ((int)client_data);
 XmxCallback (menubar_cb)
 {
   struct ele_rec *eptr = NULL;
-  mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid ((int)client_data));
-  int i = XmxExtractToken ((int)client_data);
+  mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid(client_data));
+  int i = XmxExtractToken(client_data);
   int j=0;
   char *grp, buf[512];
 

@@ -1687,9 +1687,8 @@ int res;
 
 
 static XmxCallback (upload_win_cb) {
-
-char *fname = (char *)malloc (sizeof (char) * 128);
-mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid ((int)client_data));
+    char *fname = (char *)malloc(sizeof (char) * 128);
+    mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
 
 	mo_busy();
 

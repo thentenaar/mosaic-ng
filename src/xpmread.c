@@ -565,7 +565,7 @@ ParseColors(data, ncolors, cpp, colorTablePtr, hashtable)
 	 * store the string in the hashtable with its color index number
 	 */
 	if (USE_HASHTABLE) {
-	    ErrorStatus = xpmHashIntern(hashtable, *cts, HashAtomData(a));
+	    ErrorStatus = xpmHashIntern(hashtable, *cts, HashAtomData((long)a));
 	    if (ErrorStatus != XpmSuccess) {
 		xpmFreeColorTable_(colorTable, ncolors);
 		return (ErrorStatus);

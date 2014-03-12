@@ -739,7 +739,7 @@ static int nextLWZ(FILE *fd)
 #endif
 			       return(code);
 			}
-			if ((int)sp >= ((int)stack + sizeof(stack)))
+			if (sp >= (int *)(stack + sizeof(stack)))
 			{
 #if 0
 			       ERROR("circular table STACK OVERFLOW!");
