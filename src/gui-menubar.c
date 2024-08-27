@@ -122,7 +122,7 @@ static XmxCallback (exit_confirm_cb)
     mo_exit ();
   else
     XtUnmanageChild (w);
-  
+
   return;
 }
 
@@ -459,7 +459,7 @@ mo_status mo_set_underlines (mo_window *win, int choice)
                      WbNanchorUnderlines, &(win->underlines),
                      WbNvisitedAnchorUnderlines, &(win->visited_underlines),
                      WbNdashedAnchorUnderlines, &(win->dashed_underlines),
-                     WbNdashedVisitedAnchorUnderlines, 
+                     WbNdashedVisitedAnchorUnderlines,
                      &(win->dashed_visited_underlines),
                      NULL);
       win->underlines_snarfed = 1;
@@ -471,7 +471,7 @@ mo_status mo_set_underlines (mo_window *win, int choice)
       XmxSetArg (WbNanchorUnderlines, win->underlines);
       XmxSetArg (WbNvisitedAnchorUnderlines, win->visited_underlines);
       XmxSetArg (WbNdashedAnchorUnderlines, win->dashed_underlines);
-      XmxSetArg (WbNdashedVisitedAnchorUnderlines, 
+      XmxSetArg (WbNdashedVisitedAnchorUnderlines,
                  win->dashed_visited_underlines);
       XmxSetValues (win->scrolled_win);
       break;
@@ -508,7 +508,7 @@ mo_status mo_set_underlines (mo_window *win, int choice)
   XmxRSetToggleState (win->menubar, win->underlines_state, XmxNotSet);
   XmxRSetToggleState (win->menubar, choice, XmxSet);
   win->underlines_state = choice;
-  
+
   return mo_succeed;
 }
 
@@ -517,7 +517,7 @@ mo_status mo_set_underlines (mo_window *win, int choice)
 static XmxCallback (clear_history_confirm_cb)
 {
   mo_window *win = mo_fetch_window_by_id(XmxExtractUniqid(client_data));
-  
+
   if (XmxExtractToken(client_data))
     {
       mo_window *w = NULL;
@@ -528,7 +528,7 @@ static XmxCallback (clear_history_confirm_cb)
     }
   else
     XtUnmanageChild (w);
-  
+
   return;
 }
 
@@ -553,7 +553,7 @@ static XmxCallback (agent_menubar_cb) {
 	mo_set_agents(win,i);
 	return;
 }
-  
+
 
 /* ------------------------------ menubar_cb ------------------------------ */
 
@@ -562,7 +562,6 @@ XmxCallback (menubar_cb)
   struct ele_rec *eptr = NULL;
   mo_window *win = mo_fetch_window_by_id (XmxExtractUniqid(client_data));
   int i = XmxExtractToken(client_data);
-  int j=0;
   char *grp, buf[512];
 
   if(!win)
@@ -572,7 +571,7 @@ XmxCallback (menubar_cb)
       win = current_win;
       eptr = acst->eptr;
     }
-  
+
   switch (i)
     {
     case mo_reload_document:
@@ -706,7 +705,7 @@ XmxCallback (menubar_cb)
 	}
 	mo_rbm_myself_to_death(win,0);
 	break;
-/* removed 5/17/96 - bjs 
+/* removed 5/17/96 - bjs
     case mo_fancy_selections:
       win->pretty = 1 - win->pretty;
       mo_set_fancy_selections_toggle (win);
@@ -798,15 +797,15 @@ XmxCallback (menubar_cb)
          NULL, NULL);
       break;
     case mo_help_faq:
-      mo_open_another_window (win, mo_assemble_help_url ("mosaic-faq.html"), 
+      mo_open_another_window (win, mo_assemble_help_url ("mosaic-faq.html"),
                               NULL, NULL);
       break;
     case mo_help_html:
-      mo_open_another_window (win, HTMLPRIMER_PAGE_DEFAULT, 
+      mo_open_another_window (win, HTMLPRIMER_PAGE_DEFAULT,
                               NULL, NULL);
       break;
     case mo_help_url:
-      mo_open_another_window (win, URLPRIMER_PAGE_DEFAULT, 
+      mo_open_another_window (win, URLPRIMER_PAGE_DEFAULT,
                               NULL, NULL);
       break;
     case mo_news_prev:
@@ -892,7 +891,7 @@ XmxCallback (menubar_cb)
       sprintf (buf, "news:*");
       mo_load_window_text (win, buf, NULL);
       break;
-      
+
     case mo_news_mread:
       gui_news_markGroupRead (win);
       break;
@@ -948,7 +947,8 @@ XmxCallback (menubar_cb)
         mo_post_links_window(win);
         break;
     default:
-      if (i >= DOCUMENTS_MENU_COUNT_OFFSET)
+      i -= DOCUMENTS_MENU_COUNT_OFFSET;
+      if (i >= 0 && i < MAX_DOCUMENTS_MENU_ITEMS)
         mo_access_document (win, urllist[i - DOCUMENTS_MENU_COUNT_OFFSET]);
       break;
     }
@@ -1457,13 +1457,13 @@ char buf[BUFSIZ];
 
 /* -------------------- mo_make_document_view_menubar --------------------- */
 
-/* We now allow a single customizable menu.  
+/* We now allow a single customizable menu.
 
    First choice for the spec file is the value of the resource
    documentsMenuSpecfile.
    If that doesn't exist, second choice is the value of the
    environment variable MOSAIC_DOCUMENTS_MENU_SPECFILE.
-   If *that* doesn't exist, third choice is specified in 
+   If *that* doesn't exist, third choice is specified in
    #define DOCUMENTS_MENU_SPECFILE. */
 
 static mo_status mo_file_exists (char *filename)
@@ -1471,7 +1471,7 @@ static mo_status mo_file_exists (char *filename)
   struct stat buf;
   int r;
 
-  r = stat (filename, &buf); 
+  r = stat (filename, &buf);
   if (r != -1)
     return mo_succeed;
   else
@@ -1492,10 +1492,10 @@ static void mo_grok_menubar (char *filename)
 /*    goto screwed_no_file;*/
 
   /* Make the menu. */
-  menu = (XmxMenubarStruct *) malloc 
+  menu = (XmxMenubarStruct *) malloc
     (MAX_DOCUMENTS_MENU_ITEMS * sizeof (XmxMenubarStruct));
   count = 0;
-  
+
   /* File consists of alternating titles and URL's.
      A title consisting of at least two leading dashes
      is a separator. */
@@ -1527,17 +1527,17 @@ static void mo_grok_menubar (char *filename)
           menu[count].func = (void (*)())menubar_cb;
           menu[count].data = count + DOCUMENTS_MENU_COUNT_OFFSET;
           menu[count].sub_menu = 0;
-          
+
           status = fgets (line, MO_LINE_LENGTH, fp);
           if (!status || !(*line))
             {
               /* Oops, something went wrong. */
               menu[count].namestr = 0;
-              
+
 /*              goto done;*/
 		break;
             }
-          
+
           /* There's a URL. */
           urllist[count] = strdup (line);
           urllist[count][strlen(line)-1] = '\0';
@@ -1586,7 +1586,7 @@ static void mo_grok_menubar (char *filename)
 static void mo_try_to_grok_menubar (void)
 {
   char *filename = get_pref_string(eDOCUMENTS_MENU_SPECFILE);
-  
+
   if (filename && mo_file_exists (filename))
     {
       mo_grok_menubar (filename);
@@ -1626,7 +1626,7 @@ XmxMenuRecord *toBeReturned;
       mo_try_to_grok_menubar ();
     }
 
-  toBeReturned = XmxRMakeMenubar(form, 
+  toBeReturned = XmxRMakeMenubar(form,
 				 get_pref_boolean(eSIMPLE_INTERFACE) ?
 				 simple_menuspec : menuspec);
 

@@ -5,7 +5,7 @@
 **	SGML file, create this object which is a parser. The object
 **	is (currently) created by being passed a DTD structure,
 **	and a target HTStructured oject at which to throw the parsed stuff.
-**	
+**
 **	 6 Feb 93  Binary seraches used. Intreface modified.
 */
 #include "../config.h"
@@ -13,6 +13,7 @@
 
 #include <ctype.h>
 #include <stdio.h>
+#include <string.h>
 #include "HTUtils.h"
 #include "HTChunk.h"
 #include "../libnut/str-tools.h"
@@ -30,7 +31,7 @@ extern int www2Trace;
 
 #define MAX_ATTRIBUTES 20	/* Max number of attributes per element */
 
-	
+
 /*		Element Stack
 **		-------------
 **	This allows us to return down the stack reselcting styles.
@@ -49,7 +50,7 @@ struct _HTElement {
 struct _HTStream {
 
     WWW_CONST HTStreamClass *	isa;		/* inherited from HTStream */
-    
+
     WWW_CONST SGML_dtd 		*dtd;
     HTStructuredClass	*actions;	/* target class  */
     HTStructured	*target;	/* target object */
@@ -58,11 +59,11 @@ struct _HTStream {
     int 		current_attribute_number;
     HTChunk		*string;
     HTElement		*element_stack;
-    enum sgml_state { S_text, S_litteral, S_tag, S_tag_gap, 
+    enum sgml_state { S_text, S_litteral, S_tag, S_tag_gap,
 		S_attr, S_attr_gap, S_equals, S_value,
 		S_ero, S_cro,
 		  S_squoted, S_dquoted, S_end, S_entity, S_junk_tag} state;
-#ifdef CALLERDATA		  
+#ifdef CALLERDATA
     void *		callerData;
 #endif
     BOOL present[MAX_ATTRIBUTES];	/* Flags: attribute is present? */
@@ -106,9 +107,9 @@ PRIVATE void handle_attribute_name(context, s)
 	    }
 	    return;
 	} /* if */
-	
+
     } /* for */
-    
+
 #ifndef DISABLE_TRACE
     if (www2Trace)
 	fprintf(stderr, "SGML: Unknown attribute %s for tag %s\n",
@@ -160,7 +161,7 @@ PRIVATE void handle_entity(context, term)
 
     WWW_CONST char ** entities = context->dtd->entity_names;
     WWW_CONST char *s = context->string->data;
-    
+
     int high, low, i, diff;
     for(low=0, high = context->dtd->number_of_entities;
     		high > low ;
@@ -175,7 +176,7 @@ PRIVATE void handle_entity(context, term)
     /* If entity string not found, display as text */
 #ifndef DISABLE_TRACE
     if (www2Trace)
-	fprintf(stderr, "SGML: Unknown entity %s\n", s); 
+	fprintf(stderr, "SGML: Unknown entity %s\n", s);
 #endif
     PUTC('&');
     {
@@ -212,7 +213,7 @@ PRIVATE void end_element(context, old_tag)
     while (context->element_stack) 	{/* Loop is error path only */
 	HTElement * N = context->element_stack;
 	HTTag * t = N->tag;
-	
+
 	if (old_tag != t) {		/* Mismatch: syntax error */
 	    if (context->element_stack->next) {	/* This is not the last level */
 #ifndef DISABLE_TRACE
@@ -229,15 +230,15 @@ PRIVATE void end_element(context, old_tag)
 	        return;			/* Ignore */
 	    }
 	}
-	
+
 	context->element_stack = N->next;		/* Remove from stack */
 	free(N);
 	(*context->actions->end_element)(context->target,
 		 t - context->dtd->tags);
 	if (old_tag == t) return;  /* Correct sequence */
-	
+
 	/* Syntax error path only */
-	
+
     }
 #ifndef DISABLE_TRACE
     if (www2Trace) fprintf(stderr,
@@ -256,7 +257,7 @@ PRIVATE void start_element(context)
 #endif
 {
     HTTag * new_tag = context->current_tag;
-    
+
 #ifndef DISABLE_TRACE
     if (www2Trace) fprintf(stderr, "SGML: Start <%s>\n", new_tag->name);
 #endif
@@ -331,7 +332,7 @@ PUBLIC void SGML_free  ARGS1(HTStream *, context)
 **   particular SGML context.
 */
 
-#ifdef CALLERDATA		  
+#ifdef CALLERDATA
 PUBLIC void* SGML_callerData ARGS1(HTStream *, context)
 {
     return context->callerData;
@@ -359,7 +360,7 @@ PUBLIC void SGML_character ARGS2(HTStream *, context, char,c)
 			))) {
 	    string->size = 0;
 	    context->state = S_ero;
-	    
+
 	} else if (c=='<') {
 	    string->size = 0;
 	    context->state = (context->element_stack &&
@@ -377,7 +378,7 @@ PUBLIC void SGML_character ARGS2(HTStream *, context, char,c)
 	if ( TOUPPER(c) != ((string->size ==1) ? '/'
 		: context->element_stack->tag->name[string->size-2])) {
 	    int i;
-	    
+
 	    /*	If complete match, end litteral */
 	    if ((c=='>') && (!context->element_stack->tag->name[string->size-2])) {
 		end_element(context, context->element_stack->tag);
@@ -390,20 +391,20 @@ PUBLIC void SGML_character ARGS2(HTStream *, context, char,c)
 	    for (i=0; i<string->size; i++)	/* recover */
 	       PUTC(
 	       				      string->data[i]);
-	    context->state = S_text;	
+	    context->state = S_text;
 	}
-	
+
         break;
 
 /*	Character reference or Entity
 */
    case S_ero:
    	if (c=='#') {
-	    context->state = S_cro;  /*   &# is Char Ref Open */ 
+	    context->state = S_cro;  /*   &# is Char Ref Open */
 	    break;
 	}
 	context->state = S_entity;    /* Fall through! */
-	
+
 /*	Handle Entities
 */
     case S_entity:
@@ -431,7 +432,7 @@ PUBLIC void SGML_character ARGS2(HTStream *, context, char,c)
 	break;
 
 /*		Tag
-*/	    
+*/
     case S_tag:				/* new tag */
 	if (isalnum(c))
 	    HTChunkPutc(string, c);
@@ -457,10 +458,10 @@ PUBLIC void SGML_character ARGS2(HTStream *, context, char,c)
 		break;
 	    }
 	    context->current_tag = t;
-	    
+
 	    /*  Clear out attributes
 	    */
-	    
+
 	    {
 	        int i;
 	        for (i=0; i< context->current_tag->number_of_attributes; i++)
@@ -468,7 +469,7 @@ PUBLIC void SGML_character ARGS2(HTStream *, context, char,c)
 	    }
 	    string->size = 0;
 	    context->current_attribute_number = INVALID;
-	    
+
 	    if (c=='>') {
 		if (context->current_tag->name) start_element(context);
 		context->state = S_text;
@@ -478,7 +479,7 @@ PUBLIC void SGML_character ARGS2(HTStream *, context, char,c)
 	}
 	break;
 
-		
+
     case S_tag_gap:		/* Expecting attribute or > */
 	if (WHITE(c)) break;	/* Gap between attributes */
 	if (c=='>') {		/* End of tag */
@@ -489,7 +490,7 @@ PUBLIC void SGML_character ARGS2(HTStream *, context, char,c)
 	HTChunkPutc(string, c);
 	context->state = S_attr;		/* Get attribute */
 	break;
-	
+
    				/* accumulating value */
     case S_attr:
 	if (WHITE(c) || (c=='>') || (c=='=')) {		/* End of word */
@@ -506,7 +507,7 @@ PUBLIC void SGML_character ARGS2(HTStream *, context, char,c)
 	    HTChunkPutc(string, c);
 	}
 	break;
-		
+
     case S_attr_gap:		/* Expecting attribute or = or > */
 	if (WHITE(c)) break;	/* Gap after attribute */
 	if (c=='>') {		/* End of tag */
@@ -520,8 +521,8 @@ PUBLIC void SGML_character ARGS2(HTStream *, context, char,c)
 	HTChunkPutc(string, c);
 	context->state = S_attr;		/* Get next attribute */
 	break;
-	
-    case S_equals:			/* After attr = */ 
+
+    case S_equals:			/* After attr = */
 	if (WHITE(c)) break;	/* Before attribute value */
 	if (c=='>') {		/* End of tag */
 #ifndef DISABLE_TRACE
@@ -530,7 +531,7 @@ PUBLIC void SGML_character ARGS2(HTStream *, context, char,c)
 	    if (context->current_tag->name) start_element(context);
 	    context->state = S_text;
 	    break;
-	    
+
 	} else if (c=='\'') {
 	    context->state = S_squoted;
 	    break;
@@ -542,7 +543,7 @@ PUBLIC void SGML_character ARGS2(HTStream *, context, char,c)
 	HTChunkPutc(string, c);
 	context->state = S_value;
 	break;
-	
+
     case S_value:
 	if (WHITE(c) || (c=='>')) {		/* End of word */
 	    HTChunkTerminate(string) ;
@@ -558,7 +559,7 @@ PUBLIC void SGML_character ARGS2(HTStream *, context, char,c)
 	    HTChunkPutc(string, c);
 	}
 	break;
-		
+
     case S_squoted:		/* Quoted attribute value */
 	if (c=='\'') {		/* End of attribute value */
 	    HTChunkTerminate(string) ;
@@ -569,7 +570,7 @@ PUBLIC void SGML_character ARGS2(HTStream *, context, char,c)
 	    HTChunkPutc(string, c);
 	}
 	break;
-	
+
     case S_dquoted:		/* Quoted attribute value */
 	if (c=='"') {		/* End of attribute value */
 	    HTChunkTerminate(string) ;
@@ -580,7 +581,7 @@ PUBLIC void SGML_character ARGS2(HTStream *, context, char,c)
 	    HTChunkPutc(string, c);
 	}
 	break;
-	
+
     case S_end:					/* </ */
 	if (isalnum(c))
 	    HTChunkPutc(string, c);
@@ -595,7 +596,7 @@ PUBLIC void SGML_character ARGS2(HTStream *, context, char,c)
 	    if (!t) {
 #ifndef DISABLE_TRACE
 		if(www2Trace) fprintf(stderr,
-		    "Unknown end tag </%s>\n", string->data); 
+		    "Unknown end tag </%s>\n", string->data);
 #endif
 	    } else {
 	        context->current_tag = t;
@@ -617,12 +618,12 @@ PUBLIC void SGML_character ARGS2(HTStream *, context, char,c)
 	}
 	break;
 
-		
+
     case S_junk_tag:
 	if (c=='>') {
 	    context->state = S_text;
 	}
-	
+
     } /* switch on context->state */
 
 }  /* SGML_character */
@@ -654,14 +655,14 @@ PRIVATE void SGML_handle_interrupt  ARGS1(HTStream *, context)
 /*	Structured Object Class
 **	-----------------------
 */
-PUBLIC WWW_CONST HTStreamClass SGMLParser = 
-{		
+PUBLIC WWW_CONST HTStreamClass SGMLParser =
+{
 	"SGMLParser",
 	SGML_free,
 	SGML_end,
 	SGML_character, 	SGML_string,  SGML_write,
         SGML_handle_interrupt
-}; 
+};
 
 /*	Create SGML Engine
 **	------------------
@@ -688,9 +689,9 @@ PUBLIC HTStream* SGML_new  ARGS2(
     					/* Ugh: no OO */
     context->state = S_text;
     context->element_stack = 0;			/* empty */
-#ifdef CALLERDATA		  
+#ifdef CALLERDATA
     context->callerData = (void*) callerData;
-#endif    
+#endif
     for(i=0; i<MAX_ATTRIBUTES; i++) context->value[i] = 0;
 
     return context;

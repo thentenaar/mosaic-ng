@@ -1,18 +1,18 @@
 /*                System dependencies in the W3 library
                                    SYSTEM DEPENDENCIES
-                                             
+
    System-system differences for TCP include files and macros. This
    file includes for each system the files necessary for network and
    file I/O.
-   
+
   AUTHORS
-  
+
   TBL                Tim Berners-Lee, W3 project, CERN, <timbl@info.cern.ch>
   EvA                     Eelco van Asperen <evas@cs.few.eur.nl>
   MA                      Marc Andreessen NCSA
   AT                      Aleksandar Totic <atotic@ncsa.uiuc.edu>
   SCW                     Susan C. Weber <sweber@kyle.eitech.com>
-                         
+
   HISTORY:
   22 Feb 91               Written (TBL) as part of the WWW library.
   16 Jan 92               PC code from EvA
@@ -37,7 +37,7 @@ Default values
 
    These values may be reset and altered by system-specific sections
    later on.  there are also a bunch of defaults at the end .
-   
+
  */
 /* Default values of those: */
 #define NETCLOSE close      /* Routine to close a TCP-IP socket         */
@@ -101,19 +101,19 @@ VAX/VMS
 
    Under VMS, there are many versions of TCP-IP. Define one if you do
    not use Digital's UCX product:
-   
+
   UCX                     DEC's "Ultrix connection" (default)
   WIN_TCP                 From Wollongong, now GEC software.
   MULTINET                From SRI, now from TGV Inv.
   DECNET                  Cern's TCP socket emulation over DECnet
-                           
+
    The last three do not interfere with the
    unix i/o library, and so they need special calls to read, write and
    close sockets. In these cases the socket number is a VMS channel
    number, so we make the @@@ HORRIBLE @@@ assumption that a channel
    number will be greater than 10 but a unix file descriptor less than
    10.  It works.
-   
+
  */
 #ifdef vms
 #ifdef WIN_TCP
@@ -220,13 +220,13 @@ extern int errno;
 Regular BSD unix versions
 
    These are a default unix where not already defined specifically.
-   
+
  */
 #ifndef INCLUDES_DONE
 #include <sys/types.h>
 /* #include <streams/streams.h>                 not ultrix */
 #include <string.h>
-
+#include <unistd.h>
 #include <errno.h>          /* independent */
 #include <sys/time.h>       /* independent */
 #include <sys/stat.h>
@@ -256,7 +256,7 @@ Regular BSD unix versions
 Defaults
 
   INCLUDE FILES FOR TCP
-  
+
  */
 #ifndef TCP_INCLUDES_DONE
 #include <sys/ioctl.h> /* EJB */
@@ -266,13 +266,14 @@ Defaults
 #include <arpa/inet.h>      /* Must be after netinet/in.h */
 #endif
 #include <netdb.h>
+#include <unistd.h>
 #endif  /* TCP includes */
 
 
 /*
 
   MACROS FOR MANIPULATING MASKS FOR SELECT()
-  
+
  */
 #ifdef SELECT
 #ifndef FD_SET

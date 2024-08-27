@@ -54,8 +54,8 @@
 #include "../config.h"
 #ifndef VMS
 #include <sys/time.h>
-struct timeval Tv;
-struct timezone Tz;
+static struct timeval Tv;
+static struct timezone Tz;
 #else
 #include <time.h>
 #endif
@@ -245,7 +245,7 @@ clean_white_space(txt)
 		}
 
 		/*
-		 * If there are more words, insert a space and if space was 
+		 * If there are more words, insert a space and if space was
 		 * removed move up remaining text.
 		 */
 		*start++ = ' ';
@@ -323,7 +323,7 @@ ExpandEscapes(esc, endp, termination)
 	{
 		int escLen, ampLen;
 		cnt = 0;
-		escLen = strlen(esc);	
+		escLen = strlen(esc);
 		while (AmpEscapes[cnt].tag != NULL)
 		{
 			ampLen = strlen(AmpEscapes[cnt].tag);
@@ -695,7 +695,7 @@ get_mark(start, endp)
 		    ptr += 2;
 		    while ((*ptr != '\0') && ((*ptr == ' ') || (*ptr == '\n')
 					      || (*ptr == '-') ))
-		      ptr++;                   /* skip spaces and newlines */ 
+		      ptr++;                   /* skip spaces and newlines */
 		    if (*ptr == '>')                /* completed end comment */
 		      {
 			*endp = ptr;
@@ -1087,13 +1087,13 @@ HTMLParse(old_list, str, hw)
 				tmp_bgname=NULL;
 			}
 		    }
-                    
+
 		    mark->next = NULL;
                     current = AddObj(&list, current, mark, preformat);
-                    
+
 		}
-                
-                
+
+
 
 		start = (char *)(end + 1);
 
@@ -1517,7 +1517,7 @@ AnchorTag(ptrp, startp, endp)
 		ptr++;
             }
         }
-        
+
 	/*
 	 * For a tag with no value, this is a boolean flag.
 	 * Return the string "1" so we know the tag is there.

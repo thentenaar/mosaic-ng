@@ -126,7 +126,7 @@ XmxExtractToken (XtPointer cd)
 {
   /* Pull the low 16 bits, if uniqid has been set. */
   if (Xmx_uniqid_has_been_set)
-    return (int)(((long)cd << 16) >> 16);
+    return (int)(((long)cd << 16) >> 16) & 0xffff;
   else
     return (int)((long)cd & 0xffff);
 }
@@ -170,7 +170,7 @@ void
 XmxAddEventHandler (Widget w, EventMask event_mask, XtEventHandler proc,
                     int client_data)
 {
-  XtAddEventHandler 
+  XtAddEventHandler
     (w, event_mask, False, proc, (XtPointer)_XmxMakeClientData (client_data));
 
   return;
@@ -194,19 +194,19 @@ XmxRemoveEventHandler (Widget w, EventMask event_mask, XtEventHandler proc,
 /* Adapted from Dan Heller's post in comp.windows.x.motif;
    assumes BulletinBoard with one (centered) child. */
 static void
-XmxCenteringResize 
+XmxCenteringResize
   (CompositeWidget w, XConfigureEvent *event, String args[], int *num_args)
 {
   WidgetList children;
   int width = event->width;
   int height = event->height;
-  Dimension w_width, w_height; 
-  
+  Dimension w_width, w_height;
+
   /* get handle to BulletinBoard's children and marginal spacing */
   XtVaGetValues (w,
                  XmNchildren, &children,
                  NULL);
-  
+
   XtVaGetValues (children[0],
                  XmNheight, &w_height,
                  XmNwidth, &w_width,
@@ -215,7 +215,7 @@ XmxCenteringResize
                  XmNx, width/2 - w_width/2,
                  XmNy, height/2 - w_height/2,
                  NULL);
-                 
+
   return;
 }
 
@@ -256,7 +256,7 @@ void XmxManageRemanage (Widget w)
     XtUnmanageChild (w);
   XtManageChild (w);
 #endif
-  
+
   if (XtIsManaged (w))
     if (XtIsShell(w))
       XRaiseWindow (XtDisplay (w), XtWindow (w));
@@ -296,7 +296,7 @@ Widget XmxMakePushButton (Widget parent, String name, XtCallbackProc cb,
     }
   Xmx_w = XtCreateManagedWidget ("pushbutton", xmPushButtonWidgetClass,
                                  parent, Xmx_wargs, Xmx_n);
-  XtAddCallback (Xmx_w, XmNactivateCallback, cb, 
+  XtAddCallback (Xmx_w, XmNactivateCallback, cb,
                  (XtPointer)_XmxMakeClientData (cb_data));
 
   if (xmstr)
@@ -307,12 +307,12 @@ Widget XmxMakePushButton (Widget parent, String name, XtCallbackProc cb,
 }
 
 /* args work */
-Widget XmxMakeNamedPushButton (Widget parent, String name, String wname, 
+Widget XmxMakeNamedPushButton (Widget parent, String name, String wname,
                                XtCallbackProc cb,
                                int cb_data)
 {
   XmString label;
-  
+
   if (name)
     {
       label = XmStringCreateLtoR (name, XmSTRING_DEFAULT_CHARSET);
@@ -320,7 +320,7 @@ Widget XmxMakeNamedPushButton (Widget parent, String name, String wname,
     }
   Xmx_w = XtCreateManagedWidget (wname, xmPushButtonWidgetClass,
                                  parent, Xmx_wargs, Xmx_n);
-  XtAddCallback (Xmx_w, XmNactivateCallback, cb, 
+  XtAddCallback (Xmx_w, XmNactivateCallback, cb,
                  (XtPointer)_XmxMakeClientData (cb_data));
   if (name)
     XmStringFree (label);
@@ -335,9 +335,9 @@ Widget XmxMakeBlankButton (Widget parent, XtCallbackProc cb,
 {
   Xmx_w = XtCreateManagedWidget ("blankbutton", xmPushButtonWidgetClass,
                                  parent, Xmx_wargs, Xmx_n);
-  XtAddCallback (Xmx_w, XmNactivateCallback, cb, 
+  XtAddCallback (Xmx_w, XmNactivateCallback, cb,
                  (XtPointer)_XmxMakeClientData (cb_data));
-  
+
   Xmx_n = 0;
   return Xmx_w;
 }
@@ -345,7 +345,7 @@ Widget XmxMakeBlankButton (Widget parent, XtCallbackProc cb,
 /* ------------------------------- COMMAND -------------------------------- */
 
 /* args work */
-Widget XmxMakeCommand 
+Widget XmxMakeCommand
   (Widget parent, String prompt, XtCallbackProc cb, int cb_data)
 {
   XmString xmstr = XmxMakeXmstrFromString (prompt);
@@ -353,8 +353,8 @@ Widget XmxMakeCommand
   XmxSetArg (XmNpromptString, (XtArgVal)xmstr);
   Xmx_w = XtCreateManagedWidget ("command", xmCommandWidgetClass, parent,
 				 Xmx_wargs, Xmx_n);
-  XtAddCallback 
-    (Xmx_w, XmNcommandEnteredCallback, cb, 
+  XtAddCallback
+    (Xmx_w, XmNcommandEnteredCallback, cb,
      (XtPointer)_XmxMakeClientData (cb_data));
 
   XmStringFree (xmstr);
@@ -375,7 +375,7 @@ Widget XmxMakeScrolledList
      along with it... */
   XtAddCallback (Xmx_w, XmNdefaultActionCallback, cb,
                  (XtPointer)_XmxMakeClientData (cb_data));
-  
+
   Xmx_n = 0;
   return Xmx_w;
 }
@@ -432,7 +432,7 @@ Widget XmxMakeToggleButton (Widget parent, String name, XtCallbackProc cb,
     ("togglebutton", xmToggleButtonWidgetClass, parent, Xmx_wargs, Xmx_n);
   /* Used to be XmNarmCallback --- probably not right. */
   if (cb)
-    XtAddCallback (Xmx_w, XmNvalueChangedCallback, cb, 
+    XtAddCallback (Xmx_w, XmNvalueChangedCallback, cb,
                    (XtPointer)_XmxMakeClientData (cb_data));
 
   XmStringFree (label);
@@ -445,7 +445,7 @@ Widget XmxMakeToggleButton (Widget parent, String name, XtCallbackProc cb,
 void XmxSetToggleButton (Widget button, int set_state)
 {
   assert (set_state == XmxSet || set_state == XmxUnset);
-  XmToggleButtonSetState 
+  XmToggleButtonSetState
     (button, (set_state == XmxSet) ? True : False, False);
 
   Xmx_n = 0;
@@ -477,10 +477,10 @@ Widget XmxMakeScale (Widget parent, XtCallbackProc cb, int cb_data,
   Xmx_w = XtCreateManagedWidget ("scale", xmScaleWidgetClass, parent,
                                  Xmx_wargs, Xmx_n);
 
-  XtAddCallback 
-    (Xmx_w, XmNvalueChangedCallback, cb, 
+  XtAddCallback
+    (Xmx_w, XmNvalueChangedCallback, cb,
      (XtPointer)_XmxMakeClientData (cb_data));
-  XtAddCallback (Xmx_w, XmNdragCallback, cb, 
+  XtAddCallback (Xmx_w, XmNdragCallback, cb,
                  (XtPointer)_XmxMakeClientData (cb_data));
 
   Xmx_n = 0;
@@ -572,7 +572,7 @@ void XmxSetOffsets (Widget w, int top, int bottom, int left, int right)
     XmxSetArg (XmNleftOffset, (XtArgVal)left);
   if (right != XmxNoOffset)
     XmxSetArg (XmNrightOffset, (XtArgVal)right);
-  
+
   XmxSetValues (w);
 
   Xmx_n = 0;
@@ -580,7 +580,7 @@ void XmxSetOffsets (Widget w, int top, int bottom, int left, int right)
 }
 
 /* args sent to w */
-void XmxSetConstraints (Widget w, 
+void XmxSetConstraints (Widget w,
 			int top, int bottom, int left, int right,
 			Widget topw, Widget botw, Widget lefw, Widget rigw)
 {
@@ -590,7 +590,7 @@ void XmxSetConstraints (Widget w,
       if (topw)
         XmxSetArg (XmNtopWidget, (XtArgVal)topw);
     }
-  
+
   if (bottom != XmATTACH_NONE)
     {
       XmxSetArg (XmNbottomAttachment, (XtArgVal)bottom);
@@ -611,7 +611,7 @@ void XmxSetConstraints (Widget w,
       if (rigw)
         XmxSetArg (XmNrightWidget, (XtArgVal)rigw);
     }
-  
+
   XmxSetValues (w);
 
   Xmx_n = 0;
@@ -704,7 +704,7 @@ Widget XmxMakeCenteringBboard (Widget parent, XtAppContext app)
 {
   XtActionsRec rec;
 
-  Xmx_w = XtCreateManagedWidget 
+  Xmx_w = XtCreateManagedWidget
     ("bboard", xmBulletinBoardWidgetClass, parent, Xmx_wargs, Xmx_n);
 
   /* Does this have to happen more than once? */
@@ -713,9 +713,9 @@ Widget XmxMakeCenteringBboard (Widget parent, XtAppContext app)
   XtAppAddActions (app, &rec, 1);
 
   /* This does, for sure... */
-  XtOverrideTranslations 
+  XtOverrideTranslations
     (Xmx_w, XtParseTranslationTable ("<Configure>: resize()"));
-  
+
   Xmx_n = 0;
   return Xmx_w;
 }
@@ -829,9 +829,9 @@ Widget XmxMakeQuestionDialog (Widget parent, String question, String title,
   Xmx_w = XmCreateQuestionDialog (parent, "question", Xmx_wargs, Xmx_n);
   XtUnmanageChild (XmMessageBoxGetChild (Xmx_w, XmDIALOG_HELP_BUTTON));
 
-  XtAddCallback (Xmx_w, XmNcancelCallback, cb, 
+  XtAddCallback (Xmx_w, XmNcancelCallback, cb,
                  (XtPointer)_XmxMakeClientData (no_token));
-  XtAddCallback (Xmx_w, XmNokCallback, cb, 
+  XtAddCallback (Xmx_w, XmNokCallback, cb,
                  (XtPointer)_XmxMakeClientData (yes_token));
 
   XmStringFree (message);
@@ -920,21 +920,21 @@ Widget XmxMakeFileSBDialog (Widget parent, String title, String selection_txt,
   XmxSetArg (XmNdialogTitle, (XtArgVal)dialog_title);
   /* Can't set width of box with XmNwidth here... why not? */
 
-  /* this will cause the dialog to only resize if needed. That 
+  /* this will cause the dialog to only resize if needed. That
      way it won't be growing and shrinking all the time... very annoying. - DXP */
   XmxSetArg (XmNresizePolicy, (XtArgVal)XmRESIZE_GROW);
 
   /* Create the FileSelectionBox with OK and Cancel buttons. */
   Xmx_w = XmCreateFileSelectionDialog (parent, "fsb", Xmx_wargs, Xmx_n);
   XtUnmanageChild (XmFileSelectionBoxGetChild (Xmx_w, XmDIALOG_HELP_BUTTON));
-  XtAddCallback (Xmx_w, XmNokCallback, cb, 
+  XtAddCallback (Xmx_w, XmNokCallback, cb,
                  (XtPointer)_XmxMakeClientData (cb_data));
-  XtAddCallback (Xmx_w, XmNcancelCallback, 
+  XtAddCallback (Xmx_w, XmNcancelCallback,
                  (XtCallbackProc)_XmxCancelCallback, 0);
 
   /* Set selection label to specified selection_txt. */
   Xmx_n = 0;
-  _selection_label = 
+  _selection_label =
     XmFileSelectionBoxGetChild (Xmx_w, XmDIALOG_SELECTION_LABEL);
   XmxSetArg (XmNlabelString, (XtArgVal)label);
   XtSetValues (_selection_label, Xmx_wargs, Xmx_n);
@@ -976,7 +976,7 @@ XmxCallback(_XmxHelpTextCancelCallback)
 }
 
 /* args work */
-Widget XmxMakeHelpTextDialog 
+Widget XmxMakeHelpTextDialog
   (Widget parent, String str, String title, Widget *text_w)
 {
   Widget _box, _outer_frame, _form;
@@ -1012,17 +1012,17 @@ Widget XmxMakeHelpTextDialog
   _sep = XmxMakeHorizontalSeparator (_form);
 
   /* Make an OK button. */
-  _buttons_form = XmxMakeFormAndOneButton 
+  _buttons_form = XmxMakeFormAndOneButton
     (_form, _XmxHelpTextCancelCallback, "OK", 0);
 
   /* Constraints for _form. */
-  XmxSetConstraints 
-    (XtParent (_scr_text), XmATTACH_FORM, XmATTACH_WIDGET, XmATTACH_FORM, 
+  XmxSetConstraints
+    (XtParent (_scr_text), XmATTACH_FORM, XmATTACH_WIDGET, XmATTACH_FORM,
      XmATTACH_FORM, NULL, _sep, NULL, NULL);
-  XmxSetConstraints 
+  XmxSetConstraints
     (_sep, XmATTACH_NONE, XmATTACH_WIDGET, XmATTACH_FORM, XmATTACH_FORM,
      NULL, _buttons_form, NULL, NULL);
-  XmxSetConstraints 
+  XmxSetConstraints
     (_buttons_form, XmATTACH_NONE, XmATTACH_FORM, XmATTACH_FORM, XmATTACH_FORM,
      NULL, NULL, NULL, NULL);
 
@@ -1081,7 +1081,7 @@ Widget XmxMakeHorizontalSpacer (Widget parent)
   XmString label = XmStringCreateLtoR (" ", XmSTRING_DEFAULT_CHARSET);
 
   XmxSetArg (XmNlabelString, (XtArgVal)label);
-  Xmx_w = XtCreateManagedWidget ("label", xmLabelGadgetClass, parent, 
+  Xmx_w = XtCreateManagedWidget ("label", xmLabelGadgetClass, parent,
                                  Xmx_wargs, Xmx_n);
 
   XmStringFree (label);
@@ -1112,7 +1112,7 @@ Widget XmxMakeScrolledText (Widget parent)
 				Xmx_wargs, Xmx_n);
   XtManageChild (Xmx_w);
 
-  /* Remember this returns the Text Widget, NOT the ScrolledWindow Widget, 
+  /* Remember this returns the Text Widget, NOT the ScrolledWindow Widget,
      which is what needs to be tied into a form.  Use XtParent to get the
      actual ScrolledWindow. */
   Xmx_n = 0;
@@ -1164,7 +1164,7 @@ String XmxTextGetString (Widget text)
 /* args do nothing */
 void XmxAddCallbackToText (Widget text, XtCallbackProc cb, int cb_data)
 {
-  XtAddCallback (text, XmNactivateCallback, cb, 
+  XtAddCallback (text, XmNactivateCallback, cb,
                  (XtPointer)_XmxMakeClientData (cb_data));
   return;
 }
@@ -1177,7 +1177,7 @@ void XmxAddCallbackToText (Widget text, XtCallbackProc cb, int cb_data)
 #ifdef __sgi
 /* args work */
 Widget
-XmxMakeDrawingVolume 
+XmxMakeDrawingVolume
   (Widget parent, int width, int height,
    GLXconfig *glxConfig,
    XtCallbackProc redraw_cb, XtCallbackProc resize_cb,
@@ -1190,11 +1190,11 @@ XmxMakeDrawingVolume
   Xmx_w = GlxCreateMDraw (parent, "drawingvolume", Xmx_wargs, Xmx_n);
   XtManageChild (Xmx_w);
 
-  XtAddCallback (Xmx_w, GlxNexposeCallback, redraw_cb, 
+  XtAddCallback (Xmx_w, GlxNexposeCallback, redraw_cb,
                  (XtPointer)_XmxMakeClientData (0));
-  XtAddCallback (Xmx_w, GlxNresizeCallback, resize_cb, 
+  XtAddCallback (Xmx_w, GlxNresizeCallback, resize_cb,
                  (XtPointer)_XmxMakeClientData (0));
-  XtAddCallback (Xmx_w, GlxNginitCallback, ginit_cb, 
+  XtAddCallback (Xmx_w, GlxNginitCallback, ginit_cb,
                  (XtPointer)_XmxMakeClientData (0));
 
   Xmx_n = 0;
@@ -1218,7 +1218,7 @@ void XmxInstallColormapsWithOverlay (Widget toplevel, Widget glw)
   Window overlay, popup, underlay;
   Arg args[5];
   register int i=0;
-  
+
   i=0;
   XtSetArg(args[i], GlxNoverlayWindow, &overlay); i++;
   XtSetArg(args[i], GlxNpopupWindow, &popup); i++;
@@ -1243,7 +1243,7 @@ void XmxInstallColormapsWithOverlay (Widget toplevel, Widget glw)
   windows[i] = XtWindow(glw); i++;
   windows[i] = XtWindow(toplevel); i++;
   XSetWMColormapWindows(XtDisplay(toplevel), XtWindow(toplevel), windows, i);
-  
+
   return;
 }
 
@@ -1270,11 +1270,11 @@ XmxMakeDrawingVolume
     ("drawingvolume", glibWidgetClass, parent, Xmx_wargs, Xmx_n);
   XtManageChild (Xmx_w);
 
-  XtAddCallback (Xmx_w, XglNexposeCallback, redraw_cb, 
+  XtAddCallback (Xmx_w, XglNexposeCallback, redraw_cb,
                  (XtPointer)_XmxMakeClientData (0));
-  XtAddCallback (Xmx_w, XglNresizeCallback, resize_cb, 
+  XtAddCallback (Xmx_w, XglNresizeCallback, resize_cb,
                  (XtPointer)_XmxMakeClientData (0));
-  XtAddCallback (Xmx_w, XglNgconfigCallback, ginit_cb, 
+  XtAddCallback (Xmx_w, XglNgconfigCallback, ginit_cb,
                  (XtPointer)_XmxMakeClientData (0));
 
   Xmx_n = 0;
@@ -1362,7 +1362,7 @@ void XmxApplyPixmapToLabelWidget
 /* ------------------------ DIALOG CONTROL BUTTONS ------------------------ */
 
 /* args apply to form */
-Widget XmxMakeFormAndOneButton (Widget parent, XtCallbackProc cb, 
+Widget XmxMakeFormAndOneButton (Widget parent, XtCallbackProc cb,
                                 String name1, int cb_data1)
 {
   Widget _form, _button1;
@@ -1373,19 +1373,19 @@ Widget XmxMakeFormAndOneButton (Widget parent, XtCallbackProc cb,
 
   _button1 = XmxMakePushButton (_form, name1, cb, cb_data1);
 
-  XmxSetConstraints 
+  XmxSetConstraints
     (_button1, XmATTACH_FORM, XmATTACH_FORM, XmATTACH_NONE, XmATTACH_NONE,
      NULL, NULL, NULL, NULL);
   XmxSetPositions (_button1, XmxNoPosition, XmxNoPosition, 1, 2);
   XmxSetOffsets (_button1, XmxNoOffset, XmxNoOffset, 8, 8);
-  
+
   Xmx_n = 0;
   Xmx_w = _form;
   return Xmx_w;
 }
 
 /* args apply to form */
-Widget XmxMakeFormAndTwoButtons 
+Widget XmxMakeFormAndTwoButtons
   (Widget parent, XtCallbackProc cb,
    String name1, String name2,
    int cb_data1, int cb_data2)
@@ -1399,17 +1399,17 @@ Widget XmxMakeFormAndTwoButtons
   _button1 = XmxMakePushButton (_form, name1, cb, cb_data1);
   _button2 = XmxMakePushButton (_form, name2, cb, cb_data2);
 
-  XmxSetConstraints 
+  XmxSetConstraints
     (_button1, XmATTACH_FORM, XmATTACH_FORM, XmATTACH_NONE, XmATTACH_NONE,
      NULL, NULL, NULL, NULL);
-  XmxSetConstraints 
+  XmxSetConstraints
     (_button2, XmATTACH_FORM, XmATTACH_FORM, XmATTACH_NONE, XmATTACH_NONE,
      NULL, NULL, NULL, NULL);
   XmxSetPositions (_button1, XmxNoPosition, XmxNoPosition, 0, 1);
   XmxSetPositions (_button2, XmxNoPosition, XmxNoPosition, 1, 2);
   XmxSetOffsets (_button1, XmxNoOffset, XmxNoOffset, 8, 4);
   XmxSetOffsets (_button2, XmxNoOffset, XmxNoOffset, 4, 8);
-  
+
   Xmx_n = 0;
   Xmx_w = _form;
   return Xmx_w;
@@ -1430,17 +1430,17 @@ Widget XmxMakeFormAndTwoButtonsSqueezed
   _button1 = XmxMakePushButton (_form, name1, cb, cb_data1);
   _button2 = XmxMakePushButton (_form, name2, cb, cb_data2);
 
-  XmxSetConstraints 
+  XmxSetConstraints
     (_button1, XmATTACH_FORM, XmATTACH_FORM, XmATTACH_NONE, XmATTACH_NONE,
      NULL, NULL, NULL, NULL);
-  XmxSetConstraints 
+  XmxSetConstraints
     (_button2, XmATTACH_FORM, XmATTACH_FORM, XmATTACH_NONE, XmATTACH_NONE,
      NULL, NULL, NULL, NULL);
   XmxSetPositions (_button1, XmxNoPosition, XmxNoPosition, 1, 2);
   XmxSetPositions (_button2, XmxNoPosition, XmxNoPosition, 3, 4);
   XmxSetOffsets (_button1, XmxNoOffset, XmxNoOffset, 8, 4);
   XmxSetOffsets (_button2, XmxNoOffset, XmxNoOffset, 4, 8);
-  
+
   Xmx_n = 0;
   Xmx_w = _form;
   return Xmx_w;
@@ -1462,13 +1462,13 @@ Widget XmxMakeFormAndThreeButtonsSqueezed
   _button2 = XmxMakePushButton (_form, name2, cb, cb_data2);
   _button3 = XmxMakePushButton (_form, name3, cb, cb_data3);
 
-  XmxSetConstraints 
+  XmxSetConstraints
     (_button1, XmATTACH_FORM, XmATTACH_FORM, XmATTACH_NONE, XmATTACH_NONE,
      NULL, NULL, NULL, NULL);
-  XmxSetConstraints 
+  XmxSetConstraints
     (_button2, XmATTACH_FORM, XmATTACH_FORM, XmATTACH_NONE, XmATTACH_NONE,
      NULL, NULL, NULL, NULL);
-  XmxSetConstraints 
+  XmxSetConstraints
     (_button3, XmATTACH_FORM, XmATTACH_FORM, XmATTACH_NONE, XmATTACH_NONE,
      NULL, NULL, NULL, NULL);
   XmxSetPositions (_button1, XmxNoPosition, XmxNoPosition, 1, 2);
@@ -1477,7 +1477,7 @@ Widget XmxMakeFormAndThreeButtonsSqueezed
   XmxSetOffsets (_button1, XmxNoOffset, XmxNoOffset, 8, 4);
   XmxSetOffsets (_button2, XmxNoOffset, XmxNoOffset, 4, 4);
   XmxSetOffsets (_button3, XmxNoOffset, XmxNoOffset, 4, 8);
-  
+
   Xmx_n = 0;
   Xmx_w = _form;
   return Xmx_w;
@@ -1499,13 +1499,13 @@ Widget XmxMakeFormAndThreeButtons
   _button2 = XmxMakePushButton (_form, name2, cb, cb_data2);
   _button3 = XmxMakePushButton (_form, name3, cb, cb_data3);
 
-  XmxSetConstraints 
+  XmxSetConstraints
     (_button1, XmATTACH_FORM, XmATTACH_FORM, XmATTACH_NONE, XmATTACH_NONE,
      NULL, NULL, NULL, NULL);
-  XmxSetConstraints 
+  XmxSetConstraints
     (_button2, XmATTACH_FORM, XmATTACH_FORM, XmATTACH_NONE, XmATTACH_NONE,
      NULL, NULL, NULL, NULL);
-  XmxSetConstraints 
+  XmxSetConstraints
     (_button3, XmATTACH_FORM, XmATTACH_FORM, XmATTACH_NONE, XmATTACH_NONE,
      NULL, NULL, NULL, NULL);
   XmxSetPositions (_button1, XmxNoPosition, XmxNoPosition, 0, 1);
@@ -1514,14 +1514,14 @@ Widget XmxMakeFormAndThreeButtons
   XmxSetOffsets (_button1, XmxNoOffset, XmxNoOffset, 8, 4);
   XmxSetOffsets (_button2, XmxNoOffset, XmxNoOffset, 4, 4);
   XmxSetOffsets (_button3, XmxNoOffset, XmxNoOffset, 4, 8);
-  
+
   Xmx_n = 0;
   Xmx_w = _form;
   return Xmx_w;
 }
 
 /* args apply to form */
-Widget XmxMakeFormAndFourButtons 
+Widget XmxMakeFormAndFourButtons
   (Widget parent, XtCallbackProc cb,
    String name1, String name2, String name3, String name4,
    int cb_data1, int cb_data2, int cb_data3, int cb_data4)
@@ -1537,16 +1537,16 @@ Widget XmxMakeFormAndFourButtons
   _button3 = XmxMakePushButton (_form, name3, cb, cb_data3);
   _button4 = XmxMakePushButton (_form, name4, cb, cb_data4);
 
-  XmxSetConstraints 
+  XmxSetConstraints
     (_button1, XmATTACH_FORM, XmATTACH_FORM, XmATTACH_NONE, XmATTACH_NONE,
      NULL, NULL, NULL, NULL);
-  XmxSetConstraints 
+  XmxSetConstraints
     (_button2, XmATTACH_FORM, XmATTACH_FORM, XmATTACH_NONE, XmATTACH_NONE,
      NULL, NULL, NULL, NULL);
-  XmxSetConstraints 
+  XmxSetConstraints
     (_button3, XmATTACH_FORM, XmATTACH_FORM, XmATTACH_NONE, XmATTACH_NONE,
      NULL, NULL, NULL, NULL);
-  XmxSetConstraints 
+  XmxSetConstraints
     (_button4, XmATTACH_FORM, XmATTACH_FORM, XmATTACH_NONE, XmATTACH_NONE,
      NULL, NULL, NULL, NULL);
   XmxSetPositions (_button1, XmxNoPosition, XmxNoPosition, 0, 1);
@@ -1557,14 +1557,14 @@ Widget XmxMakeFormAndFourButtons
   XmxSetOffsets (_button2, XmxNoOffset, XmxNoOffset, 4, 4);
   XmxSetOffsets (_button3, XmxNoOffset, XmxNoOffset, 4, 4);
   XmxSetOffsets (_button4, XmxNoOffset, XmxNoOffset, 4, 8);
-  
+
   Xmx_n = 0;
   Xmx_w = _form;
   return Xmx_w;
 }
 
 /* args apply to form */
-Widget XmxMakeFormAndFiveButtons 
+Widget XmxMakeFormAndFiveButtons
   (Widget parent, XtCallbackProc cb,
    String name1, String name2, String name3, String name4, String name5,
    int cb_data1, int cb_data2, int cb_data3, int cb_data4, int cb_data5)
@@ -1606,7 +1606,7 @@ Widget XmxMakeFormAndFiveButtons
   XmxSetOffsets (_button3, XmxNoOffset, XmxNoOffset, 4, 4);
   XmxSetOffsets (_button4, XmxNoOffset, XmxNoOffset, 4, 4);
   XmxSetOffsets (_button5, XmxNoOffset, XmxNoOffset, 4, 8);
-  
+
   Xmx_n = 0;
   Xmx_w = _form;
   return Xmx_w;
@@ -1620,7 +1620,7 @@ static void _XmxYesOrNoResponse (Widget w, int *answer, XmAnyCallbackStruct *cbs
     *answer = 0;
 }
 
-int XmxModalYesOrNo (Widget parent, XtAppContext app, 
+int XmxModalYesOrNo (Widget parent, XtAppContext app,
                      char *questionstr, char *yesstr, char *nostr)
 {
   Widget dialog;
@@ -1633,7 +1633,7 @@ int XmxModalYesOrNo (Widget parent, XtAppContext app,
   yes = XmStringCreateLtoR (yesstr, XmSTRING_DEFAULT_CHARSET);
   no = XmStringCreateLtoR (nostr, XmSTRING_DEFAULT_CHARSET);
   title = XmStringCreateLtoR ("Prompt", XmSTRING_DEFAULT_CHARSET);
-  
+
   XmxSetArg (XmNdialogTitle, (XtArgVal)title);
   XmxSetArg (XmNdialogStyle, XmDIALOG_FULL_APPLICATION_MODAL);
   XmxSetArg (XmNmessageString, (XtArgVal)question);
@@ -1643,11 +1643,11 @@ int XmxModalYesOrNo (Widget parent, XtAppContext app,
 
   dialog = XmCreateQuestionDialog (parent, "question_dialog", Xmx_wargs, Xmx_n);
   Xmx_n = 0;
-  
+
   XtUnmanageChild (XmMessageBoxGetChild (dialog, XmDIALOG_HELP_BUTTON));
-  XtAddCallback (dialog, XmNokCallback, 
+  XtAddCallback (dialog, XmNokCallback,
                  (XtCallbackProc)_XmxYesOrNoResponse, &answer);
-  XtAddCallback (dialog, XmNcancelCallback, 
+  XtAddCallback (dialog, XmNcancelCallback,
                  (XtCallbackProc)_XmxYesOrNoResponse, &answer);
 
   XtManageChild (dialog);
@@ -1679,20 +1679,20 @@ int XmxModalYesOrNo (Widget parent, XtAppContext app,
 #define XMX_NO_ANSWER "-*-no answer, dammit, but Xmx rules, yo yo yo-*-"
 
 /*SWP -- 7/6/95*/
-static void _XmxActivate (Widget w, char **answer, 
+static void _XmxActivate (Widget w, char **answer,
                                          XmSelectionBoxCallbackStruct *cbs)
 {
     *answer = XMX_NO_ANSWER;
 }
 
-static void _XmxPromptForStringResponse (Widget w, char **answer, 
+static void _XmxPromptForStringResponse (Widget w, char **answer,
                                          XmSelectionBoxCallbackStruct *cbs)
 {
   if (!XmStringGetLtoR (cbs->value, XmSTRING_DEFAULT_CHARSET, answer))
     *answer = XMX_NO_ANSWER;
 }
 
-static void _XmxPromptForStringCancel (Widget w, char **answer, 
+static void _XmxPromptForStringCancel (Widget w, char **answer,
                                        XmSelectionBoxCallbackStruct *cbs)
 {
   *answer = XMX_NO_ANSWER;
@@ -1700,7 +1700,7 @@ static void _XmxPromptForStringCancel (Widget w, char **answer,
 
 
 /*SWP -- 7/4/95*/
-void XmxMakeInfoDialogWait (Widget parent, XtAppContext app, 
+void XmxMakeInfoDialogWait (Widget parent, XtAppContext app,
                                char *infostr, char *titlestr, char *yesstr)
 {
   Widget dialog;
@@ -1710,7 +1710,7 @@ void XmxMakeInfoDialogWait (Widget parent, XtAppContext app,
   info = XmStringCreateLtoR (infostr, XmSTRING_DEFAULT_CHARSET);
   yes = XmStringCreateLtoR (yesstr, XmSTRING_DEFAULT_CHARSET);
   title = XmStringCreateLtoR (titlestr, XmSTRING_DEFAULT_CHARSET);
-  
+
   XmxSetArg (XmNdialogTitle, (XtArgVal)title);
   XmxSetArg (XmNdialogStyle, XmDIALOG_FULL_APPLICATION_MODAL);
   XmxSetArg (XmNmessageString, (XtArgVal)info);
@@ -1723,7 +1723,7 @@ void XmxMakeInfoDialogWait (Widget parent, XtAppContext app,
   XtUnmanageChild (XmMessageBoxGetChild (dialog, XmDIALOG_HELP_BUTTON));
   XtUnmanageChild (XmMessageBoxGetChild (dialog, XmDIALOG_CANCEL_BUTTON));
 
-  XtAddCallback (dialog, XmNokCallback, 
+  XtAddCallback (dialog, XmNokCallback,
                  (XtCallbackProc)_XmxActivate, &answer);
 
   XtManageChild (dialog);
@@ -1749,7 +1749,7 @@ void XmxMakeInfoDialogWait (Widget parent, XtAppContext app,
 
 
 /*SWP -- 4/15/96*/
-void XmxMakeErrorDialogWait (Widget parent, XtAppContext app, 
+void XmxMakeErrorDialogWait (Widget parent, XtAppContext app,
                                char *infostr, char *titlestr, char *yesstr)
 {
   Widget dialog;
@@ -1759,7 +1759,7 @@ void XmxMakeErrorDialogWait (Widget parent, XtAppContext app,
   info = XmStringCreateLtoR (infostr, XmSTRING_DEFAULT_CHARSET);
   yes = XmStringCreateLtoR (yesstr, XmSTRING_DEFAULT_CHARSET);
   title = XmStringCreateLtoR (titlestr, XmSTRING_DEFAULT_CHARSET);
-  
+
   XmxSetArg (XmNdialogTitle, (XtArgVal)title);
   XmxSetArg (XmNdialogStyle, XmDIALOG_FULL_APPLICATION_MODAL);
   XmxSetArg (XmNmessageString, (XtArgVal)info);
@@ -1772,7 +1772,7 @@ void XmxMakeErrorDialogWait (Widget parent, XtAppContext app,
   XtUnmanageChild (XmMessageBoxGetChild (dialog, XmDIALOG_HELP_BUTTON));
   XtUnmanageChild (XmMessageBoxGetChild (dialog, XmDIALOG_CANCEL_BUTTON));
 
-  XtAddCallback (dialog, XmNokCallback, 
+  XtAddCallback (dialog, XmNokCallback,
                  (XtCallbackProc)_XmxActivate, &answer);
 
   XtManageChild (dialog);
@@ -1797,7 +1797,7 @@ void XmxMakeErrorDialogWait (Widget parent, XtAppContext app,
 }
 
 
-char *XmxModalPromptForString (Widget parent, XtAppContext app, 
+char *XmxModalPromptForString (Widget parent, XtAppContext app,
                                char *questionstr, char *yesstr, char *nostr)
 {
   Widget dialog;
@@ -1810,7 +1810,7 @@ char *XmxModalPromptForString (Widget parent, XtAppContext app,
   yes = XmStringCreateLtoR (yesstr, XmSTRING_DEFAULT_CHARSET);
   no = XmStringCreateLtoR (nostr, XmSTRING_DEFAULT_CHARSET);
   title = XmStringCreateLtoR ("Prompt", XmSTRING_DEFAULT_CHARSET);
-  
+
   XmxSetArg (XmNdialogTitle, (XtArgVal)title);
   XmxSetArg (XmNdialogStyle, XmDIALOG_FULL_APPLICATION_MODAL);
   XmxSetArg (XmNselectionLabelString, (XtArgVal)question);
@@ -1818,11 +1818,11 @@ char *XmxModalPromptForString (Widget parent, XtAppContext app,
   XmxSetArg (XmNcancelLabelString, (XtArgVal)no);
   dialog = XmCreatePromptDialog (parent, "question_dialog", Xmx_wargs, Xmx_n);
   Xmx_n = 0;
-  
+
   XtUnmanageChild (XmSelectionBoxGetChild (dialog, XmDIALOG_HELP_BUTTON));
-  XtAddCallback (dialog, XmNokCallback, 
+  XtAddCallback (dialog, XmNokCallback,
                  (XtCallbackProc)_XmxPromptForStringResponse, &answer);
-  XtAddCallback (dialog, XmNcancelCallback, 
+  XtAddCallback (dialog, XmNcancelCallback,
                  (XtCallbackProc)_XmxPromptForStringCancel, &answer);
 
   XtManageChild (dialog);
@@ -1859,38 +1859,38 @@ char *XmxModalPromptForString (Widget parent, XtAppContext app,
 
 static char *_passwd = NULL;
 
-static void _XmxPromptForPasswordResponse (Widget w, char **answer, 
+static void _XmxPromptForPasswordResponse (Widget w, char **answer,
                                            XmSelectionBoxCallbackStruct *cbs)
 {
   if (!XmStringGetLtoR (cbs->value, XmSTRING_DEFAULT_CHARSET, answer))
     *answer = XMX_NO_ANSWER;
 }
 
-static void _XmxPromptForPasswordCancel (Widget w, char **answer, 
+static void _XmxPromptForPasswordCancel (Widget w, char **answer,
                                          XmSelectionBoxCallbackStruct *cbs)
 {
   *answer = XMX_NO_ANSWER;
 }
 
-static void _XmxPromptForPasswordVerify (Widget text_w, XtPointer unused, 
+static void _XmxPromptForPasswordVerify (Widget text_w, XtPointer unused,
                                          XmTextVerifyCallbackStruct *cbs)
 {
   char *new;
   int len;
-  
-  if (cbs->reason != XmCR_MODIFYING_TEXT_VALUE) 
+
+  if (cbs->reason != XmCR_MODIFYING_TEXT_VALUE)
     {
       return;
     }
 
-  if (cbs->text->ptr == NULL) 
+  if (cbs->text->ptr == NULL)
     { /* backspace */
       cbs->doit = True;
       if (_passwd && *_passwd)
         {
 	  int start;
 	  char *tptr;
-	
+
 	  len = strlen(_passwd);
 	  /* Find the start of the delete */
 	  if (cbs->startPos < len)
@@ -1914,7 +1914,7 @@ static void _XmxPromptForPasswordVerify (Widget text_w, XtPointer unused,
 	  strcat(_passwd, tptr);
         }
     }
-  else if (cbs->text->length >= 1) 
+  else if (cbs->text->length >= 1)
     {
       int i;
 
@@ -1961,7 +1961,7 @@ static void _XmxPromptForPasswordVerify (Widget text_w, XtPointer unused,
     }
 }
 
-char *XmxModalPromptForPassword (Widget parent, XtAppContext app, 
+char *XmxModalPromptForPassword (Widget parent, XtAppContext app,
                                char *questionstr, char *yesstr, char *nostr)
 {
   Widget dialog;
@@ -1976,7 +1976,7 @@ char *XmxModalPromptForPassword (Widget parent, XtAppContext app,
   yes = XmStringCreateLtoR (yesstr, XmSTRING_DEFAULT_CHARSET);
   no = XmStringCreateLtoR (nostr, XmSTRING_DEFAULT_CHARSET);
   title = XmStringCreateLtoR ("Prompt", XmSTRING_DEFAULT_CHARSET);
-  
+
   XmxSetArg (XmNdialogTitle, (XtArgVal)title);
   XmxSetArg (XmNdialogStyle, XmDIALOG_FULL_APPLICATION_MODAL);
   XmxSetArg (XmNselectionLabelString, (XtArgVal)question);
@@ -1984,14 +1984,14 @@ char *XmxModalPromptForPassword (Widget parent, XtAppContext app,
   XmxSetArg (XmNcancelLabelString, (XtArgVal)no);
   dialog = XmCreatePromptDialog (parent, "question_dialog", Xmx_wargs, Xmx_n);
   Xmx_n = 0;
-  
+
   XtUnmanageChild (XmSelectionBoxGetChild (dialog, XmDIALOG_HELP_BUTTON));
   XtAddCallback
     (XmSelectionBoxGetChild (dialog, XmDIALOG_TEXT),
      XmNmodifyVerifyCallback, (XtCallbackProc)_XmxPromptForPasswordVerify, 0);
-  XtAddCallback (dialog, XmNokCallback, 
+  XtAddCallback (dialog, XmNokCallback,
                  (XtCallbackProc)_XmxPromptForPasswordResponse, &answer);
-  XtAddCallback (dialog, XmNcancelCallback, 
+  XtAddCallback (dialog, XmNcancelCallback,
                  (XtCallbackProc)_XmxPromptForPasswordCancel, &answer);
 
   XtManageChild (dialog);
